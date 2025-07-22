@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../atlas_rails_bridge'
+require_relative '../yaml_to_hcl_converter'
 
 namespace :atlas do
   desc "Preview Atlas schema changes"
@@ -26,6 +27,15 @@ namespace :atlas do
   task :seed do
     bridge = AtlasRailsBridge.new
     bridge.generate_seed_data
+  end
+
+  desc "Convert YAML schema to Atlas HCL format"
+  task :yaml_to_hcl, [:yaml_file, :hcl_file] do |_task, args|
+    yaml_file = args[:yaml_file] || 'schema.yml'
+    hcl_file = args[:hcl_file] || 'schema.hcl'
+    
+    converter = YamlToHclConverter.new(yaml_file, hcl_file)
+    converter.convert!
   end
 
   desc "Full workflow: preview, generate migration, and apply"
@@ -108,6 +118,7 @@ namespace :atlas do
       rake atlas:apply                      # Apply Atlas schema to database
       rake atlas:deploy[name]               # Full workflow: preview + generate + apply
       rake atlas:seed                       # Generate seed data for event types
+      rake atlas:yaml_to_hcl[yaml,hcl]      # Convert YAML schema to Atlas HCL
       rake atlas:init                       # Initialize Atlas with current Rails schema
       rake atlas:validate                   # Validate Atlas schema file
       rake atlas:history                    # Show Atlas migration history
@@ -131,6 +142,7 @@ namespace :atlas do
       --------
       rake atlas:generate["add user tables"]
       rake atlas:deploy["tournament schema"]
+      rake atlas:yaml_to_hcl[schema.yml,schema.hcl]
     HELP
   end
 end
