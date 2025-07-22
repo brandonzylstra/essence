@@ -154,16 +154,23 @@ class AtlasRailsBridge
   private
 
   def get_atlas_migration_plan
-    # Get the SQL diff from Atlas
-    result = `atlas schema diff --env #{@atlas_env} --format '{{ range .Changes }}{{ .Cmd }};{{ end }}'`
+    # Get the SQL statements from Atlas dry run
+    result = `atlas schema apply --env #{@atlas_env} --dry-run`
     
     if $?.exitstatus != 0
       puts "❌ Failed to get Atlas migration plan"
       return []
     end
 
-    # Parse the SQL statements
-    statements = result.strip.split(';').map(&:strip).reject(&:empty?)
+    # Parse SQL statements from the dry-run output
+    statements = []
+    result.each_line do |line|
+      # Look for lines that start with "    -> " which contain SQL
+      if line.strip.start_with?('-> ') && line.include?('CREATE') || line.include?('ALTER') || line.include?('DROP')
+        sql = line.strip.sub(/^-> /, '').strip
+        statements << sql unless sql.empty?
+      end
+    end
     
     puts "Found #{statements.length} changes:"
     statements.each_with_index do |stmt, i|

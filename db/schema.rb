@@ -11,6 +11,23 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[8.0].define(version: 0) do
+  create_table "awards", force: :cascade do |t|
+    t.string "name", null: false
+    t.integer "tournament_event_id", null: false
+    t.integer "recipient_id", null: false
+    t.string "recipient_type", null: false
+    t.string "award_type", default: "placement", null: false
+    t.integer "position"
+    t.text "description"
+    t.datetime "awarded_at", precision: nil, null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
+    t.index ["award_type"], name: "index_awards_on_award_type"
+    t.index ["position"], name: "index_awards_on_position"
+    t.index ["recipient_id", "recipient_type"], name: "index_awards_on_recipient"
+    t.index ["tournament_event_id"], name: "index_awards_on_tournament_event_id"
+  end
+
   create_table "event_types", force: :cascade do |t|
     t.string "name", null: false
     t.string "abbreviation"
@@ -233,6 +250,7 @@ ActiveRecord::Schema[8.0].define(version: 0) do
     t.index ["role"], name: "index_users_on_role"
   end
 
+  add_foreign_key "awards", "tournament_events", on_delete: :cascade
   add_foreign_key "judges", "tournaments", on_delete: :cascade
   add_foreign_key "judges", "users", on_delete: :cascade
   add_foreign_key "match_judges", "judges", on_delete: :cascade
