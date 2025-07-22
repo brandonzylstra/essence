@@ -328,8 +328,30 @@ class YamlToHclConverter
         }
       HCL
       
+    elsif index_def.is_a?(Hash)
+      # New hash format with columns and options
+      columns = index_def['columns'] || []
+      is_unique = index_def['unique'] || false
+      
+      if columns.is_a?(Array) && columns.length > 0
+        column_names = columns.join('_and_')
+        index_name = "index_#{table_name}_on_#{column_names}"
+        index_name += '_unique' if is_unique
+        
+        hcl = <<~HCL
+          index "#{index_name}" {
+            columns = [#{columns.map { |col| "column.#{col}" }.join(', ')}]
+        HCL
+        
+        hcl += "    unique = true\n" if is_unique
+        hcl += "  }\n"
+        hcl
+      else
+        ""
+      end
+      
     elsif index_def.is_a?(Array)
-      # Multi-column index or index with options
+      # Multi-column index or index with options (legacy format)
       if index_def.length == 1 && index_def[0].is_a?(String)
         # Single column in array format
         column_name = index_def[0]
