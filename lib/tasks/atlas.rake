@@ -31,10 +31,7 @@ namespace :atlas do
 
   desc "Convert YAML schema to Atlas HCL format"
   task :yaml_to_hcl, [:yaml_file, :hcl_file] do |_task, args|
-    yaml_file = args[:yaml_file] || 'schema.yml'
-    hcl_file = args[:hcl_file] || 'schema.hcl'
-    
-    converter = YamlToHclConverter.new(yaml_file, hcl_file)
+    converter = YamlToHclConverter.new(args[:yaml_file], args[:hcl_file])
     converter.convert!
   end
 
@@ -67,11 +64,11 @@ namespace :atlas do
     FileUtils.mkdir_p("db/atlas_migrations")
 
     # Export current Rails schema to Atlas HCL format
-    system("atlas schema inspect --url 'sqlite://#{Rails.configuration.database_configuration[Rails.env]['database']}' --format '{{ hcl . }}' > current_schema.hcl")
+    system("atlas schema inspect --url 'sqlite://#{Rails.configuration.database_configuration[Rails.env]['database']}' --format '{{ hcl . }}' > db/current_schema.hcl")
 
     puts "✅ Atlas initialized!"
-    puts "📄 Current schema exported to current_schema.hcl"
-    puts "🔧 Edit schema.hcl to define your desired schema"
+    puts "📄 Current schema exported to db/current_schema.hcl"
+    puts "🔧 Edit db/schema.yaml to define your desired schema"
     puts "🚀 Run 'rake atlas:preview' to see what would change"
   end
 
@@ -128,13 +125,15 @@ namespace :atlas do
       Quick Start:
       -----------
       1. rake atlas:init                    # Set up Atlas
-      2. Edit schema.hcl                    # Define your schema
-      3. rake atlas:preview                 # See what would change
-      4. rake atlas:deploy[migration_name]  # Generate migration and apply
+      2. Edit db/schema.yaml                # Define your schema in YAML
+      3. rake atlas:yaml_to_hcl             # Convert to Atlas HCL
+      4. rake atlas:preview                 # See what would change
+      5. rake atlas:deploy[migration_name]  # Generate migration and apply
 
       Files:
       ------
-      schema.hcl          # Your desired database schema (edit this!)
+      db/schema.yaml      # Your editable schema definition (YAML format)
+      db/schema.hcl       # Auto-generated Atlas HCL schema
       atlas.hcl           # Atlas configuration
       db/atlas_migrations # Atlas migration files
 
@@ -142,7 +141,7 @@ namespace :atlas do
       --------
       rake atlas:generate["add user tables"]
       rake atlas:deploy["tournament schema"]
-      rake atlas:yaml_to_hcl[schema.yml,schema.hcl]
+      rake atlas:yaml_to_hcl[db/schema.yaml,db/schema.hcl]
     HELP
   end
 end

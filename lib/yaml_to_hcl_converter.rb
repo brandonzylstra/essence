@@ -7,9 +7,9 @@ require 'fileutils'
 # YAML to Atlas HCL Converter
 # Converts simplified YAML schema to Atlas HCL format
 class YamlToHclConverter
-  def initialize(yaml_file = 'schema.yml', hcl_file = 'schema.hcl')
-    @yaml_file = yaml_file
-    @hcl_file = hcl_file
+  def initialize(yaml_file = nil, hcl_file = nil)
+    @yaml_file = yaml_file || find_schema_yaml_file
+    @hcl_file = hcl_file || 'db/schema.hcl'
     @schema_data = nil
   end
 
@@ -24,6 +24,23 @@ class YamlToHclConverter
   end
 
   private
+
+  def find_schema_yaml_file
+    # Prefer .yaml extension over .yml, and db/ directory over root
+    candidates = [
+      'db/schema.yaml',
+      'db/schema.yml', 
+      'schema.yaml',
+      'schema.yml'
+    ]
+    
+    candidates.each do |file|
+      return file if File.exist?(file)
+    end
+    
+    # Default to preferred location/extension if none exist
+    'db/schema.yaml'
+  end
 
   def load_yaml
     unless File.exist?(@yaml_file)
@@ -386,8 +403,8 @@ end
 
 # CLI Interface
 if __FILE__ == $0
-  yaml_file = ARGV[0] || 'schema.yml'
-  hcl_file = ARGV[1] || 'schema.hcl'
+  yaml_file = ARGV[0]
+  hcl_file = ARGV[1]
   
   converter = YamlToHclConverter.new(yaml_file, hcl_file)
   converter.convert!

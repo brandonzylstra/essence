@@ -11,7 +11,7 @@ data "external_schema" "rails" {
 
 # Development environment using SQLite
 env "dev" {
-  src = "file://schema.hcl"
+  src = "file://db/schema.hcl"
   url = "sqlite://storage/development.sqlite3"
   dev = "sqlite://file?mode=memory&_fk=1"
   migration {
@@ -31,7 +31,7 @@ env "rails" {
 
 # Production-like environment
 env "prod" {
-  src = "file://schema.hcl"
+  src = "file://db/schema.hcl"
   url = env("DATABASE_URL")
   migration {
     dir = "file://db/atlas_migrations"

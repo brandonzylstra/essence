@@ -25,7 +25,9 @@ class AtlasRailsBridge
     @atlas_env = atlas_env
     @rails_root = rails_root
     @migrations_dir = File.join(@rails_root, 'db', 'migrate')
+    @db_dir = File.join(@rails_root, 'db')
     FileUtils.mkdir_p(@migrations_dir)
+    FileUtils.mkdir_p(@db_dir)
   end
 
   # Main method to generate migration from current schema to Atlas HCL target
@@ -131,7 +133,7 @@ class AtlasRailsBridge
       }
     ]
 
-    seed_file = File.join(@rails_root, 'db', 'seeds.rb')
+    seed_file = File.join(@db_dir, 'seeds.rb')
     
     seed_content = "# Event Types for Speech & Debate Tournaments\n\n"
     event_types.each do |event_type|

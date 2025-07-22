@@ -1,4 +1,4 @@
-# Auto-generated Atlas HCL schema from schema.yml
+# Auto-generated Atlas HCL schema from db/schema.yaml
 # Edit the YAML file and re-run the converter to update this file
 
 schema "main" {}
