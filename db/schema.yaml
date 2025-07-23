@@ -7,6 +7,15 @@ rails_version: "8.0"
 
 # Table definitions
 tables:
+  records:
+    columns:
+      id: primary_key
+      user_id: integer -> users.id on_delete=cascade not_null
+      record_type: string(100) not_null
+      value: text
+      created_at: datetime not_null
+      updated_at: datetime not_null
+
   seasons:
     columns:
       id: primary_key
@@ -291,42 +300,42 @@ seeds:
       participant_type: "individual"
       max_participants_per_match: 8
       description: "A speech designed to convince the audience of a particular viewpoint"
-    
+
     - name: "Informative Speaking"
       abbreviation: "INFO"
       category: "speech"
       participant_type: "individual"
       max_participants_per_match: 8
       description: "A speech that educates the audience about a specific topic"
-    
+
     - name: "Original Oratory"
       abbreviation: "OO"
       category: "speech"
       participant_type: "individual"
       max_participants_per_match: 8
       description: "An original speech on a topic of the speaker's choosing"
-    
+
     - name: "Duo Interpretation"
       abbreviation: "DUO"
       category: "interpretation"
       participant_type: "team"
       max_participants_per_match: 8
       description: "A dramatic performance by two people"
-    
+
     - name: "Team Policy Debate"
       abbreviation: "TP"
       category: "debate"
       participant_type: "team"
       max_participants_per_match: 2
       description: "A debate format with two-person teams arguing policy resolutions"
-    
+
     - name: "Lincoln Douglas Debate"
       abbreviation: "LD"
       category: "debate"
       participant_type: "individual"
       max_participants_per_match: 2
       description: "A one-on-one debate format focusing on value and philosophical arguments"
-    
+
     - name: "Apologetics"
       abbreviation: "APOL"
       category: "speech"

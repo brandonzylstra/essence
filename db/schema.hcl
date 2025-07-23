@@ -3,6 +3,43 @@
 
 schema "main" {}
 
+table "records" {
+  schema = schema.main
+column "id" {
+    null = false
+    type = integer
+    auto_increment = true
+  }
+column "user_id" {
+    null = true
+    type = integer
+  }
+column "record_type" {
+    null = false
+    type = varchar(100)
+  }
+column "value" {
+    null = true
+    type = text
+  }
+column "created_at" {
+    null = false
+    type = datetime
+  }
+column "updated_at" {
+    null = false
+    type = datetime
+  }
+primary_key {
+  columns = [column.id]
+}
+foreign_key "fk_records_user_id" {
+  columns = [column.user_id]
+  ref_columns = [table.users.column.id]
+    on_delete = CASCADE
+  }
+}
+
 table "seasons" {
   schema = schema.main
 column "id" {
