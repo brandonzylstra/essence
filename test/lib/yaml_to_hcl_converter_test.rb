@@ -21,13 +21,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
     end
     FileUtils.rm_rf(@test_dir) if @test_dir && Dir.exist?(@test_dir)
   end
-</text>
 
-<old_text line=1>
-# frozen_string_literal: true
-
-require 'test_helper'
-require_relative '../../lib/yaml_to_hcl_converter'
 require 'tempfile'
 require 'fileutils'
 
