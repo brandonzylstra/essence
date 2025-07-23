@@ -22,11 +22,6 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
     FileUtils.rm_rf(@test_dir) if @test_dir && Dir.exist?(@test_dir)
   end
 
-require 'tempfile'
-require 'fileutils'
-
-class YamlToHclConverterTest < ActiveSupport::TestCase
-
   test "prefers .yaml extension over .yml" do
     # Create both files
     File.write('db/schema.yaml', test_yaml_content)
@@ -155,7 +150,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
     
     # Check default values
     assert_includes hcl_content, 'default = true'
-    assert_includes hcl_content, "default = 'user'"
+    assert_includes hcl_content, 'default = "user"'
     assert_includes hcl_content, 'default = 0'
   end
 
@@ -289,107 +284,6 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
     assert_includes hcl_content, 'index "index_posts_on_category_id_and_user_id_and_created_at"'
   end
 
-  test "handles missing YAML file gracefully" do
-    converter = YamlToHclConverter.new('nonexistent.yaml', 'output.hcl')
-    
-    assert_raises(SystemExit) do
-      converter.convert!
-    end
-  end
-
-  test "handles invalid YAML gracefully" do
-    File.write('db/schema.yaml', 'invalid: yaml: [content')
-    
-    converter = YamlToHclConverter.new
-    
-    assert_raises(Psych::SyntaxError) do
-      converter.convert!
-    end
-  end
-
-  test "generates proper HCL header" do
-    File.write('db/schema.yaml', test_yaml_content)
-    
-    converter = YamlToHclConverter.new
-    converter.convert!
-    
-    hcl_content = File.read('db/schema.hcl')
-    
-    # Check header
-    assert_includes hcl_content, '# Auto-generated Atlas HCL schema from db/schema.yaml'
-    assert_includes hcl_content, '# Edit the YAML file and re-run the converter'
-  end
-
-  test "uses custom schema name" do
-    yaml_content = <<~YAML
-      schema_name: custom_schema
-      tables:
-        users:
-          columns:
-            id: primary_key
-            name: string(100) not_null
-    YAML
-    
-    File.write('db/schema.yaml', yaml_content)
-    
-    converter = YamlToHclConverter.new
-    converter.convert!
-    
-    hcl_content = File.read('db/schema.hcl')
-    
-    # Check custom schema name
-    assert_includes hcl_content, 'schema "custom_schema" {}'
-    assert_includes hcl_content, 'schema = schema.custom_schema'
-  end
-
-  test "handles empty tables section" do
-    yaml_content = <<~YAML
-      schema_name: main
-      tables: {}
-    YAML
-    
-    File.write('db/schema.yaml', yaml_content)
-    
-    converter = YamlToHclConverter.new
-    converter.convert!
-    
-    hcl_content = File.read('db/schema.hcl')
-    
-    # Should generate valid HCL with just schema
-    assert_includes hcl_content, 'schema "main" {}'
-    refute_includes hcl_content, 'table'
-  end
-
-  test "handles table without columns" do
-    yaml_content = <<~YAML
-      schema_name: main
-      tables:
-        empty_table: {}
-    YAML
-    
-    File.write('db/schema.yaml', yaml_content)
-    
-    converter = YamlToHclConverter.new
-    converter.convert!
-    
-    hcl_content = File.read('db/schema.hcl')
-    
-    # Should generate empty table
-    assert_includes hcl_content, 'table "empty_table" {'
-    assert_includes hcl_content, 'schema = schema.main'
-  end
-
-  test "preserves file paths correctly" do
-    File.write('db/schema.yaml', test_yaml_content)
-    
-    converter = YamlToHclConverter.new('db/schema.yaml', 'db/output.hcl')
-    converter.convert!
-    
-    assert File.exist?('db/output.hcl')
-    hcl_content = File.read('db/output.hcl')
-    assert_includes hcl_content, 'table "users"'
-  end
-
   test "applies default columns to all tables" do
     yaml_content = <<~YAML
       schema_name: main
@@ -441,7 +335,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
           columns:
             id: primary_key
       column_patterns:
-        - pattern: /_id$/
+        - pattern: "_id$"
           template: "integer -> {table}.id on_delete=cascade not_null"
       tables:
         users:
@@ -478,7 +372,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
           columns:
             id: primary_key
       column_patterns:
-        - pattern: /_at$/
+        - pattern: "_at$"
           attributes: "datetime not_null"
       tables:
         users:
@@ -548,9 +442,9 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
             id: primary_key
             created_at: datetime not_null
       column_patterns:
-        - pattern: /_id$/
+        - pattern: "_id$"
           template: "integer -> {table}.id on_delete=cascade not_null"
-        - pattern: /_at$/
+        - pattern: "_at$"
           attributes: "datetime not_null"
       tables:
         posts:
@@ -681,8 +575,8 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
     assert_includes template_content, 'defaults:'
     assert_includes template_content, '"*":'
     assert_includes template_content, 'column_patterns:'
-    assert_includes template_content, 'pattern: /_id$/'
-    assert_includes template_content, 'pattern: /_at$/'
+    assert_includes template_content, 'pattern: "_id$"'
+    assert_includes template_content, 'pattern: "_at$"'
     assert_includes template_content, 'tables:'
     assert_includes template_content, 'users:'
     assert_includes template_content, 'leagues:'
@@ -726,7 +620,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
     yaml_content = <<~YAML
       schema_name: main
       column_patterns:
-        - pattern: /_id$/
+        - pattern: "_id$"
           template: "integer -> {table}.id on_delete=cascade not_null"
       tables:
         posts:
@@ -750,6 +644,107 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
     assert_includes hcl_content, 'ref_columns = [table.companies.column.id]'   # y -> ies
     assert_includes hcl_content, 'ref_columns = [table.leaves.column.id]'      # f -> ves
     assert_includes hcl_content, 'ref_columns = [table.wives.column.id]'       # fe -> ves
+  end
+
+  test "handles missing YAML file gracefully" do
+    converter = YamlToHclConverter.new('nonexistent.yaml', 'output.hcl')
+    
+    assert_raises(SystemExit) do
+      converter.convert!
+    end
+  end
+
+  test "handles invalid YAML gracefully" do
+    File.write('db/schema.yaml', 'invalid: yaml: [content')
+    
+    converter = YamlToHclConverter.new
+    
+    assert_raises(Psych::SyntaxError) do
+      converter.convert!
+    end
+  end
+
+  test "generates proper HCL header" do
+    File.write('db/schema.yaml', test_yaml_content)
+    
+    converter = YamlToHclConverter.new
+    converter.convert!
+    
+    hcl_content = File.read('db/schema.hcl')
+    
+    # Check header
+    assert_includes hcl_content, '# Auto-generated Atlas HCL schema from db/schema.yaml'
+    assert_includes hcl_content, '# Edit the YAML file and re-run the converter'
+  end
+
+  test "uses custom schema name" do
+    yaml_content = <<~YAML
+      schema_name: custom_schema
+      tables:
+        users:
+          columns:
+            id: primary_key
+            name: string(100) not_null
+    YAML
+    
+    File.write('db/schema.yaml', yaml_content)
+    
+    converter = YamlToHclConverter.new
+    converter.convert!
+    
+    hcl_content = File.read('db/schema.hcl')
+    
+    # Check custom schema name
+    assert_includes hcl_content, 'schema "custom_schema" {}'
+    assert_includes hcl_content, 'schema = schema.custom_schema'
+  end
+
+  test "handles empty tables section" do
+    yaml_content = <<~YAML
+      schema_name: main
+      tables: {}
+    YAML
+    
+    File.write('db/schema.yaml', yaml_content)
+    
+    converter = YamlToHclConverter.new
+    converter.convert!
+    
+    hcl_content = File.read('db/schema.hcl')
+    
+    # Should generate valid HCL with just schema
+    assert_includes hcl_content, 'schema "main" {}'
+    refute_includes hcl_content, 'table'
+  end
+
+  test "handles table without columns" do
+    yaml_content = <<~YAML
+      schema_name: main
+      tables:
+        empty_table: {}
+    YAML
+    
+    File.write('db/schema.yaml', yaml_content)
+    
+    converter = YamlToHclConverter.new
+    converter.convert!
+    
+    hcl_content = File.read('db/schema.hcl')
+    
+    # Should generate empty table
+    assert_includes hcl_content, 'table "empty_table" {'
+    assert_includes hcl_content, 'schema = schema.main'
+  end
+
+  test "preserves file paths correctly" do
+    File.write('db/schema.yaml', test_yaml_content)
+    
+    converter = YamlToHclConverter.new('db/schema.yaml', 'db/output.hcl')
+    converter.convert!
+    
+    assert File.exist?('db/output.hcl')
+    hcl_content = File.read('db/output.hcl')
+    assert_includes hcl_content, 'table "users"'
   end
 
   private
