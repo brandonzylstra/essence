@@ -3,89 +3,20 @@
 
 schema "main" {}
 
-table "records" {
-  schema = schema.main
-column "id" {
-    null = false
-    type = integer
-    auto_increment = true
-  }
-column "user_id" {
-    null = true
-    type = integer
-  }
-column "record_type" {
-    null = false
-    type = varchar(100)
-  }
-column "value" {
-    null = true
-    type = text
-  }
-column "created_at" {
-    null = false
-    type = datetime
-  }
-column "updated_at" {
-    null = false
-    type = datetime
-  }
-primary_key {
-  columns = [column.id]
-}
-foreign_key "fk_records_user_id" {
-  columns = [column.user_id]
-  ref_columns = [table.users.column.id]
-    on_delete = CASCADE
-  }
-}
-
-table "seasons" {
-  schema = schema.main
-column "id" {
-    null = false
-    type = integer
-    auto_increment = true
-  }
-column "name" {
-    null = false
-    type = varchar(100)
-  }
-column "start_date" {
-    null = false
-    type = date
-  }
-column "end_date" {
-    null = false
-    type = date
-  }
-column "active" {
-    null = false
-    type = boolean
-    default = false
-  }
-column "created_at" {
-    null = false
-    type = datetime
-  }
-column "updated_at" {
-    null = false
-    type = datetime
-  }
-primary_key {
-  columns = [column.id]
-}
-index "index_seasons_on_active" {
-  columns = [column.active]
-}
-}
-
 table "leagues" {
   schema = schema.main
 column "id" {
     null = false
     type = integer
     auto_increment = true
+  }
+column "created_at" {
+    null = false
+    type = datetime
+  }
+column "updated_at" {
+    null = false
+    type = datetime
   }
 column "name" {
     null = false
@@ -112,6 +43,18 @@ column "active" {
     type = boolean
     default = true
   }
+primary_key {
+  columns = [column.id]
+}
+}
+
+table "seasons" {
+  schema = schema.main
+column "id" {
+    null = false
+    type = integer
+    auto_increment = true
+  }
 column "created_at" {
     null = false
     type = datetime
@@ -120,8 +63,28 @@ column "updated_at" {
     null = false
     type = datetime
   }
+column "name" {
+    null = false
+    type = varchar(100)
+  }
+column "start_date" {
+    null = false
+    type = date
+  }
+column "end_date" {
+    null = false
+    type = date
+  }
+column "active" {
+    null = false
+    type = boolean
+    default = false
+  }
 primary_key {
   columns = [column.id]
+}
+index "index_seasons_on_active" {
+  columns = [column.active]
 }
 }
 
@@ -131,6 +94,14 @@ column "id" {
     null = false
     type = integer
     auto_increment = true
+  }
+column "created_at" {
+    null = false
+    type = datetime
+  }
+column "updated_at" {
+    null = false
+    type = datetime
   }
 column "first_name" {
     null = false
@@ -170,11 +141,7 @@ column "active" {
     type = boolean
     default = true
   }
-column "created_at" {
-    null = false
-    type = datetime
-  }
-column "updated_at" {
+column "last_login_at" {
     null = false
     type = datetime
   }
@@ -184,8 +151,11 @@ primary_key {
 foreign_key "fk_users_league_id" {
   columns = [column.league_id]
   ref_columns = [table.leagues.column.id]
-    on_delete = SET_NULL
+    on_delete = CASCADE
   }
+index "index_users_on_email" {
+  columns = [column.email]
+}
 index "index_users_on_league_id" {
   columns = [column.league_id]
 }
@@ -200,6 +170,14 @@ column "id" {
     null = false
     type = integer
     auto_increment = true
+  }
+column "created_at" {
+    null = false
+    type = datetime
+  }
+column "updated_at" {
+    null = false
+    type = datetime
   }
 column "name" {
     null = false
@@ -221,14 +199,6 @@ column "active" {
     null = false
     type = boolean
     default = true
-  }
-column "created_at" {
-    null = false
-    type = datetime
-  }
-column "updated_at" {
-    null = false
-    type = datetime
   }
 primary_key {
   columns = [column.id]
@@ -258,6 +228,14 @@ column "id" {
     type = integer
     auto_increment = true
   }
+column "created_at" {
+    null = false
+    type = datetime
+  }
+column "updated_at" {
+    null = false
+    type = datetime
+  }
 column "team_id" {
     null = true
     type = integer
@@ -270,14 +248,6 @@ column "role" {
     null = false
     type = varchar(50)
     default = "member"
-  }
-column "created_at" {
-    null = false
-    type = datetime
-  }
-column "updated_at" {
-    null = false
-    type = datetime
   }
 primary_key {
   columns = [column.id]
@@ -310,6 +280,14 @@ column "id" {
     null = false
     type = integer
     auto_increment = true
+  }
+column "created_at" {
+    null = false
+    type = datetime
+  }
+column "updated_at" {
+    null = false
+    type = datetime
   }
 column "name" {
     null = false
@@ -345,14 +323,6 @@ column "active" {
     type = boolean
     default = true
   }
-column "created_at" {
-    null = false
-    type = datetime
-  }
-column "updated_at" {
-    null = false
-    type = datetime
-  }
 primary_key {
   columns = [column.id]
 }
@@ -370,6 +340,14 @@ column "id" {
     null = false
     type = integer
     auto_increment = true
+  }
+column "created_at" {
+    null = false
+    type = datetime
+  }
+column "updated_at" {
+    null = false
+    type = datetime
   }
 column "name" {
     null = false
@@ -400,8 +378,8 @@ column "format" {
     type = varchar(20)
     default = "in_person"
   }
-column "registration_deadline" {
-    null = true
+column "registration_deadline_at" {
+    null = false
     type = datetime
   }
 column "max_participants" {
@@ -420,14 +398,6 @@ column "status" {
 column "description" {
     null = true
     type = text
-  }
-column "created_at" {
-    null = false
-    type = datetime
-  }
-column "updated_at" {
-    null = false
-    type = datetime
   }
 primary_key {
   columns = [column.id]
@@ -463,6 +433,14 @@ column "id" {
     type = integer
     auto_increment = true
   }
+column "created_at" {
+    null = false
+    type = datetime
+  }
+column "updated_at" {
+    null = false
+    type = datetime
+  }
 column "tournament_id" {
     null = true
     type = integer
@@ -479,22 +457,14 @@ column "entry_fee" {
     null = true
     type = decimal(8,2)
   }
-column "registration_deadline" {
-    null = true
+column "registration_deadline_at" {
+    null = false
     type = datetime
   }
 column "status" {
     null = false
     type = varchar(20)
     default = "open"
-  }
-column "created_at" {
-    null = false
-    type = datetime
-  }
-column "updated_at" {
-    null = false
-    type = datetime
   }
 primary_key {
   columns = [column.id]
@@ -527,6 +497,14 @@ column "id" {
     null = false
     type = integer
     auto_increment = true
+  }
+column "created_at" {
+    null = false
+    type = datetime
+  }
+column "updated_at" {
+    null = false
+    type = datetime
   }
 column "tournament_id" {
     null = true
@@ -566,14 +544,6 @@ column "available" {
     type = boolean
     default = true
   }
-column "created_at" {
-    null = false
-    type = datetime
-  }
-column "updated_at" {
-    null = false
-    type = datetime
-  }
 primary_key {
   columns = [column.id]
 }
@@ -596,6 +566,14 @@ column "id" {
     null = false
     type = integer
     auto_increment = true
+  }
+column "created_at" {
+    null = false
+    type = datetime
+  }
+column "updated_at" {
+    null = false
+    type = datetime
   }
 column "tournament_event_id" {
     null = true
@@ -631,14 +609,6 @@ column "notes" {
     null = true
     type = text
   }
-column "created_at" {
-    null = false
-    type = datetime
-  }
-column "updated_at" {
-    null = false
-    type = datetime
-  }
 primary_key {
   columns = [column.id]
 }
@@ -665,6 +635,14 @@ column "id" {
     null = false
     type = integer
     auto_increment = true
+  }
+column "created_at" {
+    null = false
+    type = datetime
+  }
+column "updated_at" {
+    null = false
+    type = datetime
   }
 column "round_id" {
     null = true
@@ -703,14 +681,6 @@ column "notes" {
     null = true
     type = text
   }
-column "created_at" {
-    null = false
-    type = datetime
-  }
-column "updated_at" {
-    null = false
-    type = datetime
-  }
 primary_key {
   columns = [column.id]
 }
@@ -746,6 +716,14 @@ column "id" {
     type = integer
     auto_increment = true
   }
+column "created_at" {
+    null = false
+    type = datetime
+  }
+column "updated_at" {
+    null = false
+    type = datetime
+  }
 column "match_id" {
     null = true
     type = integer
@@ -774,14 +752,6 @@ column "rank" {
     null = true
     type = integer
   }
-column "created_at" {
-    null = false
-    type = datetime
-  }
-column "updated_at" {
-    null = false
-    type = datetime
-  }
 primary_key {
   columns = [column.id]
 }
@@ -808,6 +778,14 @@ column "id" {
     null = false
     type = integer
     auto_increment = true
+  }
+column "created_at" {
+    null = false
+    type = datetime
+  }
+column "updated_at" {
+    null = false
+    type = datetime
   }
 column "user_id" {
     null = true
@@ -838,14 +816,6 @@ column "active" {
     null = false
     type = boolean
     default = true
-  }
-column "created_at" {
-    null = false
-    type = datetime
-  }
-column "updated_at" {
-    null = false
-    type = datetime
   }
 primary_key {
   columns = [column.id]
@@ -879,6 +849,14 @@ column "id" {
     type = integer
     auto_increment = true
   }
+column "created_at" {
+    null = false
+    type = datetime
+  }
+column "updated_at" {
+    null = false
+    type = datetime
+  }
 column "match_id" {
     null = true
     type = integer
@@ -896,14 +874,6 @@ column "status" {
     null = false
     type = varchar(20)
     default = "assigned"
-  }
-column "created_at" {
-    null = false
-    type = datetime
-  }
-column "updated_at" {
-    null = false
-    type = datetime
   }
 primary_key {
   columns = [column.id]
@@ -937,6 +907,14 @@ column "id" {
     type = integer
     auto_increment = true
   }
+column "created_at" {
+    null = false
+    type = datetime
+  }
+column "updated_at" {
+    null = false
+    type = datetime
+  }
 column "tournament_event_id" {
     null = true
     type = integer
@@ -951,7 +929,7 @@ column "participant_type" {
   }
 column "registration_date" {
     null = false
-    type = datetime
+    type = date
   }
 column "status" {
     null = false
@@ -963,21 +941,13 @@ column "fee_paid" {
     type = boolean
     default = false
   }
-column "payment_date" {
-    null = true
+column "payment_date_at" {
+    null = false
     type = datetime
   }
 column "notes" {
     null = true
     type = text
-  }
-column "created_at" {
-    null = false
-    type = datetime
-  }
-column "updated_at" {
-    null = false
-    type = datetime
   }
 primary_key {
   columns = [column.id]
@@ -1008,6 +978,14 @@ column "id" {
     null = false
     type = integer
     auto_increment = true
+  }
+column "created_at" {
+    null = false
+    type = datetime
+  }
+column "updated_at" {
+    null = false
+    type = datetime
   }
 column "name" {
     null = false
@@ -1042,14 +1020,6 @@ column "awarded_at" {
     null = false
     type = datetime
   }
-column "created_at" {
-    null = false
-    type = datetime
-  }
-column "updated_at" {
-    null = false
-    type = datetime
-  }
 primary_key {
   columns = [column.id]
 }
@@ -1069,6 +1039,49 @@ index "index_awards_on_award_type" {
 }
 index "index_awards_on_position" {
   columns = [column.position]
+}
+}
+
+table "records" {
+  schema = schema.main
+column "id" {
+    null = false
+    type = integer
+    auto_increment = true
+  }
+column "created_at" {
+    null = false
+    type = datetime
+  }
+column "updated_at" {
+    null = false
+    type = datetime
+  }
+column "user_id" {
+    null = true
+    type = integer
+  }
+column "record_type" {
+    null = false
+    type = varchar(100)
+  }
+column "value" {
+    null = true
+    type = text
+  }
+primary_key {
+  columns = [column.id]
+}
+foreign_key "fk_records_user_id" {
+  columns = [column.user_id]
+  ref_columns = [table.users.column.id]
+    on_delete = CASCADE
+  }
+index "index_records_on_user_id" {
+  columns = [column.user_id]
+}
+index "index_records_on_record_type" {
+  columns = [column.record_type]
 }
 }
 

@@ -4,23 +4,104 @@
 require 'yaml'
 require 'fileutils'
 
-# YAML to Atlas HCL Converter
-# Converts simplified YAML schema to Atlas HCL format
+# Enhanced YAML to Atlas HCL Converter
+# Converts simplified YAML schema to Atlas HCL format with support for:
+# - Default columns for all tables
+# - Pattern-based column attribute inference
+# - Template generation for new schemas
 class YamlToHclConverter
   def initialize(yaml_file = nil, hcl_file = nil)
     @yaml_file = yaml_file || find_schema_yaml_file
     @hcl_file = hcl_file || 'db/schema.hcl'
     @schema_data = nil
+    @defaults = {}
+    @column_patterns = {}
   end
 
   def convert!
     puts "🔄 Converting #{@yaml_file} to #{@hcl_file}..."
     
     load_yaml
+    parse_defaults_and_patterns
     generate_hcl
     
     puts "✅ Conversion complete!"
     puts "📄 Atlas HCL schema written to #{@hcl_file}"
+  end
+
+  # Generate a new schema.yaml template with default patterns
+  def self.generate_template(file_path = 'db/schema.yaml')
+    template_content = <<~YAML
+      # Enhanced YAML Schema with Default Columns and Pattern Matching
+      # This file will be converted to Atlas HCL format automatically
+
+      # Global settings
+      schema_name: main
+      rails_version: "8.0"
+
+      # Default columns applied to all tables (unless overridden)
+      defaults:
+        "*":
+          columns:
+            id: primary_key
+            created_at: datetime not_null
+            updated_at: datetime not_null
+
+      # Pattern-based column attribute inference
+      column_patterns:
+        # Foreign key columns: _id suffix gets integer -> {table}.id on_delete=cascade not_null
+        - pattern: "_id$"
+          template: "integer -> {table}.id on_delete=cascade not_null"
+          description: "Foreign key columns automatically reference the related table"
+            
+        # Timestamp columns: _at suffix gets datetime not_null
+        - pattern: "_at$"
+          attributes: "datetime not_null"
+          description: "Timestamp columns get datetime type with not_null constraint"
+            
+        # Default fallback: unmatched columns become strings
+        - pattern: ".*"
+          attributes: "string"
+          description: "Default type for columns that don't match other patterns"
+
+      # Table definitions
+      tables:
+        # Example table showing how defaults and patterns work
+        users:
+          columns:
+            # id, created_at, updated_at automatically added from defaults
+            email: string(255) not_null unique
+            first_name: string(100) not_null
+            last_name: string(100) not_null
+            # league_id automatically becomes: integer -> leagues.id on_delete=cascade not_null
+            league_id: ~  # ~ means "use pattern matching"
+            # last_login_at automatically becomes: datetime not_null
+            last_login_at: ~
+            # bio will become: string (from default pattern)
+            bio: ~
+          indexes:
+            - email
+            - league_id
+
+        leagues:
+          columns:
+            # id, created_at, updated_at automatically added from defaults
+            name: string(255) not_null unique
+            abbreviation: string(10)
+            description: text
+            active: boolean default=true not_null
+
+      # Seed data definitions (optional)
+      seeds:
+        # Add seed data here if needed
+    YAML
+
+    FileUtils.mkdir_p(File.dirname(file_path))
+    File.write(file_path, template_content)
+    
+    puts "✅ Schema template created at #{file_path}"
+    puts "📝 Edit this file to define your database schema"
+    puts "🔧 Run 'rake atlas:yaml_to_hcl' to convert to Atlas HCL format"
   end
 
   private
@@ -45,11 +126,57 @@ class YamlToHclConverter
   def load_yaml
     unless File.exist?(@yaml_file)
       puts "❌ YAML file #{@yaml_file} not found!"
+      puts "💡 Run YamlToHclConverter.generate_template to create a new schema file"
       exit 1
     end
 
     @schema_data = YAML.load_file(@yaml_file)
     puts "📖 Loaded YAML schema with #{@schema_data['tables']&.keys&.length || 0} tables"
+  end
+
+  def parse_defaults_and_patterns
+    # Parse default columns
+    if @schema_data['defaults']
+      @defaults = @schema_data['defaults']
+      puts "🔧 Loaded default columns for #{@defaults.keys.length} patterns"
+    end
+
+    # Parse column patterns
+    if @schema_data['column_patterns']
+      @column_patterns = @schema_data['column_patterns'].map do |pattern_def|
+        {
+          regex: Regexp.new(pattern_def['pattern']),
+          template: pattern_def['template'],
+          attributes: pattern_def['attributes'],
+          description: pattern_def['description']
+        }
+      end
+      puts "🎯 Loaded #{@column_patterns.length} column patterns"
+    else
+      # Set default patterns if none specified
+      @column_patterns = default_column_patterns
+      puts "🎯 Using default column patterns"
+    end
+  end
+
+  def default_column_patterns
+    [
+      {
+        regex: Regexp.new("_id$"),
+        template: "integer -> {table}.id on_delete=cascade not_null",
+        description: "Foreign key columns automatically reference the related table"
+      },
+      {
+        regex: Regexp.new("_at$"),
+        attributes: "datetime not_null",
+        description: "Timestamp columns get datetime type with not_null constraint"
+      },
+      {
+        regex: Regexp.new(".*"),
+        attributes: "string",
+        description: "Default type for columns that don't match other patterns"
+      }
+    ]
   end
 
   def generate_hcl
@@ -82,11 +209,87 @@ class YamlToHclConverter
     hcl_content = ""
     
     @schema_data['tables'].each do |table_name, table_def|
-      hcl_content += generate_table_block(table_name, table_def)
+      # Merge default columns with table-specific columns
+      merged_columns = merge_default_columns(table_name, table_def)
+      table_def_with_defaults = table_def.merge('columns' => merged_columns)
+      
+      hcl_content += generate_table_block(table_name, table_def_with_defaults)
       hcl_content += "\n"
     end
     
     hcl_content
+  end
+
+  def merge_default_columns(table_name, table_def)
+    # Start with default columns for all tables (*)
+    merged = {}
+    
+    # Apply defaults from "*" pattern
+    if @defaults['*'] && @defaults['*']['columns']
+      merged.merge!(@defaults['*']['columns'])
+    end
+
+    # Apply table-specific defaults if they exist
+    if @defaults[table_name] && @defaults[table_name]['columns']
+      merged.merge!(@defaults[table_name]['columns'])
+    end
+
+    # Apply explicit table columns (these override defaults)
+    if table_def['columns']
+      table_def['columns'].each do |column_name, column_def|
+        if column_def.nil? || column_def == '~'
+          # Use pattern matching for nil or ~ values
+          merged[column_name] = infer_column_attributes(column_name, table_name)
+        else
+          # Use explicit definition
+          merged[column_name] = column_def
+        end
+      end
+    end
+
+    merged
+  end
+
+  def infer_column_attributes(column_name, table_name)
+    @column_patterns.each do |pattern|
+      if column_name.match?(pattern[:regex])
+        if pattern[:template]
+          # Handle template with variable substitution
+          return expand_template(pattern[:template], column_name, table_name)
+        elsif pattern[:attributes]
+          # Use direct attributes
+          return pattern[:attributes]
+        end
+      end
+    end
+    
+    # Fallback to string if no patterns match
+    "string"
+  end
+
+  def expand_template(template, column_name, table_name)
+    # Extract the table name from column name (e.g., "league_id" -> "leagues")
+    if column_name.match(/^(.+)_id$/)
+      referenced_table = pluralize($1)
+      return template.gsub('{table}', referenced_table)
+    end
+    template
+  end
+
+  def pluralize(word)
+    # Simple pluralization rules - could be enhanced with a proper library
+    case word
+    when /y$/
+      word.sub(/y$/, 'ies')
+    when /s$/, /sh$/, /ch$/, /x$/, /z$/
+      word + 'es'
+    when /f$/
+      word.sub(/f$/, 'ves')
+    when /fe$/
+      word.sub(/fe$/, 'ves')
+    else
+      word + 's'
+    end
   end
 
   def generate_table_block(table_name, table_def)
@@ -136,7 +339,7 @@ class YamlToHclConverter
     end
     
     hcl = <<~HCL
-        column "#{column_name}" {
+      column "#{column_name}" {
     HCL
 
     # Add null constraint
@@ -345,9 +548,9 @@ class YamlToHclConverter
       index_name = "index_#{table_name}_on_#{column_name}"
       
       <<~HCL
-        index "#{index_name}" {
-          columns = [column.#{column_name}]
-        }
+      index "#{index_name}" {
+        columns = [column.#{column_name}]
+      }
       HCL
       
     elsif index_def.is_a?(Hash)
@@ -361,8 +564,8 @@ class YamlToHclConverter
         index_name += '_unique' if is_unique
         
         hcl = <<~HCL
-          index "#{index_name}" {
-            columns = [#{columns.map { |col| "column.#{col}" }.join(', ')}]
+        index "#{index_name}" {
+          columns = [#{columns.map { |col| "column.#{col}" }.join(', ')}]
         HCL
         
         hcl += "    unique = true\n" if is_unique
@@ -380,9 +583,9 @@ class YamlToHclConverter
         index_name = "index_#{table_name}_on_#{column_name}"
         
         <<~HCL
-          index "#{index_name}" {
-            columns = [column.#{column_name}]
-          }
+        index "#{index_name}" {
+          columns = [column.#{column_name}]
+        }
         HCL
       else
         # Multi-column index
@@ -394,8 +597,8 @@ class YamlToHclConverter
         index_name += '_unique' if is_unique
         
         hcl = <<~HCL
-          index "#{index_name}" {
-            columns = [#{columns.map { |col| "column.#{col}" }.join(', ')}]
+        index "#{index_name}" {
+          columns = [#{columns.map { |col| "column.#{col}" }.join(', ')}]
         HCL
         
         hcl += "    unique = true\n" if is_unique
@@ -408,9 +611,21 @@ end
 
 # CLI Interface
 if __FILE__ == $0
-  yaml_file = ARGV[0]
-  hcl_file = ARGV[1]
+  command = ARGV[0]
   
-  converter = YamlToHclConverter.new(yaml_file, hcl_file)
-  converter.convert!
+  case command
+  when 'template', 't'
+    file_path = ARGV[1] || 'db/schema.yaml'
+    YamlToHclConverter.generate_template(file_path)
+  when 'convert', 'c'
+    yaml_file = ARGV[1]
+    hcl_file = ARGV[2]
+    converter = YamlToHclConverter.new(yaml_file, hcl_file)
+    converter.convert!
+  else
+    yaml_file = ARGV[0]
+    hcl_file = ARGV[1]
+    converter = YamlToHclConverter.new(yaml_file, hcl_file)
+    converter.convert!
+  end
 end

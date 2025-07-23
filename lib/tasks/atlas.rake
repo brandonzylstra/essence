@@ -35,6 +35,12 @@ namespace :atlas do
     converter.convert!
   end
 
+  desc "Generate a new schema.yaml template with defaults and patterns"
+  task :template, [:file_path] do |_task, args|
+    file_path = args[:file_path] || 'db/schema.yaml'
+    YamlToHclConverter.generate_template(file_path)
+  end
+
   desc "Full workflow: preview, generate migration, and apply"
   task :deploy, [ :name ] do |_task, args|
     bridge = AtlasRailsBridge.new
@@ -116,6 +122,7 @@ namespace :atlas do
       rake atlas:deploy[name]               # Full workflow: preview + generate + apply
       rake atlas:seed                       # Generate seed data for event types
       rake atlas:yaml_to_hcl[yaml,hcl]      # Convert YAML schema to Atlas HCL
+      rake atlas:template[file_path]        # Generate new schema.yaml template
       rake atlas:init                       # Initialize Atlas with current Rails schema
       rake atlas:validate                   # Validate Atlas schema file
       rake atlas:history                    # Show Atlas migration history
@@ -124,7 +131,8 @@ namespace :atlas do
 
       Quick Start:
       -----------
-      1. rake atlas:init                    # Set up Atlas
+      1. rake atlas:template                # Generate schema.yaml template (new projects)
+         OR rake atlas:init                 # Set up Atlas (existing projects)
       2. Edit db/schema.yaml                # Define your schema in YAML
       3. rake atlas:yaml_to_hcl             # Convert to Atlas HCL
       4. rake atlas:preview                 # See what would change
@@ -139,6 +147,8 @@ namespace :atlas do
 
       Examples:
       --------
+      rake atlas:template                   # Create schema.yaml with defaults
+      rake atlas:template[custom/path.yaml] # Create template at custom location
       rake atlas:generate["add user tables"]
       rake atlas:deploy["tournament schema"]
       rake atlas:yaml_to_hcl[db/schema.yaml,db/schema.hcl]

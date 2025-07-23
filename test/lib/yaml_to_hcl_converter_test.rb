@@ -16,9 +16,22 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
   end
 
   def teardown
-    Dir.chdir(@original_dir)
-    FileUtils.rm_rf(@test_dir)
+    if @original_dir && Dir.exist?(@original_dir)
+      Dir.chdir(@original_dir)
+    end
+    FileUtils.rm_rf(@test_dir) if @test_dir && Dir.exist?(@test_dir)
   end
+</text>
+
+<old_text line=1>
+# frozen_string_literal: true
+
+require 'test_helper'
+require_relative '../../lib/yaml_to_hcl_converter'
+require 'tempfile'
+require 'fileutils'
+
+class YamlToHclConverterTest < ActiveSupport::TestCase
 
   test "prefers .yaml extension over .yml" do
     # Create both files
@@ -381,6 +394,368 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
     assert File.exist?('db/output.hcl')
     hcl_content = File.read('db/output.hcl')
     assert_includes hcl_content, 'table "users"'
+  end
+
+  test "applies default columns to all tables" do
+    yaml_content = <<~YAML
+      schema_name: main
+      defaults:
+        "*":
+          columns:
+            id: primary_key
+            created_at: datetime not_null
+            updated_at: datetime not_null
+      tables:
+        users:
+          columns:
+            email: string(255) not_null
+        posts:
+          columns:
+            title: string(255) not_null
+    YAML
+    
+    File.write('db/schema.yaml', yaml_content)
+    
+    converter = YamlToHclConverter.new
+    converter.convert!
+    
+    hcl_content = File.read('db/schema.hcl')
+    
+    # Both tables should have default columns
+    assert_includes hcl_content, 'table "users"'
+    assert_includes hcl_content, 'table "posts"'
+    
+    # Check that id, created_at, updated_at appear in both tables
+    user_section = hcl_content[/table "users".*?(?=table|$)/m]
+    post_section = hcl_content[/table "posts".*?(?=table|$)/m]
+    
+    %w[id created_at updated_at].each do |col|
+      assert_includes user_section, "column \"#{col}\""
+      assert_includes post_section, "column \"#{col}\""
+    end
+    
+    # Check that explicit columns are also present
+    assert_includes user_section, 'column "email"'
+    assert_includes post_section, 'column "title"'
+  end
+
+  test "handles foreign key pattern matching" do
+    yaml_content = <<~YAML
+      schema_name: main
+      defaults:
+        "*":
+          columns:
+            id: primary_key
+      column_patterns:
+        - pattern: /_id$/
+          template: "integer -> {table}.id on_delete=cascade not_null"
+      tables:
+        users:
+          columns:
+            email: string(255) not_null
+        posts:
+          columns:
+            user_id: ~
+            author_id: ~
+    YAML
+    
+    File.write('db/schema.yaml', yaml_content)
+    
+    converter = YamlToHclConverter.new
+    converter.convert!
+    
+    hcl_content = File.read('db/schema.hcl')
+    
+    # Check foreign key generation
+    assert_includes hcl_content, 'foreign_key "fk_posts_user_id"'
+    assert_includes hcl_content, 'columns = [column.user_id]'
+    assert_includes hcl_content, 'ref_columns = [table.users.column.id]'
+    assert_includes hcl_content, 'on_delete = CASCADE'
+    
+    assert_includes hcl_content, 'foreign_key "fk_posts_author_id"'
+    assert_includes hcl_content, 'ref_columns = [table.authors.column.id]'
+  end
+
+  test "handles timestamp pattern matching" do
+    yaml_content = <<~YAML
+      schema_name: main
+      defaults:
+        "*":
+          columns:
+            id: primary_key
+      column_patterns:
+        - pattern: /_at$/
+          attributes: "datetime not_null"
+      tables:
+        users:
+          columns:
+            last_login_at: ~
+            created_at: ~
+            deleted_at: ~
+    YAML
+    
+    File.write('db/schema.yaml', yaml_content)
+    
+    converter = YamlToHclConverter.new
+    converter.convert!
+    
+    hcl_content = File.read('db/schema.hcl')
+    
+    # Check that _at columns get datetime type
+    user_section = hcl_content[/table "users".*?(?=table|$)/m]
+    
+    %w[last_login_at created_at deleted_at].each do |col|
+      column_section = user_section[/column "#{col}".*?}/m]
+      assert_includes column_section, 'type = datetime'
+      assert_includes column_section, 'null = false'
+    end
+  end
+
+  test "handles default pattern fallback" do
+    yaml_content = <<~YAML
+      schema_name: main
+      defaults:
+        "*":
+          columns:
+            id: primary_key
+      column_patterns:
+        - pattern: ".*"
+          attributes: "string"
+      tables:
+        users:
+          columns:
+            first_name: ~
+            bio: ~
+            nickname: ~
+    YAML
+    
+    File.write('db/schema.yaml', yaml_content)
+    
+    converter = YamlToHclConverter.new
+    converter.convert!
+    
+    hcl_content = File.read('db/schema.hcl')
+    
+    # Check that unmatched columns get string type
+    user_section = hcl_content[/table "users".*?(?=table|$)/m]
+    
+    %w[first_name bio nickname].each do |col|
+      column_section = user_section[/column "#{col}".*?}/m]
+      assert_includes column_section, 'type = varchar'
+    end
+  end
+
+  test "explicit columns override patterns and defaults" do
+    yaml_content = <<~YAML
+      schema_name: main
+      defaults:
+        "*":
+          columns:
+            id: primary_key
+            created_at: datetime not_null
+      column_patterns:
+        - pattern: /_id$/
+          template: "integer -> {table}.id on_delete=cascade not_null"
+        - pattern: /_at$/
+          attributes: "datetime not_null"
+      tables:
+        posts:
+          columns:
+            # Override default created_at
+            created_at: timestamp not_null
+            # Override pattern for user_id
+            user_id: bigint -> users.id on_delete=set_null
+            # Use pattern matching
+            category_id: ~
+            published_at: ~
+    YAML
+    
+    File.write('db/schema.yaml', yaml_content)
+    
+    converter = YamlToHclConverter.new
+    converter.convert!
+    
+    hcl_content = File.read('db/schema.hcl')
+    
+    post_section = hcl_content[/table "posts".*?(?=table|$)/m]
+    
+    # created_at should be timestamp (explicit override)
+    created_at_section = post_section[/column "created_at".*?}/m]
+    assert_includes created_at_section, 'type = timestamp'
+    
+    # user_id should be bigint with SET_NULL (explicit override)
+    user_id_section = post_section[/column "user_id".*?}/m]
+    assert_includes user_id_section, 'type = bigint'
+    assert_includes hcl_content, 'on_delete = SET_NULL'
+    
+    # category_id should use pattern (foreign key)
+    assert_includes hcl_content, 'foreign_key "fk_posts_category_id"'
+    assert_includes hcl_content, 'ref_columns = [table.categories.column.id]'
+    
+    # published_at should use timestamp pattern
+    published_at_section = post_section[/column "published_at".*?}/m]
+    assert_includes published_at_section, 'type = datetime'
+  end
+
+  test "uses default patterns when none specified" do
+    yaml_content = <<~YAML
+      schema_name: main
+      tables:
+        posts:
+          columns:
+            id: primary_key
+            user_id: ~
+            published_at: ~
+            title: ~
+    YAML
+    
+    File.write('db/schema.yaml', yaml_content)
+    
+    converter = YamlToHclConverter.new
+    converter.convert!
+    
+    hcl_content = File.read('db/schema.hcl')
+    
+    # Should use built-in default patterns
+    assert_includes hcl_content, 'foreign_key "fk_posts_user_id"'  # _id pattern
+    
+    post_section = hcl_content[/table "posts".*?(?=table|$)/m]
+    published_at_section = post_section[/column "published_at".*?}/m]
+    assert_includes published_at_section, 'type = datetime'  # _at pattern
+    
+    title_section = post_section[/column "title".*?}/m]
+    assert_includes title_section, 'type = varchar'  # default fallback
+  end
+
+  test "handles table-specific defaults" do
+    yaml_content = <<~YAML
+      schema_name: main
+      defaults:
+        "*":
+          columns:
+            id: primary_key
+            created_at: datetime not_null
+        users:
+          columns:
+            active: boolean default=true not_null
+            role: string(20) default='user' not_null
+      tables:
+        users:
+          columns:
+            email: string(255) not_null
+        posts:
+          columns:
+            title: string(255) not_null
+    YAML
+    
+    File.write('db/schema.yaml', yaml_content)
+    
+    converter = YamlToHclConverter.new
+    converter.convert!
+    
+    hcl_content = File.read('db/schema.hcl')
+    
+    user_section = hcl_content[/table "users".*?(?=table "posts"|$)/m]
+    post_section = hcl_content[/table "posts".*?(?=table|$)/m]
+    
+    # Users should have table-specific defaults
+    assert_includes user_section, 'column "active"'
+    assert_includes user_section, 'column "role"'
+    
+    # Posts should not have user-specific defaults
+    refute_includes post_section, 'column "active"'
+    refute_includes post_section, 'column "role"'
+    
+    # Both should have global defaults
+    assert_includes user_section, 'column "id"'
+    assert_includes user_section, 'column "created_at"'
+    assert_includes post_section, 'column "id"'
+    assert_includes post_section, 'column "created_at"'
+  end
+
+  test "generates template file correctly" do
+    template_path = File.join(@test_dir, 'custom_schema.yaml')
+    
+    YamlToHclConverter.generate_template(template_path)
+    
+    assert File.exist?(template_path)
+    
+    template_content = File.read(template_path)
+    
+    # Check for key sections
+    assert_includes template_content, 'schema_name: main'
+    assert_includes template_content, 'defaults:'
+    assert_includes template_content, '"*":'
+    assert_includes template_content, 'column_patterns:'
+    assert_includes template_content, 'pattern: /_id$/'
+    assert_includes template_content, 'pattern: /_at$/'
+    assert_includes template_content, 'tables:'
+    assert_includes template_content, 'users:'
+    assert_includes template_content, 'leagues:'
+    
+    # Verify it's valid YAML
+    parsed = YAML.load_file(template_path)
+    assert_not_nil parsed['defaults']['*']['columns']['id']
+    assert_not_nil parsed['column_patterns']
+    assert_equal 3, parsed['column_patterns'].length
+  end
+
+  test "template generates valid convertible schema" do
+    template_path = File.join(@test_dir, 'db', 'schema.yaml')
+    YamlToHclConverter.generate_template(template_path)
+    
+    # Convert the generated template
+    converter = YamlToHclConverter.new(template_path, 'db/schema.hcl')
+    converter.convert!
+    
+    assert File.exist?('db/schema.hcl')
+    hcl_content = File.read('db/schema.hcl')
+    
+    # Should generate valid HCL with example tables
+    assert_includes hcl_content, 'table "users"'
+    assert_includes hcl_content, 'table "leagues"'
+    
+    # Should have applied defaults and patterns
+    user_section = hcl_content[/table "users".*?(?=table|$)/m]
+    assert_includes user_section, 'column "id"'
+    assert_includes user_section, 'column "created_at"'
+    assert_includes user_section, 'column "updated_at"'
+    assert_includes user_section, 'column "league_id"'
+    assert_includes user_section, 'column "last_login_at"'
+    
+    # Should have foreign key for league_id
+    assert_includes hcl_content, 'foreign_key "fk_users_league_id"'
+    assert_includes hcl_content, 'ref_columns = [table.leagues.column.id]'
+  end
+
+  test "pluralization works correctly" do
+    yaml_content = <<~YAML
+      schema_name: main
+      column_patterns:
+        - pattern: /_id$/
+          template: "integer -> {table}.id on_delete=cascade not_null"
+      tables:
+        posts:
+          columns:
+            id: primary_key
+            category_id: ~
+            company_id: ~
+            leaf_id: ~
+            wife_id: ~
+    YAML
+    
+    File.write('db/schema.yaml', yaml_content)
+    
+    converter = YamlToHclConverter.new
+    converter.convert!
+    
+    hcl_content = File.read('db/schema.hcl')
+    
+    # Test various pluralization rules
+    assert_includes hcl_content, 'ref_columns = [table.categories.column.id]'  # y -> ies
+    assert_includes hcl_content, 'ref_columns = [table.companies.column.id]'   # y -> ies
+    assert_includes hcl_content, 'ref_columns = [table.leaves.column.id]'      # f -> ves
+    assert_includes hcl_content, 'ref_columns = [table.wives.column.id]'       # fe -> ves
   end
 
   private

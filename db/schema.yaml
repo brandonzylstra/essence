@@ -1,85 +1,97 @@
-# Simplified YAML Schema for Speech & Debate Tournament Management
+# Enhanced YAML Schema with Default Columns and Pattern Matching
 # This file will be converted to Atlas HCL format automatically
 
 # Global settings
 schema_name: main
 rails_version: "8.0"
 
+# Default columns applied to all tables (unless overridden)
+defaults:
+  "*":
+    columns:
+      id: primary_key
+      created_at: datetime not_null
+      updated_at: datetime not_null
+
+# Pattern-based column attribute inference
+column_patterns:
+  # Foreign key columns: _id suffix gets integer type with foreign key reference
+  - pattern: "_id$"
+    template: "integer -> {table}.id on_delete=cascade not_null"
+    description: "Foreign key columns automatically reference the related table"
+    
+  # Timestamp columns: _at suffix gets datetime not_null
+  - pattern: "_at$"
+    attributes: "datetime not_null"
+    description: "Timestamp columns get datetime type with not_null constraint"
+    
+  # Default fallback: unmatched columns become strings
+  - pattern: ".*"
+    attributes: "string"
+    description: "Default type for columns that don't match other patterns"
+
 # Table definitions
 tables:
-  records:
-    columns:
-      id: primary_key
-      user_id: integer -> users.id on_delete=cascade not_null
-      record_type: string(100) not_null
-      value: text
-      created_at: datetime not_null
-      updated_at: datetime not_null
-
-  seasons:
-    columns:
-      id: primary_key
-      name: string(100) not_null
-      start_date: date not_null
-      end_date: date not_null
-      active: boolean default=false not_null
-      created_at: datetime not_null
-      updated_at: datetime not_null
-    indexes:
-      - active
-
+  # Core entities
   leagues:
     columns:
-      id: primary_key
+      # id, created_at, updated_at automatically added from defaults
       name: string(255) not_null unique
       abbreviation: string(10)
       description: text
       website: string(500)
       contact_email: string(255)
       active: boolean default=true not_null
-      created_at: datetime not_null
-      updated_at: datetime not_null
+
+  seasons:
+    columns:
+      # id, created_at, updated_at automatically added from defaults
+      name: string(100) not_null
+      start_date: date not_null
+      end_date: date not_null
+      active: boolean default=false not_null
+    indexes:
+      - active
 
   users:
     columns:
-      id: primary_key
+      # id, created_at, updated_at automatically added from defaults
       first_name: string(100) not_null
       last_name: string(100) not_null
       email: string(255) not_null unique
       phone: string(20)
       school: string(255)
       graduation_year: integer
-      league_id: integer -> leagues.id on_delete=set_null
+      # league_id automatically becomes: integer -> leagues.id on_delete=cascade not_null
+      league_id: ~
       role: string(20) default='participant' not_null
       active: boolean default=true not_null
-      created_at: datetime not_null
-      updated_at: datetime not_null
+      # last_login_at automatically becomes: datetime not_null
+      last_login_at: ~
     indexes:
+      - email
       - league_id
       - role
 
   teams:
     columns:
-      id: primary_key
+      # id, created_at, updated_at automatically added from defaults
       name: string(255) not_null
-      league_id: integer -> leagues.id on_delete=cascade not_null
-      season_id: integer -> seasons.id on_delete=cascade not_null
+      # league_id and season_id automatically get foreign key constraints
+      league_id: ~
+      season_id: ~
       school: string(255)
       active: boolean default=true not_null
-      created_at: datetime not_null
-      updated_at: datetime not_null
     indexes:
       - league_id
       - season_id
 
   team_memberships:
     columns:
-      id: primary_key
-      team_id: integer -> teams.id on_delete=cascade not_null
-      user_id: integer -> users.id on_delete=cascade not_null
+      # id, created_at, updated_at automatically added from defaults
+      team_id: ~
+      user_id: ~
       role: string(50) default='member' not_null
-      created_at: datetime not_null
-      updated_at: datetime not_null
     indexes:
       - team_id
       - user_id
@@ -88,7 +100,7 @@ tables:
 
   event_types:
     columns:
-      id: primary_key
+      # id, created_at, updated_at automatically added from defaults
       name: string(100) not_null unique
       abbreviation: string(10)
       category: string(20) not_null # 'speech', 'debate', 'interpretation'
@@ -97,29 +109,26 @@ tables:
       description: text
       rules_url: string(500)
       active: boolean default=true not_null
-      created_at: datetime not_null
-      updated_at: datetime not_null
     indexes:
       - category
       - participant_type
 
   tournaments:
     columns:
-      id: primary_key
+      # id, created_at, updated_at automatically added from defaults
       name: string(255) not_null
-      league_id: integer -> leagues.id on_delete=cascade not_null
-      season_id: integer -> seasons.id on_delete=cascade not_null
+      league_id: ~
+      season_id: ~
       start_date: date not_null
       end_date: date not_null
       location: string(500)
       format: string(20) default='in_person' not_null # 'in_person', 'virtual', 'hybrid'
-      registration_deadline: datetime
+      # registration_deadline_at automatically becomes: datetime not_null
+      registration_deadline_at: ~
       max_participants: integer
       entry_fee: decimal(8,2)
       status: string(20) default='upcoming' not_null # 'upcoming', 'active', 'completed', 'cancelled'
       description: text
-      created_at: datetime not_null
-      updated_at: datetime not_null
     indexes:
       - league_id
       - season_id
@@ -128,15 +137,13 @@ tables:
 
   tournament_events:
     columns:
-      id: primary_key
-      tournament_id: integer -> tournaments.id on_delete=cascade not_null
-      event_type_id: integer -> event_types.id on_delete=cascade not_null
+      # id, created_at, updated_at automatically added from defaults
+      tournament_id: ~
+      event_type_id: ~
       max_participants: integer
       entry_fee: decimal(8,2)
-      registration_deadline: datetime
+      registration_deadline_at: ~
       status: string(20) default='open' not_null # 'open', 'closed', 'cancelled'
-      created_at: datetime not_null
-      updated_at: datetime not_null
     indexes:
       - tournament_id
       - event_type_id
@@ -145,8 +152,8 @@ tables:
 
   rooms:
     columns:
-      id: primary_key
-      tournament_id: integer -> tournaments.id on_delete=cascade not_null
+      # id, created_at, updated_at automatically added from defaults
+      tournament_id: ~
       name: string(100) not_null
       room_type: string(20) default='physical' not_null # 'physical', 'virtual'
       capacity: integer
@@ -155,16 +162,14 @@ tables:
       equipment: text
       notes: text
       available: boolean default=true not_null
-      created_at: datetime not_null
-      updated_at: datetime not_null
     indexes:
       - tournament_id
       - room_type
 
   rounds:
     columns:
-      id: primary_key
-      tournament_event_id: integer -> tournament_events.id on_delete=cascade not_null
+      # id, created_at, updated_at automatically added from defaults
+      tournament_event_id: ~
       round_number: integer not_null
       name: string(100) not_null
       round_type: string(20) default='preliminary' not_null # 'preliminary', 'elimination', 'final'
@@ -172,8 +177,6 @@ tables:
       end_time: datetime
       status: string(20) default='scheduled' not_null # 'scheduled', 'active', 'completed', 'cancelled'
       notes: text
-      created_at: datetime not_null
-      updated_at: datetime not_null
     indexes:
       - tournament_event_id
       - columns: [tournament_event_id, round_number]
@@ -182,8 +185,9 @@ tables:
 
   matches:
     columns:
-      id: primary_key
-      round_id: integer -> rounds.id on_delete=cascade not_null
+      # id, created_at, updated_at automatically added from defaults
+      round_id: ~
+      # room_id with set_null on delete since matches can survive room deletion
       room_id: integer -> rooms.id on_delete=set_null
       match_number: integer not_null
       start_time: datetime
@@ -192,8 +196,6 @@ tables:
       winner_id: integer
       winner_type: string(20) # 'User', 'Team'
       notes: text
-      created_at: datetime not_null
-      updated_at: datetime not_null
     indexes:
       - round_id
       - room_id
@@ -203,16 +205,14 @@ tables:
 
   match_participants:
     columns:
-      id: primary_key
-      match_id: integer -> matches.id on_delete=cascade not_null
+      # id, created_at, updated_at automatically added from defaults
+      match_id: ~
       participant_id: integer not_null
       participant_type: string(20) not_null # 'User', 'Team'
       position: string(20) # 'affirmative', 'negative', 'speaker_1', etc.
       speaking_order: integer
       score: decimal(8,2)
       rank: integer
-      created_at: datetime not_null
-      updated_at: datetime not_null
     indexes:
       - match_id
       - columns: [participant_id, participant_type]
@@ -221,16 +221,14 @@ tables:
 
   judges:
     columns:
-      id: primary_key
-      user_id: integer -> users.id on_delete=cascade not_null
-      tournament_id: integer -> tournaments.id on_delete=cascade not_null
+      # id, created_at, updated_at automatically added from defaults
+      user_id: ~
+      tournament_id: ~
       experience_level: string(20) default='novice' not_null # 'novice', 'experienced', 'expert'
       certifications: text
       preferences: text
       availability: text
       active: boolean default=true not_null
-      created_at: datetime not_null
-      updated_at: datetime not_null
     indexes:
       - user_id
       - tournament_id
@@ -239,13 +237,11 @@ tables:
 
   match_judges:
     columns:
-      id: primary_key
-      match_id: integer -> matches.id on_delete=cascade not_null
-      judge_id: integer -> judges.id on_delete=cascade not_null
+      # id, created_at, updated_at automatically added from defaults
+      match_id: ~
+      judge_id: ~
       role: string(20) default='judge' not_null # 'judge', 'timekeeper', 'observer'
       status: string(20) default='assigned' not_null # 'assigned', 'confirmed', 'absent'
-      created_at: datetime not_null
-      updated_at: datetime not_null
     indexes:
       - match_id
       - judge_id
@@ -254,17 +250,16 @@ tables:
 
   registrations:
     columns:
-      id: primary_key
-      tournament_event_id: integer -> tournament_events.id on_delete=cascade not_null
+      # id, created_at, updated_at automatically added from defaults
+      tournament_event_id: ~
       participant_id: integer not_null
       participant_type: string(20) not_null # 'User', 'Team'
-      registration_date: datetime not_null
+      # registration_date_at automatically becomes: datetime not_null (but we want just date)
+      registration_date: date not_null
       status: string(20) default='registered' not_null # 'registered', 'confirmed', 'withdrawn', 'disqualified'
       fee_paid: boolean default=false not_null
-      payment_date: datetime
+      payment_date_at: ~
       notes: text
-      created_at: datetime not_null
-      updated_at: datetime not_null
     indexes:
       - tournament_event_id
       - columns: [participant_id, participant_type]
@@ -274,22 +269,31 @@ tables:
 
   awards:
     columns:
-      id: primary_key
+      # id, created_at, updated_at automatically added from defaults
       name: string(255) not_null
-      tournament_event_id: integer -> tournament_events.id on_delete=cascade not_null
+      tournament_event_id: ~
       recipient_id: integer not_null
       recipient_type: string(20) not_null # 'User', 'Team'
       award_type: string(50) default='placement' not_null # 'placement', 'special', 'recognition'
       position: integer # 1st, 2nd, 3rd, etc.
       description: text
-      awarded_at: datetime not_null
-      created_at: datetime not_null
-      updated_at: datetime not_null
+      awarded_at: ~
     indexes:
       - tournament_event_id
       - columns: [recipient_id, recipient_type]
       - award_type
       - position
+
+  # Analytics and tracking tables
+  records:
+    columns:
+      # id, created_at, updated_at automatically added from defaults
+      user_id: ~
+      record_type: string(100) not_null
+      value: text
+    indexes:
+      - user_id
+      - record_type
 
 # Seed data definitions
 seeds:
