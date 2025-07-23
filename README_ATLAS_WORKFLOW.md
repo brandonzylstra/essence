@@ -25,7 +25,7 @@ rails db:migrate
 Atlas-Rails workflow:
 ```bash
 # Our way - edit YAML, apply changes
-vim schema.yml           # Edit your schema in simple YAML
+zed schema.yaml          # Edit your schema as YAML
 rake atlas:yaml_to_hcl   # Convert to Atlas format
 rake atlas:apply         # Apply all changes instantly
 ```
@@ -101,10 +101,10 @@ columns:
   created_at: datetime not_null
   birth_date: date
   score: decimal(8,2)
-  
+
   # Primary key
   id: primary_key
-  
+
   # Foreign keys
   user_id: integer -> users.id on_delete=cascade not_null
   league_id: integer -> leagues.id on_delete=set_null
@@ -116,14 +116,14 @@ columns:
 indexes:
   # Single column index
   - email
-  
+
   # Multi-column index
   - columns: [league_id, season_id]
-  
+
   # Unique index
   - columns: [email]
     unique: true
-    
+
   # Complex unique constraint
   - columns: [tournament_id, event_type_id]
     unique: true
@@ -238,7 +238,7 @@ This project includes a complete schema for managing speech and debate tournamen
 ### Core Entities
 
 - **Seasons** - Academic years (Dec/Jan - June)
-- **Leagues** - Organizations that run tournaments  
+- **Leagues** - Organizations that run tournaments
 - **Users** - Individual participants, judges, coaches
 - **Teams** - For team events like Team Policy debate
 - **Event Types** - Persuasive, Informative, Lincoln Douglas, etc.
@@ -254,7 +254,7 @@ This project includes a complete schema for managing speech and debate tournamen
 The schema includes predefined event types:
 
 - **Persuasive Speaking** (PERS) - Individual speech events
-- **Informative Speaking** (INFO) - Educational presentations  
+- **Informative Speaking** (INFO) - Educational presentations
 - **Original Oratory** (OO) - Original speeches
 - **Duo Interpretation** (DUO) - Two-person dramatic performances
 - **Team Policy Debate** (TP) - Team-based policy debates
@@ -286,10 +286,10 @@ indexes:
   # Unique constraints across multiple columns
   - columns: [tournament_id, event_type_id]
     unique: true
-    
+
   # Polymorphic indexes
   - columns: [participant_id, participant_type]
-  
+
   # Performance indexes
   - start_time
   - status
@@ -306,7 +306,7 @@ status: string(20) default='upcoming' not_null   # 'upcoming', 'active', 'comple
 
 ## Benefits Over Traditional Migrations
 
-### 1. **Speed** 
+### 1. **Speed**
 - Change schema in seconds, not minutes
 - No migration file writing/editing
 - Instant application of changes
@@ -363,7 +363,7 @@ rake atlas:apply    # Apply changes
 index_users_on_email_and_active
 fk_team_memberships_user
 
-# Bad  
+# Bad
 idx1
 fk_tm_u
 ```

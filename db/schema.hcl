@@ -5,6 +5,11 @@ schema "main" {}
 
 table "seasons" {
   schema = schema.main
+column "id" {
+    null = false
+    type = integer
+    auto_increment = true
+  }
 column "name" {
     null = false
     type = varchar(100)
@@ -40,6 +45,11 @@ index "index_seasons_on_active" {
 
 table "leagues" {
   schema = schema.main
+column "id" {
+    null = false
+    type = integer
+    auto_increment = true
+  }
 column "name" {
     null = false
     type = varchar(255)
@@ -80,6 +90,11 @@ primary_key {
 
 table "users" {
   schema = schema.main
+column "id" {
+    null = false
+    type = integer
+    auto_increment = true
+  }
 column "first_name" {
     null = false
     type = varchar(100)
@@ -111,7 +126,7 @@ column "league_id" {
 column "role" {
     null = false
     type = varchar(20)
-    default = ''participant''
+    default = "participant"
   }
 column "active" {
     null = false
@@ -144,6 +159,11 @@ index "index_users_on_role" {
 
 table "teams" {
   schema = schema.main
+column "id" {
+    null = false
+    type = integer
+    auto_increment = true
+  }
 column "name" {
     null = false
     type = varchar(255)
@@ -196,6 +216,11 @@ index "index_teams_on_season_id" {
 
 table "team_memberships" {
   schema = schema.main
+column "id" {
+    null = false
+    type = integer
+    auto_increment = true
+  }
 column "team_id" {
     null = true
     type = integer
@@ -207,7 +232,7 @@ column "user_id" {
 column "role" {
     null = false
     type = varchar(50)
-    default = ''member''
+    default = "member"
   }
 column "created_at" {
     null = false
@@ -244,6 +269,11 @@ index "index_team_memberships_on_team_id_and_user_id_unique" {
 
 table "event_types" {
   schema = schema.main
+column "id" {
+    null = false
+    type = integer
+    auto_increment = true
+  }
 column "name" {
     null = false
     type = varchar(100)
@@ -299,6 +329,11 @@ index "index_event_types_on_participant_type" {
 
 table "tournaments" {
   schema = schema.main
+column "id" {
+    null = false
+    type = integer
+    auto_increment = true
+  }
 column "name" {
     null = false
     type = varchar(255)
@@ -326,7 +361,7 @@ column "location" {
 column "format" {
     null = false
     type = varchar(20)
-    default = ''in_person''
+    default = "in_person"
   }
 column "registration_deadline" {
     null = true
@@ -343,7 +378,7 @@ column "entry_fee" {
 column "status" {
     null = false
     type = varchar(20)
-    default = ''upcoming''
+    default = "upcoming"
   }
 column "description" {
     null = true
@@ -386,6 +421,11 @@ index "index_tournaments_on_status" {
 
 table "tournament_events" {
   schema = schema.main
+column "id" {
+    null = false
+    type = integer
+    auto_increment = true
+  }
 column "tournament_id" {
     null = true
     type = integer
@@ -409,7 +449,7 @@ column "registration_deadline" {
 column "status" {
     null = false
     type = varchar(20)
-    default = ''open''
+    default = "open"
   }
 column "created_at" {
     null = false
@@ -446,6 +486,11 @@ index "index_tournament_events_on_tournament_id_and_event_type_id_unique" {
 
 table "rooms" {
   schema = schema.main
+column "id" {
+    null = false
+    type = integer
+    auto_increment = true
+  }
 column "tournament_id" {
     null = true
     type = integer
@@ -457,7 +502,7 @@ column "name" {
 column "room_type" {
     null = false
     type = varchar(20)
-    default = ''physical''
+    default = "physical"
   }
 column "capacity" {
     null = true
@@ -510,6 +555,11 @@ index "index_rooms_on_room_type" {
 
 table "rounds" {
   schema = schema.main
+column "id" {
+    null = false
+    type = integer
+    auto_increment = true
+  }
 column "tournament_event_id" {
     null = true
     type = integer
@@ -525,7 +575,7 @@ column "name" {
 column "round_type" {
     null = false
     type = varchar(20)
-    default = ''preliminary''
+    default = "preliminary"
   }
 column "start_time" {
     null = true
@@ -538,7 +588,7 @@ column "end_time" {
 column "status" {
     null = false
     type = varchar(20)
-    default = ''scheduled''
+    default = "scheduled"
   }
 column "notes" {
     null = true
@@ -574,6 +624,11 @@ index "index_rounds_on_start_time" {
 
 table "matches" {
   schema = schema.main
+column "id" {
+    null = false
+    type = integer
+    auto_increment = true
+  }
 column "round_id" {
     null = true
     type = integer
@@ -597,7 +652,7 @@ column "end_time" {
 column "status" {
     null = false
     type = varchar(20)
-    default = ''scheduled''
+    default = "scheduled"
   }
 column "winner_id" {
     null = true
@@ -649,6 +704,11 @@ index "index_matches_on_start_time" {
 
 table "match_participants" {
   schema = schema.main
+column "id" {
+    null = false
+    type = integer
+    auto_increment = true
+  }
 column "match_id" {
     null = true
     type = integer
@@ -707,6 +767,11 @@ index "index_match_participants_on_match_id_and_participant_id_and_participant_t
 
 table "judges" {
   schema = schema.main
+column "id" {
+    null = false
+    type = integer
+    auto_increment = true
+  }
 column "user_id" {
     null = true
     type = integer
@@ -718,7 +783,7 @@ column "tournament_id" {
 column "experience_level" {
     null = false
     type = varchar(20)
-    default = ''novice''
+    default = "novice"
   }
 column "certifications" {
     null = true
@@ -772,6 +837,11 @@ index "index_judges_on_user_id_and_tournament_id_unique" {
 
 table "match_judges" {
   schema = schema.main
+column "id" {
+    null = false
+    type = integer
+    auto_increment = true
+  }
 column "match_id" {
     null = true
     type = integer
@@ -783,12 +853,12 @@ column "judge_id" {
 column "role" {
     null = false
     type = varchar(20)
-    default = ''judge''
+    default = "judge"
   }
 column "status" {
     null = false
     type = varchar(20)
-    default = ''assigned''
+    default = "assigned"
   }
 column "created_at" {
     null = false
@@ -825,6 +895,11 @@ index "index_match_judges_on_match_id_and_judge_id_unique" {
 
 table "registrations" {
   schema = schema.main
+column "id" {
+    null = false
+    type = integer
+    auto_increment = true
+  }
 column "tournament_event_id" {
     null = true
     type = integer
@@ -844,7 +919,7 @@ column "registration_date" {
 column "status" {
     null = false
     type = varchar(20)
-    default = ''registered''
+    default = "registered"
   }
 column "fee_paid" {
     null = false
@@ -892,6 +967,11 @@ index "index_registrations_on_status" {
 
 table "awards" {
   schema = schema.main
+column "id" {
+    null = false
+    type = integer
+    auto_increment = true
+  }
 column "name" {
     null = false
     type = varchar(255)
@@ -911,7 +991,7 @@ column "recipient_type" {
 column "award_type" {
     null = false
     type = varchar(50)
-    default = ''placement''
+    default = "placement"
   }
 column "position" {
     null = true

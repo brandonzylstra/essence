@@ -128,9 +128,12 @@ class YamlToHclConverter
   end
 
   def generate_column_block(column_name, column_def)
-    return "" if column_def == 'primary_key' # Handle primary keys separately
-
-    parsed = parse_column_definition(column_def)
+    # Handle primary key columns specially but still generate them
+    if column_def == 'primary_key'
+      parsed = { type: 'integer', not_null: true, hcl_type: 'integer' }
+    else
+      parsed = parse_column_definition(column_def)
+    end
     
     hcl = <<~HCL
         column "#{column_name}" {
@@ -147,7 +150,7 @@ class YamlToHclConverter
     hcl += "    type = #{parsed[:hcl_type]}\n"
 
     # Add auto_increment for primary keys
-    if parsed[:type] == 'integer' && column_name == 'id'
+    if column_def == 'primary_key' || (parsed[:type] == 'integer' && column_name == 'id')
       hcl += "    auto_increment = true\n"
     end
 
@@ -240,7 +243,9 @@ class YamlToHclConverter
     when /^\d+\.\d+$/
       value
     else
-      "'#{value}'"
+      # Remove existing quotes if present, then add our own
+      cleaned_value = value.to_s.gsub(/^['"]|['"]$/, '')
+      "\"#{cleaned_value}\""
     end
   end
 
@@ -274,8 +279,8 @@ class YamlToHclConverter
       return column_name if column_def == 'primary_key'
     end
     
-    # Default to 'id' if no explicit primary key
-    return 'id' if columns['id']
+    # Default to 'id' if no explicit primary key and id column exists
+    return 'id' if columns&.key?('id')
     
     nil
   end
