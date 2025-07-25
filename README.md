@@ -321,27 +321,179 @@ env "prod" {
 
 ### Built-in Patterns
 
+#### Foreign Key & Relationship Patterns
 | Pattern | Regex | Result | Example |
 |---------|-------|--------|---------|
 | Foreign Keys | `_id$` | `integer -> {table}.id on_delete=cascade not_null` | `user_id: ~` |
-| Timestamps | `_at$` | `datetime not_null` | `published_at: ~` |
-| Dates | `_on$` | `date` | `due_on: ~` |
-| Booleans | `^is_` | `boolean default=false not_null` | `is_active: ~` |
-| Counters | `_count$` | `integer default=0 not_null` | `view_count: ~` |
-| Default | `.*` | `string` | `name: ~` |
 
-### Custom Pattern Examples
+#### Date & Time Patterns
+| Pattern | Regex | Result | Example |
+|---------|-------|--------|---------|
+| Timestamps | `_at$` | `datetime not_null` | `published_at: ~`, `deleted_at: ~` |
+| Date Events | `_on$` | `date` | `due_on: ~`, `completed_on: ~`, `started_on: ~` |
+| Date Fields | `_date$` | `date` | `birth_date: ~`, `hire_date: ~`, `expiry_date: ~` |
+
+#### Boolean Patterns
+| Pattern | Regex | Result | Example |
+|---------|-------|--------|---------|
+| Is Flags | `^is_` | `boolean default=false not_null` | `is_active: ~`, `is_public: ~`, `is_verified: ~` |
+| Has Flags | `^has_` | `boolean default=false not_null` | `has_premium: ~`, `has_avatar: ~`, `has_access: ~` |
+| Can Flags | `^can_` | `boolean default=false not_null` | `can_edit: ~`, `can_delete: ~`, `can_view: ~` |
+| General Flags | `_flag$` | `boolean default=false not_null` | `admin_flag: ~`, `verified_flag: ~`, `archived_flag: ~` |
+
+#### Text Content Patterns
+| Pattern | Regex | Result | Example |
+|---------|-------|--------|---------|
+| Content | `_content$` | `text` | `post_content: ~`, `message_content: ~` |
+| Body Text | `_body$` | `text` | `email_body: ~`, `article_body: ~` |
+| Text Fields | `_text$` | `text` | `description_text: ~`, `bio_text: ~`, `notes_text: ~` |
+| HTML Content | `_html$` | `text` | `formatted_html: ~`, `content_html: ~` |
+
+#### Numeric Patterns
+| Pattern | Regex | Result | Example |
+|---------|-------|--------|---------|
+| Counters | `_count$` | `integer default=0 not_null` | `view_count: ~`, `like_count: ~`, `download_count: ~` |
+| Scores | `_score$` | `decimal(8,2)` | `rating_score: ~`, `test_score: ~`, `credit_score: ~` |
+| Amounts | `_amount$` | `decimal(10,2)` | `total_amount: ~`, `fee_amount: ~`, `discount_amount: ~` |
+| Prices | `_price$` | `decimal(10,2)` | `unit_price: ~`, `sale_price: ~`, `list_price: ~` |
+
+#### String Patterns
+| Pattern | Regex | Result | Example |
+|---------|-------|--------|---------|
+| Email Addresses | `_email$` | `string(255)` | `contact_email: ~`, `backup_email: ~`, `notification_email: ~` |
+| URLs | `_url$` | `string(500)` | `website_url: ~`, `avatar_url: ~`, `callback_url: ~` |
+| Codes | `_code$` | `string(50)` | `product_code: ~`, `access_code: ~`, `coupon_code: ~` |
+| URL Slugs | `_slug$` | `string(255) unique` | `post_slug: ~`, `category_slug: ~`, `user_slug: ~` |
+
+#### Status & State Patterns
+| Pattern | Regex | Result | Example |
+|---------|-------|--------|---------|
+| Status Fields | `_status$` | `string(20) default='pending' not_null` | `order_status: ~`, `job_status: ~`, `payment_status: ~` |
+| State Fields | `_state$` | `string(20)` | `workflow_state: ~`, `approval_state: ~`, `current_state: ~` |
+| Default Fallback | `.*` | `string` | `name: ~`, `title: ~`, `description: ~` |
+
+### Complete Pattern Template
+
+Copy this comprehensive pattern configuration into your `schema.yaml`:
 
 ```yaml
 column_patterns:
-  - pattern: "_url$"
-    attributes: "string(500)"
-  - pattern: "_slug$" 
-    attributes: "string(255) unique"
-  - pattern: "_status$"
-    attributes: "string(20) default='pending' not_null"
+  # Foreign key columns
+  - pattern: "_id$"
+    template: "integer -> {table}.id on_delete=cascade not_null"
+    description: "Foreign key columns automatically reference the related table"
+    
+  # Date and time patterns
+  - pattern: "_at$"
+    attributes: "datetime not_null"
+    description: "Timestamp columns (published_at, deleted_at, updated_at)"
+  - pattern: "_on$"
+    attributes: "date"
+    description: "Date event columns (due_on, completed_on, started_on)"
+  - pattern: "_date$"
+    attributes: "date"
+    description: "Date columns (birth_date, hire_date, expiry_date)"
+    
+  # Boolean patterns
+  - pattern: "^is_"
+    attributes: "boolean default=false not_null"
+    description: "Boolean columns with is_ prefix (is_active, is_public)"
   - pattern: "^has_"
     attributes: "boolean default=false not_null"
+    description: "Boolean columns with has_ prefix (has_premium, has_avatar)"
+  - pattern: "^can_"
+    attributes: "boolean default=false not_null"
+    description: "Boolean columns with can_ prefix (can_edit, can_delete)"
+  - pattern: "_flag$"
+    attributes: "boolean default=false not_null"
+    description: "Boolean flag columns (admin_flag, verified_flag)"
+    
+  # Text content patterns
+  - pattern: "_content$"
+    attributes: "text"
+    description: "Large text content (post_content, message_content)"
+  - pattern: "_body$"
+    attributes: "text"
+    description: "Body text columns (email_body, article_body)"
+  - pattern: "_text$"
+    attributes: "text"
+    description: "General text columns (description_text, bio_text)"
+  - pattern: "_html$"
+    attributes: "text"
+    description: "HTML content columns (formatted_html, content_html)"
+    
+  # Numeric patterns
+  - pattern: "_count$"
+    attributes: "integer default=0 not_null"
+    description: "Counter columns (view_count, like_count)"
+  - pattern: "_score$"
+    attributes: "decimal(8,2)"
+    description: "Score columns (rating_score, test_score)"
+  - pattern: "_amount$"
+    attributes: "decimal(10,2)"
+    description: "Amount columns (total_amount, fee_amount)"
+  - pattern: "_price$"
+    attributes: "decimal(10,2)"
+    description: "Price columns (unit_price, sale_price)"
+    
+  # String patterns
+  - pattern: "_email$"
+    attributes: "string(255)"
+    description: "Email columns (contact_email, backup_email)"
+  - pattern: "_url$"
+    attributes: "string(500)"
+    description: "URL columns (website_url, avatar_url)"
+  - pattern: "_code$"
+    attributes: "string(50)"
+    description: "Code columns (product_code, access_code)"
+  - pattern: "_slug$"
+    attributes: "string(255) unique"
+    description: "URL slug columns (post_slug, category_slug)"
+    
+  # Status and state patterns
+  - pattern: "_status$"
+    attributes: "string(20) default='pending' not_null"
+    description: "Status columns (order_status, job_status)"
+  - pattern: "_state$"
+    attributes: "string(20)"
+    description: "State columns (workflow_state, approval_state)"
+    
+  # Default fallback
+  - pattern: ".*"
+    attributes: "string"
+    description: "Default type for unmatched columns"
+```
+
+### Usage Examples
+
+```yaml
+tables:
+  users:
+    columns:
+      # Pattern matching in action:
+      league_id: ~           # → integer -> leagues.id CASCADE
+      last_login_at: ~       # → datetime not_null
+      birth_date: ~          # → date
+      is_active: ~           # → boolean default=false not_null
+      has_premium: ~         # → boolean default=false not_null
+      can_edit: ~            # → boolean default=false not_null
+      view_count: ~          # → integer default=0 not_null
+      credit_score: ~        # → decimal(8,2)
+      contact_email: ~       # → string(255)
+      website_url: ~         # → string(500)
+      user_slug: ~           # → string(255) unique
+      account_status: ~      # → string(20) default='pending' not_null
+      bio_text: ~            # → text
+      
+  posts:
+    columns:
+      user_id: ~             # → integer -> users.id CASCADE
+      published_at: ~        # → datetime not_null
+      due_on: ~              # → date
+      post_content: ~        # → text
+      view_count: ~          # → integer default=0 not_null
+      is_published: ~        # → boolean default=false not_null
+      post_slug: ~           # → string(255) unique
 ```
 
 ## 🔧 Development

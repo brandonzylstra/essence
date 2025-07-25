@@ -1,4 +1,4 @@
-# Auto-generated Atlas HCL schema from db/schema.yaml
+# Auto-generated HCL schema from db/schema.yaml
 # Edit the YAML file and re-run the converter to update this file
 
 schema "main" {}
@@ -1084,3 +1084,4 @@ index "index_records_on_record_type" {
   columns = [column.record_type]
 }
 }
+

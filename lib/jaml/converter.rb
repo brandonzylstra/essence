@@ -53,12 +53,112 @@ module JAML
         - pattern: "_id$"
           template: "integer -> {table}.id on_delete=cascade not_null"
           description: "Foreign key columns automatically reference the related table"
-
+            
         # Timestamp columns: _at suffix gets datetime not_null
         - pattern: "_at$"
           attributes: "datetime not_null"
           description: "Timestamp columns get datetime type with not_null constraint"
-
+          
+        # Date columns: _on suffix gets date type
+        - pattern: "_on$"
+          attributes: "date"
+          description: "Date columns for events (due_on, completed_on, started_on)"
+          
+        # Date columns: _date suffix gets date type  
+        - pattern: "_date$"
+          attributes: "date"
+          description: "Date columns (birth_date, hire_date, expiry_date)"
+          
+        # Boolean columns: is_ prefix gets boolean with false default
+        - pattern: "^is_"
+          attributes: "boolean default=false not_null"
+          description: "Boolean columns with is_ prefix (is_active, is_public, is_verified)"
+          
+        # Boolean columns: has_ prefix gets boolean with false default
+        - pattern: "^has_"
+          attributes: "boolean default=false not_null"
+          description: "Boolean columns with has_ prefix (has_premium, has_avatar, has_access)"
+          
+        # Boolean columns: can_ prefix gets boolean with false default
+        - pattern: "^can_"
+          attributes: "boolean default=false not_null"
+          description: "Boolean columns with can_ prefix (can_edit, can_delete, can_view)"
+          
+        # Boolean columns: _flag suffix gets boolean with false default
+        - pattern: "_flag$"
+          attributes: "boolean default=false not_null"
+          description: "Boolean flag columns (admin_flag, verified_flag, archived_flag)"
+          
+        # Text content columns: _content suffix gets text type
+        - pattern: "_content$"
+          attributes: "text"
+          description: "Large text content columns (post_content, message_content)"
+          
+        # Text body columns: _body suffix gets text type
+        - pattern: "_body$"
+          attributes: "text"
+          description: "Body text columns (email_body, article_body, description_body)"
+          
+        # Text columns: _text suffix gets text type
+        - pattern: "_text$"
+          attributes: "text"
+          description: "Text columns (description_text, bio_text, notes_text)"
+          
+        # HTML columns: _html suffix gets text type
+        - pattern: "_html$"
+          attributes: "text"
+          description: "HTML content columns (formatted_html, content_html)"
+          
+        # Counter columns: _count suffix gets integer with 0 default
+        - pattern: "_count$"
+          attributes: "integer default=0 not_null"
+          description: "Counter columns (view_count, like_count, download_count)"
+          
+        # Score columns: _score suffix gets decimal
+        - pattern: "_score$"
+          attributes: "decimal(8,2)"
+          description: "Score columns (rating_score, test_score, credit_score)"
+          
+        # Amount columns: _amount suffix gets decimal
+        - pattern: "_amount$"
+          attributes: "decimal(10,2)"
+          description: "Amount columns (total_amount, fee_amount, discount_amount)"
+          
+        # Price columns: _price suffix gets decimal
+        - pattern: "_price$"
+          attributes: "decimal(10,2)"
+          description: "Price columns (unit_price, sale_price, list_price)"
+          
+        # Email columns: _email suffix gets string(255)
+        - pattern: "_email$"
+          attributes: "string(255)"
+          description: "Email columns (contact_email, backup_email, notification_email)"
+          
+        # URL columns: _url suffix gets string(500)
+        - pattern: "_url$"
+          attributes: "string(500)"
+          description: "URL columns (website_url, avatar_url, callback_url)"
+          
+        # Code columns: _code suffix gets string(50)
+        - pattern: "_code$"
+          attributes: "string(50)"
+          description: "Code columns (product_code, access_code, coupon_code)"
+          
+        # Slug columns: _slug suffix gets unique string
+        - pattern: "_slug$"
+          attributes: "string(255) unique"
+          description: "URL slug columns (post_slug, category_slug, user_slug)"
+          
+        # Status columns: _status suffix gets string with pending default
+        - pattern: "_status$"
+          attributes: "string(20) default='pending' not_null"
+          description: "Status columns (order_status, job_status, payment_status)"
+          
+        # State columns: _state suffix gets string
+        - pattern: "_state$"
+          attributes: "string(20)"
+          description: "State columns (workflow_state, approval_state, current_state)"
+            
         # Default fallback: unmatched columns become strings
         - pattern: ".*"
           attributes: "string"
@@ -77,11 +177,40 @@ module JAML
             league_id: ~  # ~ means "use pattern matching"
             # last_login_at automatically becomes: datetime not_null
             last_login_at: ~
+            # Pattern matching examples:
+            birth_date: ~           # Becomes: date
+            is_active: ~            # Becomes: boolean default=false not_null
+            has_premium: ~          # Becomes: boolean default=false not_null
+            view_count: ~           # Becomes: integer default=0 not_null
+            backup_email: ~         # Becomes: string(255)
+            website_url: ~          # Becomes: string(500)
+            user_slug: ~            # Becomes: string(255) unique
+            account_status: ~       # Becomes: string(20) default='pending' not_null
             # bio will become: string (from default pattern)
             bio: ~
           indexes:
             - email
             - league_id
+            - user_slug
+
+        posts:
+          columns:
+            # id, created_at, updated_at automatically added from defaults
+            title: string(255) not_null
+            # More pattern matching examples:
+            user_id: ~              # Becomes: integer -> users.id on_delete=cascade not_null
+            published_at: ~         # Becomes: datetime not_null
+            due_on: ~               # Becomes: date
+            post_content: ~         # Becomes: text
+            view_count: ~           # Becomes: integer default=0 not_null
+            rating_score: ~         # Becomes: decimal(8,2)
+            is_published: ~         # Becomes: boolean default=false not_null
+            post_slug: ~            # Becomes: string(255) unique
+            post_status: ~          # Becomes: string(20) default='pending' not_null
+          indexes:
+            - user_id
+            - post_slug
+            - is_published
 
         leagues:
           columns:
@@ -89,7 +218,9 @@ module JAML
             name: string(255) not_null unique
             abbreviation: string(10)
             description: text
-            active: boolean default=true not_null
+            website_url: ~          # Becomes: string(500)
+            contact_email: ~        # Becomes: string(255)
+            is_active: ~            # Becomes: boolean default=false not_null
 
       # Seed data definitions (optional)
       seeds:
