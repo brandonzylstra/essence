@@ -20,11 +20,11 @@ class YamlToHclConverter
 
   def convert!
     puts "🔄 Converting #{@yaml_file} to #{@hcl_file}..."
-    
+
     load_yaml
     parse_defaults_and_patterns
     generate_hcl
-    
+
     puts "✅ Conversion complete!"
     puts "📄 Atlas HCL schema written to #{@hcl_file}"
   end
@@ -32,8 +32,8 @@ class YamlToHclConverter
   # Generate a new schema.yaml template with default patterns
   def self.generate_template(file_path = 'db/schema.yaml')
     template_content = <<~YAML
-      # Enhanced YAML Schema with Default Columns and Pattern Matching
-      # This file will be converted to Atlas HCL format automatically
+      # Enhanced JAML Schema with Default Columns and Pattern Matching
+      # This file will be converted to HCL format automatically
 
       # Global settings
       schema_name: main
@@ -53,12 +53,12 @@ class YamlToHclConverter
         - pattern: "_id$"
           template: "integer -> {table}.id on_delete=cascade not_null"
           description: "Foreign key columns automatically reference the related table"
-            
+
         # Timestamp columns: _at suffix gets datetime not_null
         - pattern: "_at$"
           attributes: "datetime not_null"
           description: "Timestamp columns get datetime type with not_null constraint"
-            
+
         # Default fallback: unmatched columns become strings
         - pattern: ".*"
           attributes: "string"
@@ -98,10 +98,10 @@ class YamlToHclConverter
 
     FileUtils.mkdir_p(File.dirname(file_path))
     File.write(file_path, template_content)
-    
+
     puts "✅ Schema template created at #{file_path}"
     puts "📝 Edit this file to define your database schema"
-    puts "🔧 Run 'rake atlas:yaml_to_hcl' to convert to Atlas HCL format"
+    puts "🔧 Run 'rake jaml:convert' to convert to HCL format"
   end
 
   private
@@ -110,15 +110,15 @@ class YamlToHclConverter
     # Prefer .yaml extension over .yml, and db/ directory over root
     candidates = [
       'db/schema.yaml',
-      'db/schema.yml', 
+      'db/schema.yml',
       'schema.yaml',
       'schema.yml'
     ]
-    
+
     candidates.each do |file|
       return file if File.exist?(file)
     end
-    
+
     # Default to preferred location/extension if none exist
     'db/schema.yaml'
   end
@@ -126,7 +126,7 @@ class YamlToHclConverter
   def load_yaml
     unless File.exist?(@yaml_file)
       puts "❌ YAML file #{@yaml_file} not found!"
-      puts "💡 Run YamlToHclConverter.generate_template to create a new schema file"
+      puts "💡 Run 'rake jaml:template' to create a new schema file"
       exit 1
     end
 
@@ -183,15 +183,15 @@ class YamlToHclConverter
     hcl_content = generate_hcl_header
     hcl_content += generate_schema_block
     hcl_content += generate_table_blocks
-    
+
     File.write(@hcl_file, hcl_content)
   end
 
   def generate_hcl_header
     <<~HCL
-      # Auto-generated Atlas HCL schema from #{@yaml_file}
+      # Auto-generated HCL schema from #{@yaml_file}
       # Edit the YAML file and re-run the converter to update this file
-      
+
     HCL
   end
 
@@ -207,23 +207,23 @@ class YamlToHclConverter
     return "" unless @schema_data['tables']
 
     hcl_content = ""
-    
+
     @schema_data['tables'].each do |table_name, table_def|
       # Merge default columns with table-specific columns
       merged_columns = merge_default_columns(table_name, table_def)
       table_def_with_defaults = table_def.merge('columns' => merged_columns)
-      
+
       hcl_content += generate_table_block(table_name, table_def_with_defaults)
       hcl_content += "\n"
     end
-    
+
     hcl_content
   end
 
   def merge_default_columns(table_name, table_def)
     # Start with default columns for all tables (*)
     merged = {}
-    
+
     # Apply defaults from "*" pattern
     if @defaults['*'] && @defaults['*']['columns']
       merged.merge!(@defaults['*']['columns'])
@@ -262,7 +262,7 @@ class YamlToHclConverter
         end
       end
     end
-    
+
     # Fallback to string if no patterns match
     "string"
   end
@@ -294,7 +294,7 @@ class YamlToHclConverter
 
   def generate_table_block(table_name, table_def)
     schema_name = @schema_data['schema_name'] || 'main'
-    
+
     hcl = <<~HCL
       table "#{table_name}" {
         schema = schema.#{schema_name}
@@ -337,7 +337,7 @@ class YamlToHclConverter
     else
       parsed = parse_column_definition(column_def)
     end
-    
+
     hcl = <<~HCL
       column "#{column_name}" {
     HCL
@@ -374,7 +374,7 @@ class YamlToHclConverter
       parts = column_def.split('->')
       base_def = parts[0].strip
       reference = parts[1].strip
-      
+
       parsed = parse_simple_column_def(base_def)
       parsed[:foreign_key] = parse_foreign_key_reference(reference)
       return parsed
@@ -456,9 +456,9 @@ class YamlToHclConverter
     # Format: "leagues.id on_delete=cascade"
     parts = reference.split(' ')
     table_column = parts[0] # "leagues.id"
-    
+
     table, column = table_column.split('.')
-    
+
     fk = {
       ref_table: table,
       ref_column: column
@@ -477,14 +477,14 @@ class YamlToHclConverter
 
   def find_primary_key_column(columns)
     return nil unless columns
-    
+
     columns.each do |column_name, column_def|
       return column_name if column_def == 'primary_key'
     end
-    
+
     # Default to 'id' if no explicit primary key and id column exists
     return 'id' if columns&.key?('id')
-    
+
     nil
   end
 
@@ -498,12 +498,12 @@ class YamlToHclConverter
 
   def extract_foreign_keys(columns)
     return [] unless columns
-    
+
     foreign_keys = []
-    
+
     columns.each do |column_name, column_def|
       next if column_def == 'primary_key'
-      
+
       parsed = parse_column_definition(column_def)
       if parsed[:foreign_key]
         fk = parsed[:foreign_key].merge(
@@ -513,13 +513,13 @@ class YamlToHclConverter
         foreign_keys << fk
       end
     end
-    
+
     foreign_keys
   end
 
   def generate_foreign_key_block(fk, table_name)
     constraint_name = "fk_#{table_name}_#{fk[:column]}"
-    
+
     hcl = <<~HCL
       foreign_key "#{constraint_name}" {
         columns = [column.#{fk[:column]}]
@@ -546,42 +546,42 @@ class YamlToHclConverter
       # Simple single-column index
       column_name = index_def
       index_name = "index_#{table_name}_on_#{column_name}"
-      
+
       <<~HCL
       index "#{index_name}" {
         columns = [column.#{column_name}]
       }
       HCL
-      
+
     elsif index_def.is_a?(Hash)
       # New hash format with columns and options
       columns = index_def['columns'] || []
       is_unique = index_def['unique'] || false
-      
+
       if columns.is_a?(Array) && columns.length > 0
         column_names = columns.join('_and_')
         index_name = "index_#{table_name}_on_#{column_names}"
         index_name += '_unique' if is_unique
-        
+
         hcl = <<~HCL
         index "#{index_name}" {
           columns = [#{columns.map { |col| "column.#{col}" }.join(', ')}]
         HCL
-        
+
         hcl += "    unique = true\n" if is_unique
         hcl += "  }\n"
         hcl
       else
         ""
       end
-      
+
     elsif index_def.is_a?(Array)
       # Multi-column index or index with options (legacy format)
       if index_def.length == 1 && index_def[0].is_a?(String)
         # Single column in array format
         column_name = index_def[0]
         index_name = "index_#{table_name}_on_#{column_name}"
-        
+
         <<~HCL
         index "#{index_name}" {
           columns = [column.#{column_name}]
@@ -591,16 +591,16 @@ class YamlToHclConverter
         # Multi-column index
         columns = index_def.reject { |item| item.is_a?(String) && item == 'unique' }
         is_unique = index_def.include?('unique')
-        
+
         column_names = columns.join('_and_')
         index_name = "index_#{table_name}_on_#{column_names}"
         index_name += '_unique' if is_unique
-        
+
         hcl = <<~HCL
         index "#{index_name}" {
           columns = [#{columns.map { |col| "column.#{col}" }.join(', ')}]
         HCL
-        
+
         hcl += "    unique = true\n" if is_unique
         hcl += "  }\n"
         hcl
@@ -612,7 +612,7 @@ end
 # CLI Interface
 if __FILE__ == $0
   command = ARGV[0]
-  
+
   case command
   when 'template', 't'
     file_path = ARGV[1] || 'db/schema.yaml'

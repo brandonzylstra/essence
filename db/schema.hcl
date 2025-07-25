@@ -1084,4 +1084,3 @@ index "index_records_on_record_type" {
   columns = [column.record_type]
 }
 }
-

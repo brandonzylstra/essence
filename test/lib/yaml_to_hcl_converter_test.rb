@@ -10,7 +10,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
     @test_dir = Dir.mktmpdir('atlas_test')
     @original_dir = Dir.pwd
     Dir.chdir(@test_dir)
-    
+
     # Create db directory
     FileUtils.mkdir_p('db')
   end
@@ -26,10 +26,10 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
     # Create both files
     File.write('db/schema.yaml', test_yaml_content)
     File.write('db/schema.yml', 'invalid: yaml: content')
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     # Should use .yaml file, not .yml
     hcl_content = File.read('db/schema.hcl')
     assert_includes hcl_content, 'table "users"'
@@ -40,10 +40,10 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
     # Create files in both locations
     File.write('db/schema.yaml', test_yaml_content)
     File.write('schema.yaml', 'invalid: yaml: content')
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     # Should use db/ file
     hcl_content = File.read('db/schema.hcl')
     assert_includes hcl_content, 'table "users"'
@@ -52,10 +52,10 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
 
   test "falls back to .yml if .yaml doesn't exist" do
     File.write('db/schema.yml', test_yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     assert File.exist?('db/schema.hcl')
     hcl_content = File.read('db/schema.hcl')
     assert_includes hcl_content, 'table "users"'
@@ -63,12 +63,12 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
 
   test "converts basic table structure" do
     File.write('db/schema.yaml', test_yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Check for basic structure
     assert_includes hcl_content, 'schema "main" {}'
     assert_includes hcl_content, 'table "users" {'
@@ -89,14 +89,14 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
             created_at: datetime not_null
             score: decimal(8,2)
     YAML
-    
+
     File.write('db/schema.yaml', yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Check column type conversions
     assert_includes hcl_content, 'type = varchar(255)'
     assert_includes hcl_content, 'type = integer'
@@ -116,14 +116,14 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
             required_field: string(100) not_null
             optional_field: string(100)
     YAML
-    
+
     File.write('db/schema.yaml', yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Check null constraints
     assert_match(/column "required_field".*null = false/m, hcl_content)
     assert_match(/column "optional_field".*null = true/m, hcl_content)
@@ -140,14 +140,14 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
             role: string(20) default='user' not_null
             count: integer default=0 not_null
     YAML
-    
+
     File.write('db/schema.yaml', yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Check default values
     assert_includes hcl_content, 'default = true'
     assert_includes hcl_content, 'default = "user"'
@@ -168,14 +168,14 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
             user_id: integer -> users.id on_delete=cascade not_null
             author_id: integer -> users.id on_delete=set_null
     YAML
-    
+
     File.write('db/schema.yaml', yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Check foreign keys
     assert_includes hcl_content, 'foreign_key "fk_posts_user_id"'
     assert_includes hcl_content, 'columns = [column.user_id]'
@@ -186,12 +186,12 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
 
   test "generates primary keys correctly" do
     File.write('db/schema.yaml', test_yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Check primary key generation
     assert_includes hcl_content, 'primary_key {'
     assert_includes hcl_content, 'columns = [column.id]'
@@ -211,14 +211,14 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
             - email
             - role
     YAML
-    
+
     File.write('db/schema.yaml', yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Check simple indexes
     assert_includes hcl_content, 'index "index_users_on_email"'
     assert_includes hcl_content, 'columns = [column.email]'
@@ -241,14 +241,14 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
             - columns: [username, email]
               unique: true
     YAML
-    
+
     File.write('db/schema.yaml', yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Check unique indexes
     assert_includes hcl_content, 'index "index_users_on_email_unique"'
     assert_includes hcl_content, 'unique = true'
@@ -270,14 +270,14 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
             - columns: [user_id, created_at]
             - columns: [category_id, user_id, created_at]
     YAML
-    
+
     File.write('db/schema.yaml', yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Check multi-column indexes
     assert_includes hcl_content, 'index "index_posts_on_user_id_and_created_at"'
     assert_includes hcl_content, 'columns = [column.user_id, column.created_at]'
@@ -301,27 +301,27 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
           columns:
             title: string(255) not_null
     YAML
-    
+
     File.write('db/schema.yaml', yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Both tables should have default columns
     assert_includes hcl_content, 'table "users"'
     assert_includes hcl_content, 'table "posts"'
-    
+
     # Check that id, created_at, updated_at appear in both tables
     user_section = hcl_content[/table "users".*?(?=table|$)/m]
     post_section = hcl_content[/table "posts".*?(?=table|$)/m]
-    
+
     %w[id created_at updated_at].each do |col|
       assert_includes user_section, "column \"#{col}\""
       assert_includes post_section, "column \"#{col}\""
     end
-    
+
     # Check that explicit columns are also present
     assert_includes user_section, 'column "email"'
     assert_includes post_section, 'column "title"'
@@ -346,20 +346,20 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
             user_id: ~
             author_id: ~
     YAML
-    
+
     File.write('db/schema.yaml', yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Check foreign key generation
     assert_includes hcl_content, 'foreign_key "fk_posts_user_id"'
     assert_includes hcl_content, 'columns = [column.user_id]'
     assert_includes hcl_content, 'ref_columns = [table.users.column.id]'
     assert_includes hcl_content, 'on_delete = CASCADE'
-    
+
     assert_includes hcl_content, 'foreign_key "fk_posts_author_id"'
     assert_includes hcl_content, 'ref_columns = [table.authors.column.id]'
   end
@@ -381,17 +381,17 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
             created_at: ~
             deleted_at: ~
     YAML
-    
+
     File.write('db/schema.yaml', yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Check that _at columns get datetime type
     user_section = hcl_content[/table "users".*?(?=table|$)/m]
-    
+
     %w[last_login_at created_at deleted_at].each do |col|
       column_section = user_section[/column "#{col}".*?}/m]
       assert_includes column_section, 'type = datetime'
@@ -416,17 +416,17 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
             bio: ~
             nickname: ~
     YAML
-    
+
     File.write('db/schema.yaml', yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Check that unmatched columns get string type
     user_section = hcl_content[/table "users".*?(?=table|$)/m]
-    
+
     %w[first_name bio nickname].each do |col|
       column_section = user_section[/column "#{col}".*?}/m]
       assert_includes column_section, 'type = varchar'
@@ -457,29 +457,29 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
             category_id: ~
             published_at: ~
     YAML
-    
+
     File.write('db/schema.yaml', yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     post_section = hcl_content[/table "posts".*?(?=table|$)/m]
-    
+
     # created_at should be timestamp (explicit override)
     created_at_section = post_section[/column "created_at".*?}/m]
     assert_includes created_at_section, 'type = timestamp'
-    
+
     # user_id should be bigint with SET_NULL (explicit override)
     user_id_section = post_section[/column "user_id".*?}/m]
     assert_includes user_id_section, 'type = bigint'
     assert_includes hcl_content, 'on_delete = SET_NULL'
-    
+
     # category_id should use pattern (foreign key)
     assert_includes hcl_content, 'foreign_key "fk_posts_category_id"'
     assert_includes hcl_content, 'ref_columns = [table.categories.column.id]'
-    
+
     # published_at should use timestamp pattern
     published_at_section = post_section[/column "published_at".*?}/m]
     assert_includes published_at_section, 'type = datetime'
@@ -496,21 +496,21 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
             published_at: ~
             title: ~
     YAML
-    
+
     File.write('db/schema.yaml', yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Should use built-in default patterns
     assert_includes hcl_content, 'foreign_key "fk_posts_user_id"'  # _id pattern
-    
+
     post_section = hcl_content[/table "posts".*?(?=table|$)/m]
     published_at_section = post_section[/column "published_at".*?}/m]
     assert_includes published_at_section, 'type = datetime'  # _at pattern
-    
+
     title_section = post_section[/column "title".*?}/m]
     assert_includes title_section, 'type = varchar'  # default fallback
   end
@@ -535,25 +535,25 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
           columns:
             title: string(255) not_null
     YAML
-    
+
     File.write('db/schema.yaml', yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     user_section = hcl_content[/table "users".*?(?=table "posts"|$)/m]
     post_section = hcl_content[/table "posts".*?(?=table|$)/m]
-    
+
     # Users should have table-specific defaults
     assert_includes user_section, 'column "active"'
     assert_includes user_section, 'column "role"'
-    
+
     # Posts should not have user-specific defaults
     refute_includes post_section, 'column "active"'
     refute_includes post_section, 'column "role"'
-    
+
     # Both should have global defaults
     assert_includes user_section, 'column "id"'
     assert_includes user_section, 'column "created_at"'
@@ -563,13 +563,13 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
 
   test "generates template file correctly" do
     template_path = File.join(@test_dir, 'custom_schema.yaml')
-    
+
     YamlToHclConverter.generate_template(template_path)
-    
+
     assert File.exist?(template_path)
-    
+
     template_content = File.read(template_path)
-    
+
     # Check for key sections
     assert_includes template_content, 'schema_name: main'
     assert_includes template_content, 'defaults:'
@@ -580,7 +580,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
     assert_includes template_content, 'tables:'
     assert_includes template_content, 'users:'
     assert_includes template_content, 'leagues:'
-    
+
     # Verify it's valid YAML
     parsed = YAML.load_file(template_path)
     assert_not_nil parsed['defaults']['*']['columns']['id']
@@ -591,18 +591,18 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
   test "template generates valid convertible schema" do
     template_path = File.join(@test_dir, 'db', 'schema.yaml')
     YamlToHclConverter.generate_template(template_path)
-    
+
     # Convert the generated template
     converter = YamlToHclConverter.new(template_path, 'db/schema.hcl')
     converter.convert!
-    
+
     assert File.exist?('db/schema.hcl')
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Should generate valid HCL with example tables
     assert_includes hcl_content, 'table "users"'
     assert_includes hcl_content, 'table "leagues"'
-    
+
     # Should have applied defaults and patterns
     user_section = hcl_content[/table "users".*?(?=table|$)/m]
     assert_includes user_section, 'column "id"'
@@ -610,7 +610,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
     assert_includes user_section, 'column "updated_at"'
     assert_includes user_section, 'column "league_id"'
     assert_includes user_section, 'column "last_login_at"'
-    
+
     # Should have foreign key for league_id
     assert_includes hcl_content, 'foreign_key "fk_users_league_id"'
     assert_includes hcl_content, 'ref_columns = [table.leagues.column.id]'
@@ -631,14 +631,14 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
             leaf_id: ~
             wife_id: ~
     YAML
-    
+
     File.write('db/schema.yaml', yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Test various pluralization rules
     assert_includes hcl_content, 'ref_columns = [table.categories.column.id]'  # y -> ies
     assert_includes hcl_content, 'ref_columns = [table.companies.column.id]'   # y -> ies
@@ -648,7 +648,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
 
   test "handles missing YAML file gracefully" do
     converter = YamlToHclConverter.new('nonexistent.yaml', 'output.hcl')
-    
+
     assert_raises(SystemExit) do
       converter.convert!
     end
@@ -656,9 +656,9 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
 
   test "handles invalid YAML gracefully" do
     File.write('db/schema.yaml', 'invalid: yaml: [content')
-    
+
     converter = YamlToHclConverter.new
-    
+
     assert_raises(Psych::SyntaxError) do
       converter.convert!
     end
@@ -666,12 +666,12 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
 
   test "generates proper HCL header" do
     File.write('db/schema.yaml', test_yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Check header
     assert_includes hcl_content, '# Auto-generated Atlas HCL schema from db/schema.yaml'
     assert_includes hcl_content, '# Edit the YAML file and re-run the converter'
@@ -686,14 +686,14 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
             id: primary_key
             name: string(100) not_null
     YAML
-    
+
     File.write('db/schema.yaml', yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Check custom schema name
     assert_includes hcl_content, 'schema "custom_schema" {}'
     assert_includes hcl_content, 'schema = schema.custom_schema'
@@ -704,14 +704,14 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
       schema_name: main
       tables: {}
     YAML
-    
+
     File.write('db/schema.yaml', yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Should generate valid HCL with just schema
     assert_includes hcl_content, 'schema "main" {}'
     refute_includes hcl_content, 'table'
@@ -723,14 +723,14 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
       tables:
         empty_table: {}
     YAML
-    
+
     File.write('db/schema.yaml', yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Should generate empty table
     assert_includes hcl_content, 'table "empty_table" {'
     assert_includes hcl_content, 'schema = schema.main'
@@ -738,10 +738,10 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
 
   test "preserves file paths correctly" do
     File.write('db/schema.yaml', test_yaml_content)
-    
+
     converter = YamlToHclConverter.new('db/schema.yaml', 'db/output.hcl')
     converter.convert!
-    
+
     assert File.exist?('db/output.hcl')
     hcl_content = File.read('db/output.hcl')
     assert_includes hcl_content, 'table "users"'
@@ -753,7 +753,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
     <<~YAML
       schema_name: main
       rails_version: "8.0"
-      
+
       tables:
         users:
           columns:
@@ -767,7 +767,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
           indexes:
             - email
             - active
-            
+
         posts:
           columns:
             id: primary_key

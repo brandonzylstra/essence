@@ -19,12 +19,12 @@ column_patterns:
   - pattern: "_id$"
     template: "integer -> {table}.id on_delete=cascade not_null"
     description: "Foreign key columns automatically reference the related table"
-    
+
   # Timestamp columns: _at suffix gets datetime not_null
   - pattern: "_at$"
     attributes: "datetime not_null"
     description: "Timestamp columns get datetime type with not_null constraint"
-    
+
   # Default fallback: unmatched columns become strings
   - pattern: ".*"
     attributes: "string"

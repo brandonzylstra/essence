@@ -3,34 +3,34 @@
 require_relative '../atlas_rails_bridge'
 require_relative '../yaml_to_hcl_converter'
 
-namespace :atlas do
-  desc "Preview Atlas schema changes"
+namespace :jaml do
+  desc "Preview schema changes"
   task :preview do
     bridge = AtlasRailsBridge.new
     bridge.preview_changes
   end
 
-  desc "Generate Rails migration from Atlas schema diff"
+  desc "Generate Rails migration from schema diff"
   task :generate, [ :name ] do |_task, args|
     bridge = AtlasRailsBridge.new
     migration_name = args[:name] || "atlas_schema_update"
     bridge.generate_migration(migration_name)
   end
 
-  desc "Apply Atlas schema and update Rails schema.rb"
+  desc "Apply schema and update Rails schema.rb"
   task :apply do
     bridge = AtlasRailsBridge.new
     bridge.apply_schema!
   end
 
-  desc "Generate seed data for event types"
+  desc "Generate seed data"
   task :seed do
     bridge = AtlasRailsBridge.new
     bridge.generate_seed_data
   end
 
-  desc "Convert YAML schema to Atlas HCL format"
-  task :yaml_to_hcl, [:yaml_file, :hcl_file] do |_task, args|
+  desc "Convert YAML schema to HCL format"
+  task :convert, [:yaml_file, :hcl_file] do |_task, args|
     converter = YamlToHclConverter.new(args[:yaml_file], args[:hcl_file])
     converter.convert!
   end
@@ -75,12 +75,12 @@ namespace :atlas do
     puts "✅ Atlas initialized!"
     puts "📄 Current schema exported to db/current_schema.hcl"
     puts "🔧 Edit db/schema.yaml to define your desired schema"
-    puts "🚀 Run 'rake atlas:preview' to see what would change"
+    puts "🚀 Run 'rake jaml:preview' to see what would change"
   end
 
-  desc "Validate Atlas schema file"
+  desc "Validate schema file"
   task :validate do
-    puts "🔍 Validating Atlas schema..."
+    puts "🔍 Validating schema..."
     result = system("atlas schema validate --env dev")
     if result
       puts "✅ Schema validation passed!"
@@ -90,13 +90,13 @@ namespace :atlas do
     end
   end
 
-  desc "Show Atlas migration history"
+  desc "Show migration history"
   task :history do
-    puts "📋 Atlas migration history:"
+    puts "📋 Migration history:"
     system("atlas migrate status --env dev")
   end
 
-  desc "Reset Atlas migrations (DANGEROUS - for development only)"
+  desc "Reset migrations (DANGEROUS - for development only)"
   task :reset do
     print "⚠️  This will delete all Atlas migration history. Are you sure? (y/N): "
     response = STDIN.gets.chomp.downcase
@@ -104,57 +104,57 @@ namespace :atlas do
     if response == "y" || response == "yes"
       FileUtils.rm_rf("db/atlas_migrations")
       FileUtils.mkdir_p("db/atlas_migrations")
-      puts "🗑️  Atlas migrations reset!"
+      puts "🗑️  Migrations reset!"
     else
       puts "✅ Reset cancelled"
     end
   end
 
-  desc "Show all available Atlas commands"
+  desc "Show all available JAML commands"
   task :help do
     puts <<~HELP
-      Atlas Rails Integration Tasks
-      =============================
+      JAML (JAML ActiveRecord Modeling Language) Tasks
+      ================================================
 
-      rake atlas:preview                    # Preview what Atlas would change
-      rake atlas:generate[name]             # Generate Rails migration from Atlas diff
-      rake atlas:apply                      # Apply Atlas schema to database
-      rake atlas:deploy[name]               # Full workflow: preview + generate + apply
-      rake atlas:seed                       # Generate seed data for event types
-      rake atlas:yaml_to_hcl[yaml,hcl]      # Convert YAML schema to Atlas HCL
-      rake atlas:template[file_path]        # Generate new schema.yaml template
-      rake atlas:init                       # Initialize Atlas with current Rails schema
-      rake atlas:validate                   # Validate Atlas schema file
-      rake atlas:history                    # Show Atlas migration history
-      rake atlas:reset                      # Reset Atlas migrations (development only)
-      rake atlas:help                       # Show this help message
+      rake jaml:preview                     # Preview what would change
+      rake jaml:generate[name]              # Generate Rails migration from schema diff
+      rake jaml:apply                       # Apply schema to database
+      rake jaml:deploy[name]                # Full workflow: preview + generate + apply
+      rake jaml:seed                        # Generate seed data
+      rake jaml:convert[yaml,hcl]           # Convert YAML schema to HCL format
+      rake jaml:template[file_path]         # Generate new schema.yaml template
+      rake jaml:init                        # Initialize with current Rails schema
+      rake jaml:validate                    # Validate schema file
+      rake jaml:history                     # Show migration history
+      rake jaml:reset                       # Reset migrations (development only)
+      rake jaml:help                        # Show this help message
 
       Quick Start:
       -----------
-      1. rake atlas:template                # Generate schema.yaml template (new projects)
-         OR rake atlas:init                 # Set up Atlas (existing projects)
+      1. rake jaml:template                 # Generate schema.yaml template (new projects)
+         OR rake jaml:init                  # Set up (existing projects)
       2. Edit db/schema.yaml                # Define your schema in YAML
-      3. rake atlas:yaml_to_hcl             # Convert to Atlas HCL
-      4. rake atlas:preview                 # See what would change
-      5. rake atlas:deploy[migration_name]  # Generate migration and apply
+      3. rake jaml:convert                  # Convert to HCL format
+      4. rake jaml:preview                  # See what would change
+      5. rake jaml:deploy[migration_name]   # Generate migration and apply
 
       Files:
       ------
       db/schema.yaml      # Your editable schema definition (YAML format)
-      db/schema.hcl       # Auto-generated Atlas HCL schema
+      db/schema.hcl       # Auto-generated HCL schema
       atlas.hcl           # Atlas configuration
-      db/atlas_migrations # Atlas migration files
+      db/atlas_migrations # Migration files
 
       Examples:
       --------
-      rake atlas:template                   # Create schema.yaml with defaults
-      rake atlas:template[custom/path.yaml] # Create template at custom location
-      rake atlas:generate["add user tables"]
-      rake atlas:deploy["tournament schema"]
-      rake atlas:yaml_to_hcl[db/schema.yaml,db/schema.hcl]
+      rake jaml:template                    # Create schema.yaml with defaults
+      rake jaml:template[custom/path.yaml]  # Create template at custom location
+      rake jaml:generate["add user tables"]
+      rake jaml:deploy["tournament schema"]
+      rake jaml:convert[db/schema.yaml,db/schema.hcl]
     HELP
   end
 end
 
 # Default task shows help
-task atlas: "atlas:help"
+task jaml: "jaml:help"
