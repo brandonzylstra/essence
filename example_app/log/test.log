@@ -1,0 +1,1117 @@
+  [1m[35m (1.7ms)[0m  [1m[35mDROP TABLE IF EXISTS "awards"[0m
+  [1m[35m (0.9ms)[0m  [1m[35mCREATE TABLE "awards" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "tournament_event_id" integer NOT NULL, "recipient_id" integer NOT NULL, "recipient_type" varchar NOT NULL, "award_type" varchar DEFAULT 'placement' NOT NULL, "position" integer, "description" text, "awarded_at" datetime NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE INDEX "index_awards_on_award_type" ON "awards" ("award_type")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_awards_on_position" ON "awards" ("position")[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE INDEX "index_awards_on_recipient" ON "awards" ("recipient_id", "recipient_type")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_awards_on_tournament_event_id" ON "awards" ("tournament_event_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE IF EXISTS "event_types"[0m
+  [1m[35m (0.6ms)[0m  [1m[35mCREATE TABLE "event_types" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "abbreviation" varchar, "category" varchar NOT NULL, "participant_type" varchar NOT NULL, "max_participants_per_match" integer DEFAULT 2 NOT NULL, "description" text, "rules_url" varchar, "active" boolean NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_event_types_on_category" ON "event_types" ("category")[0m
+  [1m[35m (0.3ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_event_types_on_name" ON "event_types" ("name")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_event_types_on_participant_type" ON "event_types" ("participant_type")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE IF EXISTS "judges"[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE TABLE "judges" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "user_id" integer NOT NULL, "tournament_id" integer NOT NULL, "experience_level" varchar DEFAULT 'novice' NOT NULL, "certifications" text, "preferences" text, "availability" text, "active" boolean NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_judges_on_tournament_id" ON "judges" ("tournament_id")[0m
+  [1m[35m (1.8ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_judges_unique" ON "judges" ("user_id", "tournament_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_judges_on_user_id" ON "judges" ("user_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "leagues"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "leagues" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "abbreviation" varchar, "description" text, "website" varchar, "contact_email" varchar, "active" boolean NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_leagues_on_name" ON "leagues" ("name")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "match_judges"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "match_judges" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "match_id" integer NOT NULL, "judge_id" integer NOT NULL, "role" varchar DEFAULT 'judge' NOT NULL, "status" varchar DEFAULT 'assigned' NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_match_judges_on_judge_id" ON "match_judges" ("judge_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_match_judges_unique" ON "match_judges" ("match_id", "judge_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_match_judges_on_match_id" ON "match_judges" ("match_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "match_participants"[0m
+  [1m[35m (0.6ms)[0m  [1m[35mCREATE TABLE "match_participants" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "match_id" integer NOT NULL, "participant_id" integer NOT NULL, "participant_type" varchar NOT NULL, "position" varchar, "speaking_order" integer, "score" decimal, "rank" integer, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (1.5ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_match_participants_unique" ON "match_participants" ("match_id", "participant_id", "participant_type")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_match_participants_on_match_id" ON "match_participants" ("match_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_match_participants_on_participant" ON "match_participants" ("participant_id", "participant_type")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "matches"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "matches" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "round_id" integer NOT NULL, "room_id" integer, "match_number" integer NOT NULL, "start_time" datetime, "end_time" datetime, "status" varchar DEFAULT 'scheduled' NOT NULL, "winner_id" integer, "winner_type" varchar, "notes" text, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_matches_on_room_id" ON "matches" ("room_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_matches_on_match_number" ON "matches" ("round_id", "match_number")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_matches_on_round_id" ON "matches" ("round_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_matches_on_start_time" ON "matches" ("start_time")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "registrations"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "registrations" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "tournament_event_id" integer NOT NULL, "participant_id" integer NOT NULL, "participant_type" varchar NOT NULL, "registration_date" datetime NOT NULL, "status" varchar DEFAULT 'registered' NOT NULL, "fee_paid" boolean NOT NULL, "payment_date" datetime, "notes" text, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_registrations_on_participant" ON "registrations" ("participant_id", "participant_type")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_registrations_on_status" ON "registrations" ("status")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_registrations_unique" ON "registrations" ("tournament_event_id", "participant_id", "participant_type")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_registrations_on_tournament_event_id" ON "registrations" ("tournament_event_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "rooms"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "rooms" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "tournament_id" integer NOT NULL, "name" varchar NOT NULL, "room_type" varchar DEFAULT 'physical' NOT NULL, "capacity" integer, "location" varchar, "virtual_link" varchar, "equipment" text, "notes" text, "available" boolean NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_rooms_on_room_type" ON "rooms" ("room_type")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_rooms_on_tournament_id" ON "rooms" ("tournament_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "rounds"[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE TABLE "rounds" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "tournament_event_id" integer NOT NULL, "round_number" integer NOT NULL, "name" varchar NOT NULL, "round_type" varchar DEFAULT 'preliminary' NOT NULL, "start_time" datetime, "end_time" datetime, "status" varchar DEFAULT 'scheduled' NOT NULL, "notes" text, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_rounds_on_start_time" ON "rounds" ("start_time")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_rounds_on_round_number" ON "rounds" ("tournament_event_id", "round_number")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_rounds_on_tournament_event_id" ON "rounds" ("tournament_event_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "seasons"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "seasons" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "start_date" date NOT NULL, "end_date" date NOT NULL, "active" boolean NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_seasons_on_active" ON "seasons" ("active")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "team_memberships"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "team_memberships" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "team_id" integer NOT NULL, "user_id" integer NOT NULL, "role" varchar DEFAULT 'member' NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_team_memberships_unique" ON "team_memberships" ("team_id", "user_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_team_memberships_on_team_id" ON "team_memberships" ("team_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_team_memberships_on_user_id" ON "team_memberships" ("user_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "teams"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "teams" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "league_id" integer NOT NULL, "season_id" integer NOT NULL, "school" varchar, "active" boolean NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_teams_on_league_id" ON "teams" ("league_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_teams_on_season_id" ON "teams" ("season_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "tournament_events"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "tournament_events" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "tournament_id" integer NOT NULL, "event_type_id" integer NOT NULL, "max_participants" integer, "entry_fee" decimal, "registration_deadline" datetime, "status" varchar DEFAULT 'open' NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_tournament_events_on_event_type_id" ON "tournament_events" ("event_type_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_tournament_events_unique" ON "tournament_events" ("tournament_id", "event_type_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_tournament_events_on_tournament_id" ON "tournament_events" ("tournament_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "tournaments"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "tournaments" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "league_id" integer NOT NULL, "season_id" integer NOT NULL, "start_date" date NOT NULL, "end_date" date NOT NULL, "location" varchar, "format" varchar DEFAULT 'in_person' NOT NULL, "registration_deadline" datetime, "max_participants" integer, "entry_fee" decimal, "status" varchar DEFAULT 'upcoming' NOT NULL, "description" text, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_tournaments_on_league_id" ON "tournaments" ("league_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_tournaments_on_season_id" ON "tournaments" ("season_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_tournaments_on_start_date" ON "tournaments" ("start_date")[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE INDEX "index_tournaments_on_status" ON "tournaments" ("status")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "users"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "users" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "first_name" varchar NOT NULL, "last_name" varchar NOT NULL, "email" varchar NOT NULL, "phone" varchar, "school" varchar, "graduation_year" integer, "league_id" integer, "role" varchar DEFAULT 'participant' NOT NULL, "active" boolean NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_users_on_email" ON "users" ("email")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_users_on_league_id" ON "users" ("league_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_users_on_role" ON "users" ("role")[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (3.2ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "aawards" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "tournament_event_id" integer NOT NULL, "recipient_id" integer NOT NULL, "recipient_type" varchar NOT NULL, "award_type" varchar DEFAULT 'placement' NOT NULL, "position" integer, "description" text, "awarded_at" datetime NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_aawards_on_tournament_event_id" ON "aawards" ("tournament_event_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_aawards_on_recipient" ON "aawards" ("recipient_id", "recipient_type")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aawards_on_position" ON "aawards" ("position")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aawards_on_award_type" ON "aawards" ("award_type")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "aawards" ("id","name","tournament_event_id","recipient_id","recipient_type","award_type","position","description","awarded_at","created_at","updated_at")
+                     SELECT "id","name","tournament_event_id","recipient_id","recipient_type","award_type","position","description","awarded_at","created_at","updated_at" FROM "awards"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "awards"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "awards" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "tournament_event_id" integer NOT NULL, "recipient_id" integer NOT NULL, "recipient_type" varchar NOT NULL, "award_type" varchar DEFAULT 'placement' NOT NULL, "position" integer, "description" text, "awarded_at" datetime NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL, CONSTRAINT "fk_rails_ce003d3a1d"
+FOREIGN KEY ("tournament_event_id")
+  REFERENCES "tournament_events" ("id")
+ ON DELETE CASCADE)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_awards_on_award_type" ON "awards" ("award_type")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_awards_on_position" ON "awards" ("position")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_awards_on_recipient" ON "awards" ("recipient_id", "recipient_type")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_awards_on_tournament_event_id" ON "awards" ("tournament_event_id")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "awards" ("id","name","tournament_event_id","recipient_id","recipient_type","award_type","position","description","awarded_at","created_at","updated_at")
+                     SELECT "id","name","tournament_event_id","recipient_id","recipient_type","award_type","position","description","awarded_at","created_at","updated_at" FROM "aawards"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE "aawards"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "ajudges" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "user_id" integer NOT NULL, "tournament_id" integer NOT NULL, "experience_level" varchar DEFAULT 'novice' NOT NULL, "certifications" text, "preferences" text, "availability" text, "active" boolean NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_ajudges_on_user_id" ON "ajudges" ("user_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_ajudges_unique" ON "ajudges" ("user_id", "tournament_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_ajudges_on_tournament_id" ON "ajudges" ("tournament_id")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "ajudges" ("id","user_id","tournament_id","experience_level","certifications","preferences","availability","active","created_at","updated_at")
+                     SELECT "id","user_id","tournament_id","experience_level","certifications","preferences","availability","active","created_at","updated_at" FROM "judges"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "judges"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "judges" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "user_id" integer NOT NULL, "tournament_id" integer NOT NULL, "experience_level" varchar DEFAULT 'novice' NOT NULL, "certifications" text, "preferences" text, "availability" text, "active" boolean NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL, CONSTRAINT "fk_rails_0d88e6ddd2"
+FOREIGN KEY ("tournament_id")
+  REFERENCES "tournaments" ("id")
+ ON DELETE CASCADE)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_judges_on_tournament_id" ON "judges" ("tournament_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_judges_unique" ON "judges" ("user_id", "tournament_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_judges_on_user_id" ON "judges" ("user_id")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "judges" ("id","user_id","tournament_id","experience_level","certifications","preferences","availability","active","created_at","updated_at")
+                     SELECT "id","user_id","tournament_id","experience_level","certifications","preferences","availability","active","created_at","updated_at" FROM "ajudges"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "ajudges"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TEMPORARY TABLE "ajudges" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "user_id" integer NOT NULL, "tournament_id" integer NOT NULL, "experience_level" varchar DEFAULT 'novice' NOT NULL, "certifications" text, "preferences" text, "availability" text, "active" boolean NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_ajudges_on_user_id" ON "ajudges" ("user_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_ajudges_unique" ON "ajudges" ("user_id", "tournament_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_ajudges_on_tournament_id" ON "ajudges" ("tournament_id")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "ajudges" ("id","user_id","tournament_id","experience_level","certifications","preferences","availability","active","created_at","updated_at")
+                     SELECT "id","user_id","tournament_id","experience_level","certifications","preferences","availability","active","created_at","updated_at" FROM "judges"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE "judges"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TABLE "judges" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "user_id" integer NOT NULL, "tournament_id" integer NOT NULL, "experience_level" varchar DEFAULT 'novice' NOT NULL, "certifications" text, "preferences" text, "availability" text, "active" boolean NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL, CONSTRAINT "fk_rails_0d88e6ddd2"
+FOREIGN KEY ("tournament_id")
+  REFERENCES "tournaments" ("id")
+ ON DELETE CASCADE, CONSTRAINT "fk_rails_ae5c49c060"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+ ON DELETE CASCADE)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_judges_on_tournament_id" ON "judges" ("tournament_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_judges_unique" ON "judges" ("user_id", "tournament_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_judges_on_user_id" ON "judges" ("user_id")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "judges" ("id","user_id","tournament_id","experience_level","certifications","preferences","availability","active","created_at","updated_at")
+                     SELECT "id","user_id","tournament_id","experience_level","certifications","preferences","availability","active","created_at","updated_at" FROM "ajudges"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE "ajudges"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TEMPORARY TABLE "amatch_judges" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "match_id" integer NOT NULL, "judge_id" integer NOT NULL, "role" varchar DEFAULT 'judge' NOT NULL, "status" varchar DEFAULT 'assigned' NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_amatch_judges_on_match_id" ON "amatch_judges" ("match_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_amatch_judges_unique" ON "amatch_judges" ("match_id", "judge_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_amatch_judges_on_judge_id" ON "amatch_judges" ("judge_id")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "amatch_judges" ("id","match_id","judge_id","role","status","created_at","updated_at")
+                     SELECT "id","match_id","judge_id","role","status","created_at","updated_at" FROM "match_judges"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "match_judges"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TABLE "match_judges" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "match_id" integer NOT NULL, "judge_id" integer NOT NULL, "role" varchar DEFAULT 'judge' NOT NULL, "status" varchar DEFAULT 'assigned' NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL, CONSTRAINT "fk_rails_d9dd7e2fd5"
+FOREIGN KEY ("judge_id")
+  REFERENCES "judges" ("id")
+ ON DELETE CASCADE)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_match_judges_on_judge_id" ON "match_judges" ("judge_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_match_judges_unique" ON "match_judges" ("match_id", "judge_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_match_judges_on_match_id" ON "match_judges" ("match_id")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "match_judges" ("id","match_id","judge_id","role","status","created_at","updated_at")
+                     SELECT "id","match_id","judge_id","role","status","created_at","updated_at" FROM "amatch_judges"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE "amatch_judges"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TEMPORARY TABLE "amatch_judges" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "match_id" integer NOT NULL, "judge_id" integer NOT NULL, "role" varchar DEFAULT 'judge' NOT NULL, "status" varchar DEFAULT 'assigned' NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_amatch_judges_on_match_id" ON "amatch_judges" ("match_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_amatch_judges_unique" ON "amatch_judges" ("match_id", "judge_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_amatch_judges_on_judge_id" ON "amatch_judges" ("judge_id")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "amatch_judges" ("id","match_id","judge_id","role","status","created_at","updated_at")
+                     SELECT "id","match_id","judge_id","role","status","created_at","updated_at" FROM "match_judges"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE "match_judges"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "match_judges" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "match_id" integer NOT NULL, "judge_id" integer NOT NULL, "role" varchar DEFAULT 'judge' NOT NULL, "status" varchar DEFAULT 'assigned' NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL, CONSTRAINT "fk_rails_d9dd7e2fd5"
+FOREIGN KEY ("judge_id")
+  REFERENCES "judges" ("id")
+ ON DELETE CASCADE, CONSTRAINT "fk_rails_c3c877c2a2"
+FOREIGN KEY ("match_id")
+  REFERENCES "matches" ("id")
+ ON DELETE CASCADE)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_match_judges_on_judge_id" ON "match_judges" ("judge_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_match_judges_unique" ON "match_judges" ("match_id", "judge_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_match_judges_on_match_id" ON "match_judges" ("match_id")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "match_judges" ("id","match_id","judge_id","role","status","created_at","updated_at")
+                     SELECT "id","match_id","judge_id","role","status","created_at","updated_at" FROM "amatch_judges"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "amatch_judges"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TEMPORARY TABLE "amatch_participants" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "match_id" integer NOT NULL, "participant_id" integer NOT NULL, "participant_type" varchar NOT NULL, "position" varchar, "speaking_order" integer, "score" decimal, "rank" integer, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_amatch_participants_on_participant" ON "amatch_participants" ("participant_id", "participant_type")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_amatch_participants_on_match_id" ON "amatch_participants" ("match_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_amatch_participants_unique" ON "amatch_participants" ("match_id", "participant_id", "participant_type")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "amatch_participants" ("id","match_id","participant_id","participant_type","position","speaking_order","score","rank","created_at","updated_at")
+                     SELECT "id","match_id","participant_id","participant_type","position","speaking_order","score","rank","created_at","updated_at" FROM "match_participants"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE "match_participants"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TABLE "match_participants" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "match_id" integer NOT NULL, "participant_id" integer NOT NULL, "participant_type" varchar NOT NULL, "position" varchar, "speaking_order" integer, "score" decimal, "rank" integer, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL, CONSTRAINT "fk_rails_ee99d7b1c7"
+FOREIGN KEY ("match_id")
+  REFERENCES "matches" ("id")
+ ON DELETE CASCADE)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_match_participants_unique" ON "match_participants" ("match_id", "participant_id", "participant_type")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_match_participants_on_match_id" ON "match_participants" ("match_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_match_participants_on_participant" ON "match_participants" ("participant_id", "participant_type")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "match_participants" ("id","match_id","participant_id","participant_type","position","speaking_order","score","rank","created_at","updated_at")
+                     SELECT "id","match_id","participant_id","participant_type","position","speaking_order","score","rank","created_at","updated_at" FROM "amatch_participants"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "amatch_participants"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TEMPORARY TABLE "amatches" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "round_id" integer NOT NULL, "room_id" integer, "match_number" integer NOT NULL, "start_time" datetime, "end_time" datetime, "status" varchar DEFAULT 'scheduled' NOT NULL, "winner_id" integer, "winner_type" varchar, "notes" text, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_amatches_on_start_time" ON "amatches" ("start_time")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_amatches_on_round_id" ON "amatches" ("round_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_amatches_on_match_number" ON "amatches" ("round_id", "match_number")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_amatches_on_room_id" ON "amatches" ("room_id")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "amatches" ("id","round_id","room_id","match_number","start_time","end_time","status","winner_id","winner_type","notes","created_at","updated_at")
+                     SELECT "id","round_id","room_id","match_number","start_time","end_time","status","winner_id","winner_type","notes","created_at","updated_at" FROM "matches"[0m
+  [1m[35m (0.2ms)[0m  [1m[35mDROP TABLE "matches"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "matches" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "round_id" integer NOT NULL, "room_id" integer, "match_number" integer NOT NULL, "start_time" datetime, "end_time" datetime, "status" varchar DEFAULT 'scheduled' NOT NULL, "winner_id" integer, "winner_type" varchar, "notes" text, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL, CONSTRAINT "fk_rails_f55b9485ce"
+FOREIGN KEY ("room_id")
+  REFERENCES "rooms" ("id")
+ ON DELETE SET NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_matches_on_room_id" ON "matches" ("room_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_matches_on_match_number" ON "matches" ("round_id", "match_number")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_matches_on_round_id" ON "matches" ("round_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_matches_on_start_time" ON "matches" ("start_time")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "matches" ("id","round_id","room_id","match_number","start_time","end_time","status","winner_id","winner_type","notes","created_at","updated_at")
+                     SELECT "id","round_id","room_id","match_number","start_time","end_time","status","winner_id","winner_type","notes","created_at","updated_at" FROM "amatches"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "amatches"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "amatches" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "round_id" integer NOT NULL, "room_id" integer, "match_number" integer NOT NULL, "start_time" datetime, "end_time" datetime, "status" varchar DEFAULT 'scheduled' NOT NULL, "winner_id" integer, "winner_type" varchar, "notes" text, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_amatches_on_start_time" ON "amatches" ("start_time")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_amatches_on_round_id" ON "amatches" ("round_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_amatches_on_match_number" ON "amatches" ("round_id", "match_number")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_amatches_on_room_id" ON "amatches" ("room_id")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "amatches" ("id","round_id","room_id","match_number","start_time","end_time","status","winner_id","winner_type","notes","created_at","updated_at")
+                     SELECT "id","round_id","room_id","match_number","start_time","end_time","status","winner_id","winner_type","notes","created_at","updated_at" FROM "matches"[0m
+  [1m[35m (0.2ms)[0m  [1m[35mDROP TABLE "matches"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "matches" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "round_id" integer NOT NULL, "room_id" integer, "match_number" integer NOT NULL, "start_time" datetime, "end_time" datetime, "status" varchar DEFAULT 'scheduled' NOT NULL, "winner_id" integer, "winner_type" varchar, "notes" text, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL, CONSTRAINT "fk_rails_f55b9485ce"
+FOREIGN KEY ("room_id")
+  REFERENCES "rooms" ("id")
+ ON DELETE SET NULL, CONSTRAINT "fk_rails_e7c0250650"
+FOREIGN KEY ("round_id")
+  REFERENCES "rounds" ("id")
+ ON DELETE CASCADE)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_matches_on_room_id" ON "matches" ("room_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_matches_on_match_number" ON "matches" ("round_id", "match_number")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_matches_on_round_id" ON "matches" ("round_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_matches_on_start_time" ON "matches" ("start_time")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "matches" ("id","round_id","room_id","match_number","start_time","end_time","status","winner_id","winner_type","notes","created_at","updated_at")
+                     SELECT "id","round_id","room_id","match_number","start_time","end_time","status","winner_id","winner_type","notes","created_at","updated_at" FROM "amatches"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "amatches"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "aregistrations" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "tournament_event_id" integer NOT NULL, "participant_id" integer NOT NULL, "participant_type" varchar NOT NULL, "registration_date" datetime NOT NULL, "status" varchar DEFAULT 'registered' NOT NULL, "fee_paid" boolean NOT NULL, "payment_date" datetime, "notes" text, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aregistrations_on_tournament_event_id" ON "aregistrations" ("tournament_event_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_aregistrations_unique" ON "aregistrations" ("tournament_event_id", "participant_id", "participant_type")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aregistrations_on_status" ON "aregistrations" ("status")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_aregistrations_on_participant" ON "aregistrations" ("participant_id", "participant_type")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "aregistrations" ("id","tournament_event_id","participant_id","participant_type","registration_date","status","fee_paid","payment_date","notes","created_at","updated_at")
+                     SELECT "id","tournament_event_id","participant_id","participant_type","registration_date","status","fee_paid","payment_date","notes","created_at","updated_at" FROM "registrations"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "registrations"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "registrations" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "tournament_event_id" integer NOT NULL, "participant_id" integer NOT NULL, "participant_type" varchar NOT NULL, "registration_date" datetime NOT NULL, "status" varchar DEFAULT 'registered' NOT NULL, "fee_paid" boolean NOT NULL, "payment_date" datetime, "notes" text, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL, CONSTRAINT "fk_rails_46547a57d9"
+FOREIGN KEY ("tournament_event_id")
+  REFERENCES "tournament_events" ("id")
+ ON DELETE CASCADE)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_registrations_on_participant" ON "registrations" ("participant_id", "participant_type")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_registrations_on_status" ON "registrations" ("status")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_registrations_unique" ON "registrations" ("tournament_event_id", "participant_id", "participant_type")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_registrations_on_tournament_event_id" ON "registrations" ("tournament_event_id")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "registrations" ("id","tournament_event_id","participant_id","participant_type","registration_date","status","fee_paid","payment_date","notes","created_at","updated_at")
+                     SELECT "id","tournament_event_id","participant_id","participant_type","registration_date","status","fee_paid","payment_date","notes","created_at","updated_at" FROM "aregistrations"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE "aregistrations"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TEMPORARY TABLE "arooms" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "tournament_id" integer NOT NULL, "name" varchar NOT NULL, "room_type" varchar DEFAULT 'physical' NOT NULL, "capacity" integer, "location" varchar, "virtual_link" varchar, "equipment" text, "notes" text, "available" boolean NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_arooms_on_tournament_id" ON "arooms" ("tournament_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_arooms_on_room_type" ON "arooms" ("room_type")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "arooms" ("id","tournament_id","name","room_type","capacity","location","virtual_link","equipment","notes","available","created_at","updated_at")
+                     SELECT "id","tournament_id","name","room_type","capacity","location","virtual_link","equipment","notes","available","created_at","updated_at" FROM "rooms"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "rooms"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "rooms" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "tournament_id" integer NOT NULL, "name" varchar NOT NULL, "room_type" varchar DEFAULT 'physical' NOT NULL, "capacity" integer, "location" varchar, "virtual_link" varchar, "equipment" text, "notes" text, "available" boolean NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL, CONSTRAINT "fk_rails_7810a55bab"
+FOREIGN KEY ("tournament_id")
+  REFERENCES "tournaments" ("id")
+ ON DELETE CASCADE)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_rooms_on_room_type" ON "rooms" ("room_type")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_rooms_on_tournament_id" ON "rooms" ("tournament_id")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "rooms" ("id","tournament_id","name","room_type","capacity","location","virtual_link","equipment","notes","available","created_at","updated_at")
+                     SELECT "id","tournament_id","name","room_type","capacity","location","virtual_link","equipment","notes","available","created_at","updated_at" FROM "arooms"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE "arooms"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TEMPORARY TABLE "arounds" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "tournament_event_id" integer NOT NULL, "round_number" integer NOT NULL, "name" varchar NOT NULL, "round_type" varchar DEFAULT 'preliminary' NOT NULL, "start_time" datetime, "end_time" datetime, "status" varchar DEFAULT 'scheduled' NOT NULL, "notes" text, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_arounds_on_tournament_event_id" ON "arounds" ("tournament_event_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_arounds_on_round_number" ON "arounds" ("tournament_event_id", "round_number")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_arounds_on_start_time" ON "arounds" ("start_time")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "arounds" ("id","tournament_event_id","round_number","name","round_type","start_time","end_time","status","notes","created_at","updated_at")
+                     SELECT "id","tournament_event_id","round_number","name","round_type","start_time","end_time","status","notes","created_at","updated_at" FROM "rounds"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "rounds"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "rounds" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "tournament_event_id" integer NOT NULL, "round_number" integer NOT NULL, "name" varchar NOT NULL, "round_type" varchar DEFAULT 'preliminary' NOT NULL, "start_time" datetime, "end_time" datetime, "status" varchar DEFAULT 'scheduled' NOT NULL, "notes" text, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL, CONSTRAINT "fk_rails_37bcb0b079"
+FOREIGN KEY ("tournament_event_id")
+  REFERENCES "tournament_events" ("id")
+ ON DELETE CASCADE)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_rounds_on_start_time" ON "rounds" ("start_time")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_rounds_on_round_number" ON "rounds" ("tournament_event_id", "round_number")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_rounds_on_tournament_event_id" ON "rounds" ("tournament_event_id")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "rounds" ("id","tournament_event_id","round_number","name","round_type","start_time","end_time","status","notes","created_at","updated_at")
+                     SELECT "id","tournament_event_id","round_number","name","round_type","start_time","end_time","status","notes","created_at","updated_at" FROM "arounds"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE "arounds"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TEMPORARY TABLE "ateam_memberships" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "team_id" integer NOT NULL, "user_id" integer NOT NULL, "role" varchar DEFAULT 'member' NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_ateam_memberships_on_user_id" ON "ateam_memberships" ("user_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_ateam_memberships_on_team_id" ON "ateam_memberships" ("team_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_ateam_memberships_unique" ON "ateam_memberships" ("team_id", "user_id")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "ateam_memberships" ("id","team_id","user_id","role","created_at","updated_at")
+                     SELECT "id","team_id","user_id","role","created_at","updated_at" FROM "team_memberships"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "team_memberships"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TABLE "team_memberships" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "team_id" integer NOT NULL, "user_id" integer NOT NULL, "role" varchar DEFAULT 'member' NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL, CONSTRAINT "fk_rails_61c29b529e"
+FOREIGN KEY ("team_id")
+  REFERENCES "teams" ("id")
+ ON DELETE CASCADE)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_team_memberships_unique" ON "team_memberships" ("team_id", "user_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_team_memberships_on_team_id" ON "team_memberships" ("team_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_team_memberships_on_user_id" ON "team_memberships" ("user_id")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "team_memberships" ("id","team_id","user_id","role","created_at","updated_at")
+                     SELECT "id","team_id","user_id","role","created_at","updated_at" FROM "ateam_memberships"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE "ateam_memberships"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TEMPORARY TABLE "ateam_memberships" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "team_id" integer NOT NULL, "user_id" integer NOT NULL, "role" varchar DEFAULT 'member' NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_ateam_memberships_on_user_id" ON "ateam_memberships" ("user_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_ateam_memberships_on_team_id" ON "ateam_memberships" ("team_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_ateam_memberships_unique" ON "ateam_memberships" ("team_id", "user_id")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "ateam_memberships" ("id","team_id","user_id","role","created_at","updated_at")
+                     SELECT "id","team_id","user_id","role","created_at","updated_at" FROM "team_memberships"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE "team_memberships"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "team_memberships" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "team_id" integer NOT NULL, "user_id" integer NOT NULL, "role" varchar DEFAULT 'member' NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL, CONSTRAINT "fk_rails_61c29b529e"
+FOREIGN KEY ("team_id")
+  REFERENCES "teams" ("id")
+ ON DELETE CASCADE, CONSTRAINT "fk_rails_5aba9331a7"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+ ON DELETE CASCADE)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_team_memberships_unique" ON "team_memberships" ("team_id", "user_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_team_memberships_on_team_id" ON "team_memberships" ("team_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_team_memberships_on_user_id" ON "team_memberships" ("user_id")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "team_memberships" ("id","team_id","user_id","role","created_at","updated_at")
+                     SELECT "id","team_id","user_id","role","created_at","updated_at" FROM "ateam_memberships"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "ateam_memberships"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TEMPORARY TABLE "ateams" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "league_id" integer NOT NULL, "season_id" integer NOT NULL, "school" varchar, "active" boolean NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_ateams_on_season_id" ON "ateams" ("season_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_ateams_on_league_id" ON "ateams" ("league_id")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "ateams" ("id","name","league_id","season_id","school","active","created_at","updated_at")
+                     SELECT "id","name","league_id","season_id","school","active","created_at","updated_at" FROM "teams"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "teams"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TABLE "teams" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "league_id" integer NOT NULL, "season_id" integer NOT NULL, "school" varchar, "active" boolean NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL, CONSTRAINT "fk_rails_99e3bbb19c"
+FOREIGN KEY ("league_id")
+  REFERENCES "leagues" ("id")
+ ON DELETE CASCADE)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_teams_on_league_id" ON "teams" ("league_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_teams_on_season_id" ON "teams" ("season_id")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "teams" ("id","name","league_id","season_id","school","active","created_at","updated_at")
+                     SELECT "id","name","league_id","season_id","school","active","created_at","updated_at" FROM "ateams"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE "ateams"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "ateams" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "league_id" integer NOT NULL, "season_id" integer NOT NULL, "school" varchar, "active" boolean NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_ateams_on_season_id" ON "ateams" ("season_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_ateams_on_league_id" ON "ateams" ("league_id")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "ateams" ("id","name","league_id","season_id","school","active","created_at","updated_at")
+                     SELECT "id","name","league_id","season_id","school","active","created_at","updated_at" FROM "teams"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "teams"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "teams" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "league_id" integer NOT NULL, "season_id" integer NOT NULL, "school" varchar, "active" boolean NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL, CONSTRAINT "fk_rails_99e3bbb19c"
+FOREIGN KEY ("league_id")
+  REFERENCES "leagues" ("id")
+ ON DELETE CASCADE, CONSTRAINT "fk_rails_5fef1fc74c"
+FOREIGN KEY ("season_id")
+  REFERENCES "seasons" ("id")
+ ON DELETE CASCADE)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_teams_on_league_id" ON "teams" ("league_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_teams_on_season_id" ON "teams" ("season_id")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "teams" ("id","name","league_id","season_id","school","active","created_at","updated_at")
+                     SELECT "id","name","league_id","season_id","school","active","created_at","updated_at" FROM "ateams"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE "ateams"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TEMPORARY TABLE "atournament_events" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "tournament_id" integer NOT NULL, "event_type_id" integer NOT NULL, "max_participants" integer, "entry_fee" decimal, "registration_deadline" datetime, "status" varchar DEFAULT 'open' NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_atournament_events_on_tournament_id" ON "atournament_events" ("tournament_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_atournament_events_unique" ON "atournament_events" ("tournament_id", "event_type_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_atournament_events_on_event_type_id" ON "atournament_events" ("event_type_id")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "atournament_events" ("id","tournament_id","event_type_id","max_participants","entry_fee","registration_deadline","status","created_at","updated_at")
+                     SELECT "id","tournament_id","event_type_id","max_participants","entry_fee","registration_deadline","status","created_at","updated_at" FROM "tournament_events"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "tournament_events"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "tournament_events" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "tournament_id" integer NOT NULL, "event_type_id" integer NOT NULL, "max_participants" integer, "entry_fee" decimal, "registration_deadline" datetime, "status" varchar DEFAULT 'open' NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL, CONSTRAINT "fk_rails_f2e1e30b3f"
+FOREIGN KEY ("event_type_id")
+  REFERENCES "event_types" ("id")
+ ON DELETE CASCADE)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_tournament_events_on_event_type_id" ON "tournament_events" ("event_type_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_tournament_events_unique" ON "tournament_events" ("tournament_id", "event_type_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_tournament_events_on_tournament_id" ON "tournament_events" ("tournament_id")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "tournament_events" ("id","tournament_id","event_type_id","max_participants","entry_fee","registration_deadline","status","created_at","updated_at")
+                     SELECT "id","tournament_id","event_type_id","max_participants","entry_fee","registration_deadline","status","created_at","updated_at" FROM "atournament_events"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE "atournament_events"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TEMPORARY TABLE "atournament_events" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "tournament_id" integer NOT NULL, "event_type_id" integer NOT NULL, "max_participants" integer, "entry_fee" decimal, "registration_deadline" datetime, "status" varchar DEFAULT 'open' NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_atournament_events_on_tournament_id" ON "atournament_events" ("tournament_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_atournament_events_unique" ON "atournament_events" ("tournament_id", "event_type_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_atournament_events_on_event_type_id" ON "atournament_events" ("event_type_id")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "atournament_events" ("id","tournament_id","event_type_id","max_participants","entry_fee","registration_deadline","status","created_at","updated_at")
+                     SELECT "id","tournament_id","event_type_id","max_participants","entry_fee","registration_deadline","status","created_at","updated_at" FROM "tournament_events"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "tournament_events"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TABLE "tournament_events" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "tournament_id" integer NOT NULL, "event_type_id" integer NOT NULL, "max_participants" integer, "entry_fee" decimal, "registration_deadline" datetime, "status" varchar DEFAULT 'open' NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL, CONSTRAINT "fk_rails_f2e1e30b3f"
+FOREIGN KEY ("event_type_id")
+  REFERENCES "event_types" ("id")
+ ON DELETE CASCADE, CONSTRAINT "fk_rails_370bc71d46"
+FOREIGN KEY ("tournament_id")
+  REFERENCES "tournaments" ("id")
+ ON DELETE CASCADE)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_tournament_events_on_event_type_id" ON "tournament_events" ("event_type_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_tournament_events_unique" ON "tournament_events" ("tournament_id", "event_type_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_tournament_events_on_tournament_id" ON "tournament_events" ("tournament_id")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "tournament_events" ("id","tournament_id","event_type_id","max_participants","entry_fee","registration_deadline","status","created_at","updated_at")
+                     SELECT "id","tournament_id","event_type_id","max_participants","entry_fee","registration_deadline","status","created_at","updated_at" FROM "atournament_events"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE "atournament_events"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "atournaments" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "league_id" integer NOT NULL, "season_id" integer NOT NULL, "start_date" date NOT NULL, "end_date" date NOT NULL, "location" varchar, "format" varchar DEFAULT 'in_person' NOT NULL, "registration_deadline" datetime, "max_participants" integer, "entry_fee" decimal, "status" varchar DEFAULT 'upcoming' NOT NULL, "description" text, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_atournaments_on_status" ON "atournaments" ("status")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_atournaments_on_start_date" ON "atournaments" ("start_date")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_atournaments_on_season_id" ON "atournaments" ("season_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_atournaments_on_league_id" ON "atournaments" ("league_id")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "atournaments" ("id","name","league_id","season_id","start_date","end_date","location","format","registration_deadline","max_participants","entry_fee","status","description","created_at","updated_at")
+                     SELECT "id","name","league_id","season_id","start_date","end_date","location","format","registration_deadline","max_participants","entry_fee","status","description","created_at","updated_at" FROM "tournaments"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "tournaments"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "tournaments" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "league_id" integer NOT NULL, "season_id" integer NOT NULL, "start_date" date NOT NULL, "end_date" date NOT NULL, "location" varchar, "format" varchar DEFAULT 'in_person' NOT NULL, "registration_deadline" datetime, "max_participants" integer, "entry_fee" decimal, "status" varchar DEFAULT 'upcoming' NOT NULL, "description" text, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL, CONSTRAINT "fk_rails_81cfbfab5e"
+FOREIGN KEY ("league_id")
+  REFERENCES "leagues" ("id")
+ ON DELETE CASCADE)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_tournaments_on_league_id" ON "tournaments" ("league_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_tournaments_on_season_id" ON "tournaments" ("season_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_tournaments_on_start_date" ON "tournaments" ("start_date")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_tournaments_on_status" ON "tournaments" ("status")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "tournaments" ("id","name","league_id","season_id","start_date","end_date","location","format","registration_deadline","max_participants","entry_fee","status","description","created_at","updated_at")
+                     SELECT "id","name","league_id","season_id","start_date","end_date","location","format","registration_deadline","max_participants","entry_fee","status","description","created_at","updated_at" FROM "atournaments"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "atournaments"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "atournaments" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "league_id" integer NOT NULL, "season_id" integer NOT NULL, "start_date" date NOT NULL, "end_date" date NOT NULL, "location" varchar, "format" varchar DEFAULT 'in_person' NOT NULL, "registration_deadline" datetime, "max_participants" integer, "entry_fee" decimal, "status" varchar DEFAULT 'upcoming' NOT NULL, "description" text, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_atournaments_on_status" ON "atournaments" ("status")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_atournaments_on_start_date" ON "atournaments" ("start_date")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_atournaments_on_season_id" ON "atournaments" ("season_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_atournaments_on_league_id" ON "atournaments" ("league_id")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "atournaments" ("id","name","league_id","season_id","start_date","end_date","location","format","registration_deadline","max_participants","entry_fee","status","description","created_at","updated_at")
+                     SELECT "id","name","league_id","season_id","start_date","end_date","location","format","registration_deadline","max_participants","entry_fee","status","description","created_at","updated_at" FROM "tournaments"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "tournaments"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TABLE "tournaments" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "league_id" integer NOT NULL, "season_id" integer NOT NULL, "start_date" date NOT NULL, "end_date" date NOT NULL, "location" varchar, "format" varchar DEFAULT 'in_person' NOT NULL, "registration_deadline" datetime, "max_participants" integer, "entry_fee" decimal, "status" varchar DEFAULT 'upcoming' NOT NULL, "description" text, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL, CONSTRAINT "fk_rails_81cfbfab5e"
+FOREIGN KEY ("league_id")
+  REFERENCES "leagues" ("id")
+ ON DELETE CASCADE, CONSTRAINT "fk_rails_24b079789b"
+FOREIGN KEY ("season_id")
+  REFERENCES "seasons" ("id")
+ ON DELETE CASCADE)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_tournaments_on_league_id" ON "tournaments" ("league_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_tournaments_on_season_id" ON "tournaments" ("season_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_tournaments_on_start_date" ON "tournaments" ("start_date")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_tournaments_on_status" ON "tournaments" ("status")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "tournaments" ("id","name","league_id","season_id","start_date","end_date","location","format","registration_deadline","max_participants","entry_fee","status","description","created_at","updated_at")
+                     SELECT "id","name","league_id","season_id","start_date","end_date","location","format","registration_deadline","max_participants","entry_fee","status","description","created_at","updated_at" FROM "atournaments"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE "atournaments"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "ausers" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "first_name" varchar NOT NULL, "last_name" varchar NOT NULL, "email" varchar NOT NULL, "phone" varchar, "school" varchar, "graduation_year" integer, "league_id" integer, "role" varchar DEFAULT 'participant' NOT NULL, "active" boolean NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_ausers_on_role" ON "ausers" ("role")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_ausers_on_league_id" ON "ausers" ("league_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_ausers_on_email" ON "ausers" ("email")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "ausers" ("id","first_name","last_name","email","phone","school","graduation_year","league_id","role","active","created_at","updated_at")
+                     SELECT "id","first_name","last_name","email","phone","school","graduation_year","league_id","role","active","created_at","updated_at" FROM "users"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "users"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "users" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "first_name" varchar NOT NULL, "last_name" varchar NOT NULL, "email" varchar NOT NULL, "phone" varchar, "school" varchar, "graduation_year" integer, "league_id" integer, "role" varchar DEFAULT 'participant' NOT NULL, "active" boolean NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL, CONSTRAINT "fk_rails_75ce651bb7"
+FOREIGN KEY ("league_id")
+  REFERENCES "leagues" ("id")
+ ON DELETE SET NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_users_on_email" ON "users" ("email")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_users_on_league_id" ON "users" ("league_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_users_on_role" ON "users" ("role")[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "users" ("id","first_name","last_name","email","phone","school","graduation_year","league_id","role","active","created_at","updated_at")
+                     SELECT "id","first_name","last_name","email","phone","school","graduation_year","league_id","role","active","created_at","updated_at" FROM "ausers"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "ausers"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (2.8ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (0)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.4ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.2ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'test', '2025-07-22 02:46:24.201519', '2025-07-22 02:46:24.201521') RETURNING "key"[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Load (0.2ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.1ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('schema_sha1', 'aa06afb7f6aa5a9e6de58e05758a808412e32fdf', '2025-07-22 02:46:24.211492', '2025-07-22 02:46:24.211493') RETURNING "key"[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (1.9ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (5.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.3ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.291334', '2025-07-22 02:46:34.291334'), (298486374, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.291334', '2025-07-22 02:46:34.291334')[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.3ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.307745', '2025-07-22 02:46:34.307745'), (298486374, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.307745', '2025-07-22 02:46:34.307745')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.2ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (1.3ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.3ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.313073', '2025-07-22 02:46:34.313073'), (298486374, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.313073', '2025-07-22 02:46:34.313073')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (1.5ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.326665', '2025-07-22 02:46:34.326665'), (298486374, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.326665', '2025-07-22 02:46:34.326665')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.332411', '2025-07-22 02:46:34.332411'), (298486374, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.332411', '2025-07-22 02:46:34.332411')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.337046', '2025-07-22 02:46:34.337046'), (298486374, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.337046', '2025-07-22 02:46:34.337046')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.339495', '2025-07-22 02:46:34.339495'), (298486374, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.339495', '2025-07-22 02:46:34.339495')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.341401', '2025-07-22 02:46:34.341401'), (298486374, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.341401', '2025-07-22 02:46:34.341401')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.3ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.351489', '2025-07-22 02:46:34.351489'), (298486374, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.351489', '2025-07-22 02:46:34.351489')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.4ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.354760', '2025-07-22 02:46:34.354760'), (298486374, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.354760', '2025-07-22 02:46:34.354760')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.358529', '2025-07-22 02:46:34.358529'), (298486374, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.358529', '2025-07-22 02:46:34.358529')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.362076', '2025-07-22 02:46:34.362076'), (298486374, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.362076', '2025-07-22 02:46:34.362076')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.1ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.363730', '2025-07-22 02:46:34.363730'), (298486374, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.363730', '2025-07-22 02:46:34.363730')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.1ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.365122', '2025-07-22 02:46:34.365122'), (298486374, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.365122', '2025-07-22 02:46:34.365122')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.367363', '2025-07-22 02:46:34.367363'), (298486374, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.367363', '2025-07-22 02:46:34.367363')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.378237', '2025-07-22 02:46:34.378237'), (298486374, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.378237', '2025-07-22 02:46:34.378237')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.1ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.382042', '2025-07-22 02:46:34.382042'), (298486374, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.382042', '2025-07-22 02:46:34.382042')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.1ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.383430', '2025-07-22 02:46:34.383430'), (298486374, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.383430', '2025-07-22 02:46:34.383430')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.1ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.385274', '2025-07-22 02:46:34.385274'), (298486374, NULL, NULL, NULL, NULL, '2025-07-22 02:46:34.385274', '2025-07-22 02:46:34.385274')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.5ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (1.9ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (5.7ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (1.0ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.517576', '2025-07-23 21:59:20.517576'), (298486374, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.517576', '2025-07-23 21:59:20.517576')[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.3ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.534510', '2025-07-23 21:59:20.534510'), (298486374, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.534510', '2025-07-23 21:59:20.534510')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.2ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (1.4ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.3ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.540473', '2025-07-23 21:59:20.540473'), (298486374, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.540473', '2025-07-23 21:59:20.540473')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (1.6ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.555187', '2025-07-23 21:59:20.555187'), (298486374, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.555187', '2025-07-23 21:59:20.555187')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.560982', '2025-07-23 21:59:20.560982'), (298486374, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.560982', '2025-07-23 21:59:20.560982')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.566345', '2025-07-23 21:59:20.566345'), (298486374, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.566345', '2025-07-23 21:59:20.566345')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.1ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.568358', '2025-07-23 21:59:20.568358'), (298486374, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.568358', '2025-07-23 21:59:20.568358')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.1ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.569939', '2025-07-23 21:59:20.569939'), (298486374, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.569939', '2025-07-23 21:59:20.569939')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.3ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.579648', '2025-07-23 21:59:20.579648'), (298486374, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.579648', '2025-07-23 21:59:20.579648')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.3ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.581943', '2025-07-23 21:59:20.581943'), (298486374, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.581943', '2025-07-23 21:59:20.581943')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.585460', '2025-07-23 21:59:20.585460'), (298486374, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.585460', '2025-07-23 21:59:20.585460')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.587832', '2025-07-23 21:59:20.587832'), (298486374, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.587832', '2025-07-23 21:59:20.587832')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.589358', '2025-07-23 21:59:20.589358'), (298486374, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.589358', '2025-07-23 21:59:20.589358')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.1ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.591126', '2025-07-23 21:59:20.591126'), (298486374, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.591126', '2025-07-23 21:59:20.591126')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.593660', '2025-07-23 21:59:20.593660'), (298486374, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.593660', '2025-07-23 21:59:20.593660')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.604250', '2025-07-23 21:59:20.604250'), (298486374, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.604250', '2025-07-23 21:59:20.604250')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.1ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.607909', '2025-07-23 21:59:20.607909'), (298486374, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.607909', '2025-07-23 21:59:20.607909')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.1ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.609276', '2025-07-23 21:59:20.609276'), (298486374, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.609276', '2025-07-23 21:59:20.609276')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.1ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.610744', '2025-07-23 21:59:20.610744'), (298486374, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.610744', '2025-07-23 21:59:20.610744')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.1ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.612116', '2025-07-23 21:59:20.612116'), (298486374, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.612116', '2025-07-23 21:59:20.612116')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.613476', '2025-07-23 21:59:20.613476'), (298486374, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.613476', '2025-07-23 21:59:20.613476')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.617926', '2025-07-23 21:59:20.617926'), (298486374, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.617926', '2025-07-23 21:59:20.617926')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.1ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.620850', '2025-07-23 21:59:20.620850'), (298486374, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.620850', '2025-07-23 21:59:20.620850')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.1ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.621952', '2025-07-23 21:59:20.621952'), (298486374, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.621952', '2025-07-23 21:59:20.621952')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.1ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.623394', '2025-07-23 21:59:20.623394'), (298486374, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.623394', '2025-07-23 21:59:20.623394')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.1ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.625224', '2025-07-23 21:59:20.625224'), (298486374, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.625224', '2025-07-23 21:59:20.625224')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.1ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.626393', '2025-07-23 21:59:20.626393'), (298486374, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.626393', '2025-07-23 21:59:20.626393')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.628994', '2025-07-23 21:59:20.628994'), (298486374, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.628994', '2025-07-23 21:59:20.628994')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.632080', '2025-07-23 21:59:20.632080'), (298486374, NULL, NULL, NULL, NULL, '2025-07-23 21:59:20.632080', '2025-07-23 21:59:20.632080')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.3ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.5ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.3ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.4ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (1.9ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35mSQL (5.2ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.2ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.8ms)[0m  [1m[31mDELETE FROM "seasons";
+INSERT INTO "seasons" ("id", "name", "start_date", "end_date", "active", "created_at", "updated_at") VALUES (980190962, NULL, NULL, NULL, NULL, '2025-07-23 23:35:39.493871', '2025-07-23 23:35:39.493871'), (298486374, NULL, NULL, NULL, NULL, '2025-07-23 23:35:39.493871', '2025-07-23 23:35:39.493871')[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.3ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m

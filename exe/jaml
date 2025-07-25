@@ -1,0 +1,127 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../lib/jaml'
+
+class JAMLCli
+  COMMANDS = {
+    'template' => 'Generate a new schema.yaml template with defaults and patterns',
+    'convert' => 'Convert YAML schema to HCL format',
+    'help' => 'Show help information',
+    'version' => 'Show JAML version'
+  }.freeze
+
+  def initialize(args)
+    @args = args
+    @command = args.first
+  end
+
+  def run
+    case @command
+    when 'template', 't'
+      generate_template
+    when 'convert', 'c'
+      convert_schema
+    when 'version', 'v', '--version'
+      show_version
+    when 'help', 'h', '--help', nil
+      show_help
+    else
+      puts "❌ Unknown command: #{@command}"
+      puts "Run 'jaml help' for available commands."
+      exit 1
+    end
+  end
+
+  private
+
+  def generate_template
+    file_path = @args[1] || 'db/schema.yaml'
+    
+    puts "🎯 Generating JAML schema template at #{file_path}..."
+    
+    begin
+      JAML.generate_template(file_path)
+    rescue => e
+      puts "❌ Error generating template: #{e.message}"
+      exit 1
+    end
+  end
+
+  def convert_schema
+    yaml_file = @args[1]
+    hcl_file = @args[2]
+    
+    if yaml_file && !File.exist?(yaml_file)
+      puts "❌ YAML file not found: #{yaml_file}"
+      exit 1
+    end
+    
+    puts "🔄 Converting schema to HCL format..."
+    
+    begin
+      JAML.convert(yaml_file, hcl_file)
+    rescue => e
+      puts "❌ Error during conversion: #{e.message}"
+      exit 1
+    end
+  end
+
+  def show_version
+    puts "JAML v#{JAML::VERSION}"
+    puts "JAML ActiveRecord Modeling Language"
+  end
+
+  def show_help
+    puts <<~HELP
+      JAML - JAML ActiveRecord Modeling Language
+      ==========================================
+      
+      Rapid database schema iteration for Rails applications.
+      
+      USAGE:
+        jaml <command> [options]
+      
+      COMMANDS:
+        template [file]       Generate a new schema.yaml template (alias: t)
+        convert [yaml] [hcl]  Convert YAML schema to HCL format (alias: c)
+        version               Show JAML version (alias: v)
+        help                  Show this help message (alias: h)
+      
+      EXAMPLES:
+        jaml template                        # Generate db/schema.yaml template
+        jaml template custom/schema.yaml     # Generate template at custom path
+        jaml convert                         # Convert db/schema.yaml to db/schema.hcl
+        jaml convert input.yaml output.hcl   # Convert with custom file paths
+        jaml version                         # Show version information
+      
+      FEATURES:
+        ✅ Default columns (id, created_at, updated_at) for all tables
+        ✅ Smart pattern matching for column types:
+           • _id columns → automatic foreign keys with references
+           • _at columns → datetime not_null constraints  
+           • Fallback to string type for unmatched columns
+        ✅ Automatic pluralization for foreign key references
+        ✅ Clean YAML syntax that's version-control friendly
+        ✅ Template generation for quick project setup
+        ✅ Seamless Rails integration via rake tasks
+      
+      RAILS INTEGRATION:
+        In a Rails project, use rake tasks for full workflow:
+        
+        rake jaml:template                   # Generate schema template
+        rake jaml:convert                    # Convert YAML to HCL
+        rake jaml:preview                    # Preview schema changes
+        rake jaml:apply                      # Apply changes to database
+        rake jaml:deploy[name]               # Full workflow with migration
+      
+      For more information, visit: https://github.com/brandonzylstra/jaml
+    HELP
+  end
+end
+
+# Run the CLI
+if __FILE__ == $0
+  cli = JAMLCli.new(ARGV)
+  cli.run
+end
