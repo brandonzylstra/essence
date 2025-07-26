@@ -1,0 +1,5 @@
+schema_name: test
+tables:
+  users:
+    columns:
+      id: primary_key

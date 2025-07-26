@@ -25,7 +25,7 @@ module JAML
     parse_defaults_and_patterns
     generate_hcl
 
-    puts "✅ Conversion complete!"
+    puts "✅ Conversion completed successfully!"
     puts "📄 Atlas HCL schema written to #{@hcl_file}"
   end
 
@@ -274,13 +274,18 @@ module JAML
 
     # Parse column patterns
     if @schema_data['column_patterns']
-      @column_patterns = @schema_data['column_patterns'].map do |pattern_def|
-        {
-          regex: Regexp.new(pattern_def['pattern']),
-          template: pattern_def['template'],
-          attributes: pattern_def['attributes'],
-          description: pattern_def['description']
-        }
+      @column_patterns = @schema_data['column_patterns'].filter_map do |pattern_def|
+        begin
+          {
+            regex: Regexp.new(pattern_def['pattern']),
+            template: pattern_def['template'],
+            attributes: pattern_def['attributes'],
+            description: pattern_def['description']
+          }
+        rescue RegexpError => e
+          puts "⚠️  Skipping invalid regex pattern '#{pattern_def['pattern']}': #{e.message}"
+          nil
+        end
       end
       puts "🎯 Loaded #{@column_patterns.length} column patterns"
     else

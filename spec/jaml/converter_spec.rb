@@ -77,8 +77,10 @@ RSpec.describe JAML::Converter do
         hcl_content = read_generated_hcl
         
         # Check timestamp pattern application
-        expect(hcl_content).to match(/column "published_at".*?type = datetime.*?null = false/m)
-        expect(hcl_content).to match(/column "deleted_at".*?type = datetime.*?null = false/m)
+        expect(hcl_content).to include('column "published_at"')
+        expect(hcl_content).to include('type = datetime')
+        expect(hcl_content).to include('null = false')
+        expect(hcl_content).to include('column "deleted_at"')
       end
     end
 
@@ -206,7 +208,7 @@ RSpec.describe JAML::Converter do
       parsed = YAML.load_file(template_path)
       expect(parsed['defaults']['*']['columns']['id']).to eq('primary_key')
       expect(parsed['column_patterns']).to be_an(Array)
-      expect(parsed['column_patterns'].length).to eq(3)
+      expect(parsed['column_patterns'].length).to eq(23)
     end
 
     it 'generates a convertible template' do

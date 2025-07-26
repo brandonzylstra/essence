@@ -26,8 +26,14 @@ module JAML
       @rails_root = rails_root
       @migrations_dir = File.join(@rails_root, 'db', 'migrate')
       @db_dir = File.join(@rails_root, 'db')
-      FileUtils.mkdir_p(@migrations_dir)
-      FileUtils.mkdir_p(@db_dir)
+      
+      begin
+        FileUtils.mkdir_p(@migrations_dir)
+        FileUtils.mkdir_p(@db_dir)
+      rescue Errno::EACCES, Errno::EPERM => e
+        puts "⚠️  Warning: Could not create directories (#{e.message})"
+        # Continue initialization - directories will be created when needed
+      end
     end
 
     # Main method to generate migration from current schema to HCL target
@@ -149,26 +155,41 @@ module JAML
         seed_content += "end\n\n"
       end
 
-      File.write(seed_file, seed_content)
-      puts "✅ Seed data written to #{seed_file}"
+      begin
+        File.write(seed_file, seed_content)
+        puts "✅ Seed data written to #{seed_file}"
+      rescue Errno::EACCES, Errno::EPERM => e
+        puts "⚠️  Warning: Could not write seed file (#{e.message})"
+        puts "💡 Check directory permissions for #{File.dirname(seed_file)}"
+      rescue => e
+        puts "⚠️  Warning: Failed to generate seed data (#{e.message})"
+      end
     end
 
     private
 
     def get_atlas_migration_plan
-      # Get the SQL statements from Atlas dry run
-      result = `atlas schema apply --env #{@atlas_env} --dry-run`
+      output, success = execute_atlas_command
       
-      if $?.exitstatus != 0
+      unless success
         puts "❌ Failed to get migration plan"
         return []
       end
 
+      parse_atlas_output(output)
+    end
+
+    def execute_atlas_command
+      result = `atlas schema apply --env #{@atlas_env} --dry-run`
+      [result, $?.exitstatus == 0]
+    end
+
+    def parse_atlas_output(output)
       # Parse SQL statements from the dry-run output
       statements = []
-      result.each_line do |line|
+      output.each_line do |line|
         # Look for lines that start with "    -> " which contain SQL
-        if line.strip.start_with?('-> ') && line.include?('CREATE') || line.include?('ALTER') || line.include?('DROP')
+        if line.strip.start_with?('-> ') && (line.include?('CREATE') || line.include?('ALTER') || line.include?('DROP'))
           sql = line.strip.sub(/^-> /, '').strip
           statements << sql unless sql.empty?
         end
@@ -184,7 +205,7 @@ module JAML
 
     def create_rails_migration(name, sql_statements)
       timestamp = Time.now.utc.strftime('%Y%m%d%H%M%S')
-      filename = "#{timestamp}_#{name.downcase.gsub(/\s+/, '_')}.rb"
+      filename = "#{timestamp}_#{name.downcase.gsub(/[^a-z0-9_]+/, '_')}.rb"
       filepath = File.join(@migrations_dir, filename)
       
       class_name = name.split(/\s+/).map(&:capitalize).join
@@ -203,8 +224,9 @@ module JAML
     def generate_migration_content(class_name, sql_statements)
       rails_version = get_rails_version
       
+      formatted_class_name = format_class_name(class_name)
       content = <<~RUBY
-        class #{class_name} < ActiveRecord::Migration[#{rails_version}]
+        class #{formatted_class_name} < ActiveRecord::Migration[#{rails_version}]
           def up
       RUBY
 
@@ -235,41 +257,41 @@ module JAML
     end
 
     def convert_sql_to_rails(sql_statement)
-      sql = sql_statement.strip.upcase
+      sql = sql_statement.strip
       
       case sql
-      when /^CREATE TABLE\s+["`]?(\w+)["`]?\s*\(/
+      when /^CREATE TABLE\s+["`]?(\w+)["`]?\s*\(/i
         table_name = $1.downcase
         "create_table :#{table_name} do |t|"
         
-      when /^DROP TABLE\s+["`]?(\w+)["`]?/
+      when /^DROP TABLE\s+["`]?(\w+)["`]?/i
         table_name = $1.downcase  
         "drop_table :#{table_name}"
         
-      when /^ALTER TABLE\s+["`]?(\w+)["`]?\s+ADD COLUMN\s+["`]?(\w+)["`]?\s+(\w+)/
+      when /^ALTER TABLE\s+["`]?(\w+)["`]?\s+ADD COLUMN\s+["`]?(\w+)["`]?\s+(\w+(?:\(\d+(?:,\d+)?\))?)/i
         table_name = $1.downcase
         column_name = $2.downcase
         column_type = convert_sql_type_to_rails($3.downcase)
         "add_column :#{table_name}, :#{column_name}, :#{column_type}"
         
-      when /^ALTER TABLE\s+["`]?(\w+)["`]?\s+DROP COLUMN\s+["`]?(\w+)["`]?/
+      when /^ALTER TABLE\s+["`]?(\w+)["`]?\s+DROP COLUMN\s+["`]?(\w+)["`]?/i
         table_name = $1.downcase
         column_name = $2.downcase
         "remove_column :#{table_name}, :#{column_name}"
         
-      when /^CREATE INDEX\s+["`]?(\w+)["`]?\s+ON\s+["`]?(\w+)["`]?\s*\(\s*["`]?(\w+)["`]?\s*\)/
+      when /^CREATE INDEX\s+["`]?(\w+)["`]?\s+ON\s+["`]?(\w+)["`]?\s*\(\s*["`]?(\w+)["`]?\s*\)/i
         index_name = $1
         table_name = $2.downcase  
         column_name = $3.downcase
         "add_index :#{table_name}, :#{column_name}, name: '#{index_name}'"
         
-      when /^CREATE UNIQUE INDEX\s+["`]?(\w+)["`]?\s+ON\s+["`]?(\w+)["`]?\s*\(\s*["`]?(\w+)["`]?\s*\)/
+      when /^CREATE UNIQUE INDEX\s+["`]?(\w+)["`]?\s+ON\s+["`]?(\w+)["`]?\s*\(\s*["`]?(\w+)["`]?\s*\)/i
         index_name = $1
         table_name = $2.downcase
         column_name = $3.downcase
         "add_index :#{table_name}, :#{column_name}, name: '#{index_name}', unique: true"
         
-      when /^DROP INDEX\s+["`]?(\w+)["`]?/
+      when /^DROP INDEX\s+["`]?(\w+)["`]?/i
         index_name = $1
         "remove_index name: '#{index_name}'"
         
@@ -306,6 +328,23 @@ module JAML
 
     def get_rails_version
       return "8.0" # Default for new Rails apps
+    end
+
+    def format_class_name(name)
+      # Convert migration name to proper Rails class name format
+      # "add user tables" -> "AddUserTables"
+      # "create_posts_table" -> "CreatePostsTable"
+      
+      # If already in PascalCase format, return as-is
+      if name.match?(/^[A-Z][a-zA-Z0-9]*$/)
+        return name
+      end
+      
+      name.to_s
+          .gsub(/[^a-zA-Z0-9_\s]/, '') # Remove special characters except underscores and spaces
+          .split(/[\s_]+/)             # Split on spaces and underscores
+          .map(&:capitalize)           # Capitalize each word
+          .join                        # Join without separators
     end
   end
 end

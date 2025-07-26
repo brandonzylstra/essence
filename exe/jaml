@@ -17,6 +17,15 @@ class JAMLCli
   end
 
   def run
+    # Handle flags first
+    if @command == '-h'
+      show_help
+      return
+    elsif @command == '-v'
+      show_version
+      return
+    end
+
     case @command
     when 'template', 't'
       generate_template
@@ -24,7 +33,7 @@ class JAMLCli
       convert_schema
     when 'version', 'v', '--version'
       show_version
-    when 'help', 'h', '--help', nil
+    when 'help', '--help', nil
       show_help
     else
       puts "❌ Unknown command: #{@command}"
