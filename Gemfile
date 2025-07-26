@@ -11,7 +11,7 @@ group :development, :test do
   gem "rspec", "~> 3.0"
   gem "rubocop", "~> 1.21"
   gem "rubocop-rails", "~> 2.0", require: false
-  gem "rubocop-rspec", "~> 2.0", require: false
+  gem "rubocop-rspec", "~> 3.6", require: false
   gem "yard", "~> 0.9", require: false
 end
 
