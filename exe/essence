@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require_relative '../lib/jaml'
+require_relative '../lib/essence'
 
-class JAMLCli
+class EssenceCli
   COMMANDS = {
     'template' => 'Generate a new schema.yaml template with defaults and patterns',
     'convert' => 'Convert YAML schema to HCL format',
@@ -37,7 +37,7 @@ class JAMLCli
       show_help
     else
       puts "❌ Unknown command: #{@command}"
-      puts "Run 'jaml help' for available commands."
+      puts "Run 'essence help' for available commands."
       exit 1
     end
   end
@@ -47,10 +47,10 @@ class JAMLCli
   def generate_template
     file_path = @args[1] || 'db/schema.yaml'
     
-    puts "🎯 Generating JAML schema template at #{file_path}..."
+    puts "🎯 Generating Essence schema template at #{file_path}..."
     
     begin
-      JAML.generate_template(file_path)
+      Essence.generate_template(file_path)
     rescue => e
       puts "❌ Error generating template: #{e.message}"
       exit 1
@@ -69,7 +69,7 @@ class JAMLCli
     puts "🔄 Converting schema to HCL format..."
     
     begin
-      JAML.convert(yaml_file, hcl_file)
+      Essence.convert(yaml_file, hcl_file)
     rescue => e
       puts "❌ Error during conversion: #{e.message}"
       exit 1
@@ -77,32 +77,32 @@ class JAMLCli
   end
 
   def show_version
-    puts "JAML v#{JAML::VERSION}"
-    puts "JAML ActiveRecord Modeling Language"
+    puts "Essence v#{Essence::VERSION}"
+    puts "Essence - Database Schema Management"
   end
 
   def show_help
     puts <<~HELP
-      JAML - JAML ActiveRecord Modeling Language
-      ==========================================
+      Essence - Database Schema Management
+      ====================================
       
       Rapid database schema iteration for Rails applications.
       
       USAGE:
-        jaml <command> [options]
+        essence <command> [options]
       
       COMMANDS:
         template [file]       Generate a new schema.yaml template (alias: t)
         convert [yaml] [hcl]  Convert YAML schema to HCL format (alias: c)
-        version               Show JAML version (alias: v)
+        version               Show Essence version (alias: v)
         help                  Show this help message (alias: h)
       
       EXAMPLES:
-        jaml template                        # Generate db/schema.yaml template
-        jaml template custom/schema.yaml     # Generate template at custom path
-        jaml convert                         # Convert db/schema.yaml to db/schema.hcl
-        jaml convert input.yaml output.hcl   # Convert with custom file paths
-        jaml version                         # Show version information
+        essence template                        # Generate db/schema.yaml template
+        essence template custom/schema.yaml     # Generate template at custom path
+        essence convert                         # Convert db/schema.yaml to db/schema.hcl
+        essence convert input.yaml output.hcl   # Convert with custom file paths
+        essence version                         # Show version information
       
       FEATURES:
         ✅ Default columns (id, created_at, updated_at) for all tables
@@ -118,19 +118,19 @@ class JAMLCli
       RAILS INTEGRATION:
         In a Rails project, use rake tasks for full workflow:
         
-        rake jaml:template                   # Generate schema template
-        rake jaml:convert                    # Convert YAML to HCL
-        rake jaml:preview                    # Preview schema changes
-        rake jaml:apply                      # Apply changes to database
-        rake jaml:deploy[name]               # Full workflow with migration
+        rake essence:template                # Generate schema template
+        rake essence:convert                 # Convert YAML to HCL
+        rake essence:preview                 # Preview schema changes
+        rake essence:apply                   # Apply changes to database
+        rake essence:deploy[name]            # Full workflow with migration
       
-      For more information, visit: https://github.com/brandonzylstra/jaml
+      For more information, visit: https://github.com/brandonzylstra/essence
     HELP
   end
 end
 
 # Run the CLI
 if __FILE__ == $0
-  cli = JAMLCli.new(ARGV)
+  cli = EssenceCli.new(ARGV)
   cli.run
 end

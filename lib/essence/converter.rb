@@ -3,9 +3,9 @@
 require 'yaml'
 require 'fileutils'
 
-module JAML
+module Essence
   # Enhanced YAML to HCL Converter
-  # Converts simplified JAML schema to HCL format with support for:
+  # Converts simplified YAML schema to HCL format with support for:
   # - Default columns for all tables
   # - Pattern-based column attribute inference
   # - Template generation for new schemas
@@ -32,7 +32,7 @@ module JAML
     # Generate a new schema.yaml template with default patterns
     def self.generate_template(file_path = 'db/schema.yaml')
     template_content = <<~YAML
-      # Enhanced JAML Schema with Default Columns and Pattern Matching
+      # Enhanced Essence Schema with Default Columns and Pattern Matching
       # This file will be converted to HCL format automatically
 
       # Global settings
@@ -232,7 +232,7 @@ module JAML
 
       puts "✅ Schema template created at #{file_path}"
       puts "📝 Edit this file to define your database schema"
-      puts "🔧 Run 'rake jaml:convert' to convert to HCL format"
+      puts "🔧 Run 'rake essence:convert' to convert to HCL format"
     end
 
   private
@@ -257,7 +257,7 @@ module JAML
   def load_yaml
     unless File.exist?(@yaml_file)
       puts "❌ YAML file #{@yaml_file} not found!"
-      puts "💡 Run 'rake jaml:template' to create a new schema file"
+      puts "💡 Run 'rake essence:template' to create a new schema file"
       exit 1
     end
 
@@ -752,16 +752,16 @@ if __FILE__ == $0
   case command
   when 'template', 't'
     file_path = ARGV[1] || 'db/schema.yaml'
-    JAML::Converter.generate_template(file_path)
+    Essence::Converter.generate_template(file_path)
   when 'convert', 'c'
     yaml_file = ARGV[1]
     hcl_file = ARGV[2]
-    converter = JAML::Converter.new(yaml_file, hcl_file)
+    converter = Essence::Converter.new(yaml_file, hcl_file)
     converter.convert!
   else
     yaml_file = ARGV[0]
     hcl_file = ARGV[1]
-    converter = JAML::Converter.new(yaml_file, hcl_file)
+    converter = Essence::Converter.new(yaml_file, hcl_file)
     converter.convert!
   end
 end

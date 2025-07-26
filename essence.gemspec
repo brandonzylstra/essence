@@ -1,19 +1,19 @@
 # frozen_string_literal: true
 
-require_relative "lib/jaml/version"
+require_relative "lib/essence/version"
 
 Gem::Specification.new do |spec|
-  spec.name = "jaml"
-  spec.version = JAML::VERSION
+  spec.name = "essence"
+  spec.version = Essence::VERSION
   spec.authors = ["Brandon Zylstra"]
-  spec.email = ["brandon@example.com"]
+  spec.email = ["brandon.zylstra@gmail.com"]
 
-  spec.summary = "JAML ActiveRecord Modeling Language - Rapid database schema iteration for Rails"
+  spec.summary = "Essence - Rapid database schema iteration for Rails"
   spec.description = <<~DESC
-    JAML (JAML ActiveRecord Modeling Language) is a powerful tool for rapid database schema 
-    iteration in Rails applications. It provides a clean, YAML-based syntax with intelligent 
-    defaults and pattern matching for defining database schemas that compile to Atlas HCL format.
-    
+    Essence is a powerful tool for rapid database schema iteration in Rails applications.
+    It provides a clean, YAML-based syntax with intelligent defaults and pattern matching
+    for defining database schemas that compile to Atlas HCL format.
+
     Features include:
     - Default columns for all tables (id, created_at, updated_at)
     - Pattern-based column inference (_id for foreign keys, _at for timestamps)
@@ -23,14 +23,14 @@ Gem::Specification.new do |spec|
     - Template generation for quick project setup
   DESC
 
-  spec.homepage = "https://github.com/brandonzylstra/jaml"
+  spec.homepage = "https://github.com/brandonzylstra/essence"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.0.0"
 
   spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = "https://github.com/brandonzylstra/jaml"
-  spec.metadata["changelog_uri"] = "https://github.com/brandonzylstra/jaml/blob/main/CHANGELOG.md"
-  spec.metadata["documentation_uri"] = "https://github.com/brandonzylstra/jaml/blob/main/README.md"
+  spec.metadata["source_code_uri"] = "https://github.com/brandonzylstra/essence"
+  spec.metadata["changelog_uri"] = "https://github.com/brandonzylstra/essence/blob/main/CHANGELOG.md"
+  spec.metadata["documentation_uri"] = "https://github.com/brandonzylstra/essence/blob/main/README.md"
 
   # Specify which files should be added to the gem when it is released.
   spec.files = Dir.chdir(__dir__) do

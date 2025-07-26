@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'JAML Comprehensive Pattern Matching' do
+RSpec.describe 'Essence Comprehensive Pattern Matching' do
   describe 'Foreign Key Patterns' do
     it 'generates foreign keys for _id columns' do
       schema_content = <<~YAML
@@ -21,7 +21,7 @@ RSpec.describe 'JAML Comprehensive Pattern Matching' do
       
       create_test_yaml(schema_content)
       
-      converter = JAML::Converter.new
+      converter = Essence::Converter.new
       converter.convert!
       
       hcl_content = read_generated_hcl
@@ -54,7 +54,7 @@ RSpec.describe 'JAML Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = JAML::Converter.new
+      converter = Essence::Converter.new
       converter.convert!
       hcl_content = read_generated_hcl
       
@@ -82,7 +82,7 @@ RSpec.describe 'JAML Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = JAML::Converter.new
+      converter = Essence::Converter.new
       converter.convert!
       hcl_content = read_generated_hcl
       
@@ -108,7 +108,7 @@ RSpec.describe 'JAML Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = JAML::Converter.new
+      converter = Essence::Converter.new
       converter.convert!
       hcl_content = read_generated_hcl
       
@@ -137,7 +137,7 @@ RSpec.describe 'JAML Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = JAML::Converter.new
+      converter = Essence::Converter.new
       converter.convert!
       hcl_content = read_generated_hcl
       
@@ -165,7 +165,7 @@ RSpec.describe 'JAML Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = JAML::Converter.new
+      converter = Essence::Converter.new
       converter.convert!
       hcl_content = read_generated_hcl
       
@@ -192,7 +192,7 @@ RSpec.describe 'JAML Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = JAML::Converter.new
+      converter = Essence::Converter.new
       converter.convert!
       hcl_content = read_generated_hcl
       
@@ -219,7 +219,7 @@ RSpec.describe 'JAML Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = JAML::Converter.new
+      converter = Essence::Converter.new
       converter.convert!
       hcl_content = read_generated_hcl
       
@@ -248,7 +248,7 @@ RSpec.describe 'JAML Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = JAML::Converter.new
+      converter = Essence::Converter.new
       converter.convert!
       hcl_content = read_generated_hcl
       
@@ -274,7 +274,7 @@ RSpec.describe 'JAML Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = JAML::Converter.new
+      converter = Essence::Converter.new
       converter.convert!
       hcl_content = read_generated_hcl
       
@@ -300,7 +300,7 @@ RSpec.describe 'JAML Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = JAML::Converter.new
+      converter = Essence::Converter.new
       converter.convert!
       hcl_content = read_generated_hcl
       
@@ -326,7 +326,7 @@ RSpec.describe 'JAML Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = JAML::Converter.new
+      converter = Essence::Converter.new
       converter.convert!
       hcl_content = read_generated_hcl
       
@@ -355,7 +355,7 @@ RSpec.describe 'JAML Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = JAML::Converter.new
+      converter = Essence::Converter.new
       converter.convert!
       hcl_content = read_generated_hcl
       
@@ -383,7 +383,7 @@ RSpec.describe 'JAML Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = JAML::Converter.new
+      converter = Essence::Converter.new
       converter.convert!
       hcl_content = read_generated_hcl
       
@@ -409,7 +409,7 @@ RSpec.describe 'JAML Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = JAML::Converter.new
+      converter = Essence::Converter.new
       converter.convert!
       hcl_content = read_generated_hcl
       
@@ -435,7 +435,7 @@ RSpec.describe 'JAML Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = JAML::Converter.new
+      converter = Essence::Converter.new
       converter.convert!
       hcl_content = read_generated_hcl
       
@@ -463,7 +463,7 @@ RSpec.describe 'JAML Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = JAML::Converter.new
+      converter = Essence::Converter.new
       converter.convert!
       hcl_content = read_generated_hcl
       
@@ -489,7 +489,7 @@ RSpec.describe 'JAML Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = JAML::Converter.new
+      converter = Essence::Converter.new
       converter.convert!
       hcl_content = read_generated_hcl
       
@@ -515,7 +515,7 @@ RSpec.describe 'JAML Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = JAML::Converter.new
+      converter = Essence::Converter.new
       converter.convert!
       hcl_content = read_generated_hcl
       
@@ -541,7 +541,7 @@ RSpec.describe 'JAML Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = JAML::Converter.new
+      converter = Essence::Converter.new
       converter.convert!
       hcl_content = read_generated_hcl
       

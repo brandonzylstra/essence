@@ -3,48 +3,48 @@
 require_relative '../rails_bridge'
 require_relative '../converter'
 
-namespace :jaml do
+namespace :essence do
   desc "Preview schema changes"
   task :preview do
-    bridge = JAML::RailsBridge.new
+    bridge = Essence::RailsBridge.new
     bridge.preview_changes
   end
 
   desc "Generate Rails migration from schema diff"
   task :generate, [ :name ] do |_task, args|
-    bridge = JAML::RailsBridge.new
-    migration_name = args[:name] || "jaml_schema_update"
+    bridge = Essence::RailsBridge.new
+    migration_name = args[:name] || "essence_schema_update"
     bridge.generate_migration(migration_name)
   end
 
   desc "Apply schema and update Rails schema.rb"
   task :apply do
-    bridge = JAML::RailsBridge.new
+    bridge = Essence::RailsBridge.new
     bridge.apply_schema!
   end
 
   desc "Generate seed data"
   task :seed do
-    bridge = JAML::RailsBridge.new
+    bridge = Essence::RailsBridge.new
     bridge.generate_seed_data
   end
 
   desc "Convert YAML schema to HCL format"
   task :convert, [:yaml_file, :hcl_file] do |_task, args|
-    converter = JAML::Converter.new(args[:yaml_file], args[:hcl_file])
+    converter = Essence::Converter.new(args[:yaml_file], args[:hcl_file])
     converter.convert!
   end
 
   desc "Generate a new schema.yaml template with defaults and patterns"
   task :template, [:file_path] do |_task, args|
     file_path = args[:file_path] || 'db/schema.yaml'
-    JAML::Converter.generate_template(file_path)
+    Essence::Converter.generate_template(file_path)
   end
 
   desc "Full workflow: preview, generate migration, and apply"
   task :deploy, [ :name ] do |_task, args|
-    bridge = JAML::RailsBridge.new
-    migration_name = args[:name] || "jaml_schema_update"
+    bridge = Essence::RailsBridge.new
+    migration_name = args[:name] || "essence_schema_update"
 
     puts "🔍 Step 1: Previewing changes..."
     bridge.preview_changes
@@ -58,7 +58,7 @@ namespace :jaml do
     if response == "y" || response == "yes"
       bridge.apply_schema!
     else
-      puts "⏸️  Schema application skipped. Run 'rake atlas:apply' when ready."
+      puts "⏸️  Schema application skipped. Run 'rake essence:apply' when ready."
     end
   end
 
@@ -75,7 +75,7 @@ namespace :jaml do
     puts "✅ Atlas initialized!"
     puts "📄 Current schema exported to db/current_schema.hcl"
     puts "🔧 Edit db/schema.yaml to define your desired schema"
-    puts "🚀 Run 'rake jaml:preview' to see what would change"
+    puts "🚀 Run 'rake essence:preview' to see what would change"
   end
 
   desc "Validate schema file"
@@ -110,33 +110,33 @@ namespace :jaml do
     end
   end
 
-  desc "Show all available JAML commands"
+  desc "Show all available Essence commands"
   task :help do
     puts <<~HELP
-      JAML (JAML ActiveRecord Modeling Language) Tasks
-      ================================================
+      Essence - Database Schema Management Tasks
+      ==========================================
 
-      rake jaml:preview                     # Preview what would change
-      rake jaml:generate[name]              # Generate Rails migration from schema diff
-      rake jaml:apply                       # Apply schema to database
-      rake jaml:deploy[name]                # Full workflow: preview + generate + apply
-      rake jaml:seed                        # Generate seed data
-      rake jaml:convert[yaml,hcl]           # Convert YAML schema to HCL format
-      rake jaml:template[file_path]         # Generate new schema.yaml template
-      rake jaml:init                        # Initialize with current Rails schema
-      rake jaml:validate                    # Validate schema file
-      rake jaml:history                     # Show migration history
-      rake jaml:reset                       # Reset migrations (development only)
-      rake jaml:help                        # Show this help message
+      rake essence:preview                     # Preview what would change
+      rake essence:generate[name]              # Generate Rails migration from schema diff
+      rake essence:apply                       # Apply schema to database
+      rake essence:deploy[name]                # Full workflow: preview + generate + apply
+      rake essence:seed                        # Generate seed data
+      rake essence:convert[yaml,hcl]           # Convert YAML schema to HCL format
+      rake essence:template[file_path]         # Generate new schema.yaml template
+      rake essence:init                        # Initialize with current Rails schema
+      rake essence:validate                    # Validate schema file
+      rake essence:history                     # Show migration history
+      rake essence:reset                       # Reset migrations (development only)
+      rake essence:help                        # Show this help message
 
       Quick Start:
       -----------
-      1. rake jaml:template                 # Generate schema.yaml template (new projects)
-         OR rake jaml:init                  # Set up (existing projects)
-      2. Edit db/schema.yaml                # Define your schema in YAML
-      3. rake jaml:convert                  # Convert to HCL format
-      4. rake jaml:preview                  # See what would change
-      5. rake jaml:deploy[migration_name]   # Generate migration and apply
+      1. rake essence:template                 # Generate schema.yaml template (new projects)
+         OR rake essence:init                  # Set up (existing projects)
+      2. Edit db/schema.yaml                   # Define your schema in YAML
+      3. rake essence:convert                  # Convert to HCL format
+      4. rake essence:preview                  # See what would change
+      5. rake essence:deploy[migration_name]   # Generate migration and apply
 
       Files:
       ------
@@ -147,14 +147,14 @@ namespace :jaml do
 
       Examples:
       --------
-      rake jaml:template                    # Create schema.yaml with defaults
-      rake jaml:template[custom/path.yaml]  # Create template at custom location
-      rake jaml:generate["add user tables"]
-      rake jaml:deploy["tournament schema"]
-      rake jaml:convert[db/schema.yaml,db/schema.hcl]
+      rake essence:template                    # Create schema.yaml with defaults
+      rake essence:template[custom/path.yaml]  # Create template at custom location
+      rake essence:generate["add user tables"]
+      rake essence:deploy["tournament schema"]
+      rake essence:convert[db/schema.yaml,db/schema.hcl]
     HELP
   end
 end
 
 # Default task shows help
-task jaml: "jaml:help"
+task essence: "essence:help"

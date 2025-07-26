@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe JAML::RailsBridge do
+RSpec.describe Essence::RailsBridge do
   let(:bridge) { described_class.new(atlas_env: 'test', rails_root: '.') }
   
   before do
@@ -45,7 +45,7 @@ RSpec.describe JAML::RailsBridge do
       
       bridge.generate_migration
       
-      expect(File.exist?('db/migrate/20240101120000_jaml_schema_update.rb')).to be true
+      expect(File.exist?('db/migrate/20240101120000_essence_schema_update.rb')).to be true
     end
 
     it 'generates a migration with custom name' do

@@ -4,7 +4,7 @@ require 'fileutils'
 require 'json'
 require 'time'
 
-module JAML
+module Essence
   # Rails Bridge - Generate Rails migrations from schema changes
   class RailsBridge
     RAILS_TYPE_MAPPING = {
@@ -38,7 +38,7 @@ module JAML
 
     # Main method to generate migration from current schema to HCL target
     def generate_migration(migration_name = nil)
-      migration_name ||= "jaml_schema_update"
+      migration_name ||= "essence_schema_update"
       
       puts "🔄 Generating migration plan..."
       plan = get_atlas_migration_plan
@@ -246,8 +246,8 @@ module JAML
           end
 
           def down
-            # JAML handles rollbacks via schema state comparison
-            # To rollback, revert your schema.hcl file and run jaml again
+            # Essence handles rollbacks via schema state comparison
+            # To rollback, revert your schema.hcl file and run essence again
             raise ActiveRecord::IrreversibleMigration
           end
         end
@@ -353,11 +353,11 @@ end
 if __FILE__ == $0
   command = ARGV[0]
   
-  bridge = JAML::RailsBridge.new
+  bridge = Essence::RailsBridge.new
 
   case command
   when 'generate', 'g'
-    migration_name = ARGV[1] || 'jaml_schema_update'
+    migration_name = ARGV[1] || 'essence_schema_update'
     bridge.generate_migration(migration_name)
     
   when 'apply'
@@ -371,10 +371,10 @@ if __FILE__ == $0
     
   else
     puts <<~HELP
-      JAML Rails Bridge - Generate Rails migrations from schema changes
+      Essence Rails Bridge - Generate Rails migrations from schema changes
       
       Usage:
-        ruby lib/jaml/rails_bridge.rb <command> [options]
+        ruby lib/essence/rails_bridge.rb <command> [options]
       
       Commands:
         generate [name]  Generate Rails migration from schema diff (alias: g)
@@ -383,10 +383,10 @@ if __FILE__ == $0
         seed            Generate seed data for event types
         
       Examples:
-        ruby lib/jaml/rails_bridge.rb generate "add tournament tables"
-        ruby lib/jaml/rails_bridge.rb apply
-        ruby lib/jaml/rails_bridge.rb preview
-        ruby lib/jaml/rails_bridge.rb seed
+        ruby lib/essence/rails_bridge.rb generate "add tournament tables"
+        ruby lib/essence/rails_bridge.rb apply
+        ruby lib/essence/rails_bridge.rb preview
+        ruby lib/essence/rails_bridge.rb seed
     HELP
   end
 end

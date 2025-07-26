@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe JAML::Converter do
+RSpec.describe Essence::Converter do
   describe '#convert!' do
     context 'with basic schema' do
       it 'converts YAML to HCL format' do

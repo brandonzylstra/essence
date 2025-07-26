@@ -4,7 +4,7 @@ require 'spec_helper'
 require 'open3'
 
 RSpec.describe 'CLI Integration Tests' do
-  let(:cli_path) { File.expand_path('../../exe/jaml', __dir__) }
+  let(:cli_path) { File.expand_path('../../exe/essence', __dir__) }
   
   before do
     # Ensure CLI is executable
@@ -12,12 +12,12 @@ RSpec.describe 'CLI Integration Tests' do
   end
 
   describe 'CLI executable' do
-    describe 'jaml template' do
+    describe 'essence template' do
       it 'generates a template file with default path' do
         stdout, stderr, status = Open3.capture3("ruby #{cli_path} template")
         
         expect(status.success?).to be true
-        expect(stdout).to include('Generating JAML schema template')
+        expect(stdout).to include('Generating Essence schema template')
         expect(stdout).to include('Schema template created at db/schema.yaml')
         expect(File.exist?('db/schema.yaml')).to be true
         
@@ -32,7 +32,7 @@ RSpec.describe 'CLI Integration Tests' do
         stdout, stderr, status = Open3.capture3("ruby #{cli_path} template #{custom_path}")
         
         expect(status.success?).to be true
-        expect(stdout).to include("Generating JAML schema template at #{custom_path}")
+        expect(stdout).to include("Generating Essence schema template at #{custom_path}")
         expect(File.exist?(custom_path)).to be true
       end
 
@@ -45,7 +45,7 @@ RSpec.describe 'CLI Integration Tests' do
       end
     end
 
-    describe 'jaml convert' do
+    describe 'essence convert' do
       before do
         # Create a test schema file
         test_schema = <<~YAML
@@ -127,38 +127,39 @@ RSpec.describe 'CLI Integration Tests' do
       end
     end
 
-    describe 'jaml version' do
+    describe 'essence version' do
       it 'displays version information' do
         stdout, stderr, status = Open3.capture3("ruby #{cli_path} version")
         
         expect(status.success?).to be true
-        expect(stdout).to include('JAML v0.1.0')
-        expect(stdout).to include('JAML ActiveRecord Modeling Language')
+        expect(stdout).to include('Essence v0.1.0')
+        expect(stdout).to include('Essence - Database Schema Management')
       end
 
       it 'responds to -v flag' do
         stdout, stderr, status = Open3.capture3("ruby #{cli_path} -v")
         
         expect(status.success?).to be true
-        expect(stdout).to include('JAML v0.1.0')
+        expect(stdout).to include('Essence v0.1.0')
       end
 
       it 'responds to --version flag' do
         stdout, stderr, status = Open3.capture3("ruby #{cli_path} --version")
         
         expect(status.success?).to be true
-        expect(stdout).to include('JAML v0.1.0')
+        expect(stdout).to include('Essence v0.1.0')
+        expect(stdout).to include('Essence - Database Schema Management')
       end
     end
 
-    describe 'jaml help' do
+    describe 'essence help' do
       it 'displays help information' do
-        stdout, stderr, status = Open3.capture3("ruby #{cli_path} help")
+        stdout, stderr, status = Open3.capture3("ruby #{cli_path} --help")
         
         expect(status.success?).to be true
-        expect(stdout).to include('JAML - JAML ActiveRecord Modeling Language')
-        expect(stdout).to include('USAGE:')
-        expect(stdout).to include('COMMANDS:')
+        expect(stdout).to include('Essence - Database Schema Management')
+        expect(stdout).to include('EXAMPLES:')
+        expect(stdout).to include('FEATURES:')
         expect(stdout).to include('template')
         expect(stdout).to include('convert')
         expect(stdout).to include('version')
@@ -170,7 +171,7 @@ RSpec.describe 'CLI Integration Tests' do
         stdout, stderr, status = Open3.capture3("ruby #{cli_path} -h")
         
         expect(status.success?).to be true
-        expect(stdout).to include('JAML - JAML ActiveRecord Modeling Language')
+        expect(stdout).to include('Essence - Database Schema Management')
       end
 
       it 'responds to --help flag' do
@@ -184,7 +185,7 @@ RSpec.describe 'CLI Integration Tests' do
         stdout, stderr, status = Open3.capture3("ruby #{cli_path}")
         
         expect(status.success?).to be true
-        expect(stdout).to include('JAML - JAML ActiveRecord Modeling Language')
+        expect(stdout).to include('Essence - Database Schema Management')
       end
     end
 
@@ -219,7 +220,7 @@ RSpec.describe 'CLI Integration Tests' do
         stdout, stderr, status = Open3.capture3("ruby #{cli_path} v")
         
         expect(status.success?).to be true
-        expect(stdout).to include('JAML v0.1.0')
+        expect(stdout).to include('Essence v0.1.0')
       end
     end
 
@@ -229,7 +230,7 @@ RSpec.describe 'CLI Integration Tests' do
         
         expect(status.success?).to be false
         expect(stdout).to include('Unknown command: unknown_command')
-        expect(stdout).to include("Run 'jaml help' for available commands")
+        expect(stdout).to include("Run 'essence help' for available commands")
       end
 
       it 'handles file permission errors' do

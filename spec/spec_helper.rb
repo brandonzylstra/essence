@@ -19,7 +19,7 @@ SimpleCov.start do
   ])
 end
 
-require_relative '../lib/jaml'
+require_relative '../lib/essence'
 
 require 'fileutils'
 require 'tempfile'
