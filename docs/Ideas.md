@@ -2,9 +2,9 @@
 
 ## Interface ##
 
-- [ ] Rename Rake tasks from `atlas` namespace to `jaml` namespace.
-- [ ] Rename `yaml_to_hcl` to `convert`.
-- [ ] Add new column attribute inference patterns, such as `_on` for date columns.
+- [x] Rename Rake tasks from `atlas` namespace to `jaml` namespace.
+- [x] Rename `yaml_to_hcl` to `convert`.
+- [x] Add new column attribute inference patterns, such as `_on` for date columns.
 - [ ] Enable column attribute concatenation, so that multiple patterns can be applied.
 - [ ] Allow modification of details during the preview stage of
       edit → convert → preview → apply
@@ -13,7 +13,7 @@
 
 ## Packaging ##
 
-- [ ] Wrap all this up as a gem, to be added to any Ruby project.
+- [x] Wrap all this up as a gem, to be added to any Ruby project.
 
 
 ## YAML ##
