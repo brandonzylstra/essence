@@ -1,10 +1,4 @@
 
-Prompt
-======
-
-Please also tell me what alternatives there could be to the use of `~` for not specifying column attributes.  Is `~` a standard part of YAML, or just a string that you chose because it doesn't have any other meaning?  I don't dislike it but I'm not 100% sold on it either, however I don't have any better ideas so I'd like to know what alternatives could be, but don't implement any changes to this yet.
-
-
 
 ## Interface ##
 
