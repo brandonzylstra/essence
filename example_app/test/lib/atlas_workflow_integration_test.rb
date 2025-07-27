@@ -180,7 +180,7 @@ class AtlasWorkflowIntegrationTest < ActiveSupport::TestCase
 
   test "handles polymorphic relationships correctly" do
     polymorphic_yaml = <<~YAML
-      schema_name: main
+      schema_name: public
       tables:
         comments:
           columns:
@@ -212,7 +212,7 @@ class AtlasWorkflowIntegrationTest < ActiveSupport::TestCase
 
   test "handles enum-like string constraints" do
     enum_yaml = <<~YAML
-      schema_name: main
+      schema_name: public
       tables:
         orders:
           columns:
@@ -241,7 +241,7 @@ class AtlasWorkflowIntegrationTest < ActiveSupport::TestCase
 
   test "supports different column types correctly" do
     types_yaml = <<~YAML
-      schema_name: main
+      schema_name: public
       tables:
         test_types:
           columns:
@@ -304,7 +304,7 @@ class AtlasWorkflowIntegrationTest < ActiveSupport::TestCase
 
   test "handles empty schema gracefully" do
     empty_yaml = <<~YAML
-      schema_name: main
+      schema_name: public
       tables: {}
     YAML
     
@@ -322,7 +322,7 @@ class AtlasWorkflowIntegrationTest < ActiveSupport::TestCase
 
   test "preserves case sensitivity in names" do
     case_yaml = <<~YAML
-      schema_name: main
+      schema_name: public
       tables:
         UserProfiles:
           columns:
@@ -350,7 +350,7 @@ class AtlasWorkflowIntegrationTest < ActiveSupport::TestCase
 
   def create_test_yaml_schema
     yaml_content = <<~YAML
-      schema_name: main
+      schema_name: public
       tables:
         users:
           columns:
@@ -383,7 +383,7 @@ class AtlasWorkflowIntegrationTest < ActiveSupport::TestCase
 
   def create_complex_yaml_schema
     yaml_content = <<~YAML
-      schema_name: main
+      schema_name: public
       tables:
         categories:
           columns:
@@ -425,7 +425,7 @@ class AtlasWorkflowIntegrationTest < ActiveSupport::TestCase
 
   def simple_yaml_schema
     <<~YAML
-      schema_name: main
+      schema_name: public
       tables:
         test_table:
           columns:

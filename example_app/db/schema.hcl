@@ -1,10 +1,10 @@
 # Auto-generated HCL schema from db/schema.yaml
 # Edit the YAML file and re-run the converter to update this file
 
-schema "main" {}
+schema "public" {}
 
 table "leagues" {
-  schema = schema.main
+  schema = schema.public
 column "id" {
     null = false
     type = integer
@@ -49,7 +49,7 @@ primary_key {
 }
 
 table "seasons" {
-  schema = schema.main
+  schema = schema.public
 column "id" {
     null = false
     type = integer
@@ -89,7 +89,7 @@ index "index_seasons_on_active" {
 }
 
 table "users" {
-  schema = schema.main
+  schema = schema.public
 column "id" {
     null = false
     type = integer
@@ -165,7 +165,7 @@ index "index_users_on_role" {
 }
 
 table "teams" {
-  schema = schema.main
+  schema = schema.public
 column "id" {
     null = false
     type = integer
@@ -222,7 +222,7 @@ index "index_teams_on_season_id" {
 }
 
 table "team_memberships" {
-  schema = schema.main
+  schema = schema.public
 column "id" {
     null = false
     type = integer
@@ -275,7 +275,7 @@ index "index_team_memberships_on_team_id_and_user_id_unique" {
 }
 
 table "event_types" {
-  schema = schema.main
+  schema = schema.public
 column "id" {
     null = false
     type = integer
@@ -335,7 +335,7 @@ index "index_event_types_on_participant_type" {
 }
 
 table "tournaments" {
-  schema = schema.main
+  schema = schema.public
 column "id" {
     null = false
     type = integer
@@ -427,7 +427,7 @@ index "index_tournaments_on_status" {
 }
 
 table "tournament_events" {
-  schema = schema.main
+  schema = schema.public
 column "id" {
     null = false
     type = integer
@@ -492,7 +492,7 @@ index "index_tournament_events_on_tournament_id_and_event_type_id_unique" {
 }
 
 table "rooms" {
-  schema = schema.main
+  schema = schema.public
 column "id" {
     null = false
     type = integer
@@ -561,7 +561,7 @@ index "index_rooms_on_room_type" {
 }
 
 table "rounds" {
-  schema = schema.main
+  schema = schema.public
 column "id" {
     null = false
     type = integer
@@ -630,7 +630,7 @@ index "index_rounds_on_start_time" {
 }
 
 table "matches" {
-  schema = schema.main
+  schema = schema.public
 column "id" {
     null = false
     type = integer
@@ -710,7 +710,7 @@ index "index_matches_on_start_time" {
 }
 
 table "match_participants" {
-  schema = schema.main
+  schema = schema.public
 column "id" {
     null = false
     type = integer
@@ -773,7 +773,7 @@ index "index_match_participants_on_match_id_and_participant_id_and_participant_t
 }
 
 table "judges" {
-  schema = schema.main
+  schema = schema.public
 column "id" {
     null = false
     type = integer
@@ -843,7 +843,7 @@ index "index_judges_on_user_id_and_tournament_id_unique" {
 }
 
 table "match_judges" {
-  schema = schema.main
+  schema = schema.public
 column "id" {
     null = false
     type = integer
@@ -901,7 +901,7 @@ index "index_match_judges_on_match_id_and_judge_id_unique" {
 }
 
 table "registrations" {
-  schema = schema.main
+  schema = schema.public
 column "id" {
     null = false
     type = integer
@@ -973,7 +973,7 @@ index "index_registrations_on_status" {
 }
 
 table "awards" {
-  schema = schema.main
+  schema = schema.public
 column "id" {
     null = false
     type = integer
@@ -1043,7 +1043,7 @@ index "index_awards_on_position" {
 }
 
 table "records" {
-  schema = schema.main
+  schema = schema.public
 column "id" {
     null = false
     type = integer

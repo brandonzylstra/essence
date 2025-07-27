@@ -19,8 +19,8 @@ gem "cssbundling-rails"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 
-# JAML ActiveRecord Modeling Language
-gem "jaml", path: ".."
+# Essence Database Schema Management
+gem "essence", path: ".."
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"

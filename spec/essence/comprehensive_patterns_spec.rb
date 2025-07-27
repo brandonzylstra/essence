@@ -6,7 +6,7 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
   describe 'Foreign Key Patterns' do
     it 'generates foreign keys for _id columns' do
       schema_content = <<~YAML
-        schema_name: main
+        schema_name: public
         column_patterns:
           - pattern: "_id$"
             template: "integer -> {table}.id on_delete=cascade not_null"
@@ -39,7 +39,7 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
   describe 'Date and Time Patterns' do
     it 'applies _at pattern for datetime columns' do
       schema_content = <<~YAML
-        schema_name: main
+        schema_name: public
         column_patterns:
           - pattern: "_at$"
             attributes: "datetime not_null"
@@ -68,7 +68,7 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
 
     it 'applies _on pattern for date columns' do
       schema_content = <<~YAML
-        schema_name: main
+        schema_name: public
         column_patterns:
           - pattern: "_on$"
             attributes: "date"
@@ -94,7 +94,7 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
 
     it 'applies _date pattern for date columns' do
       schema_content = <<~YAML
-        schema_name: main
+        schema_name: public
         column_patterns:
           - pattern: "_date$"
             attributes: "date"
@@ -122,7 +122,7 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
   describe 'Boolean Patterns' do
     it 'applies is_ pattern for boolean columns' do
       schema_content = <<~YAML
-        schema_name: main
+        schema_name: public
         column_patterns:
           - pattern: "^is_"
             attributes: "boolean default=false not_null"
@@ -151,7 +151,7 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
 
     it 'applies has_ pattern for boolean columns' do
       schema_content = <<~YAML
-        schema_name: main
+        schema_name: public
         column_patterns:
           - pattern: "^has_"
             attributes: "boolean default=false not_null"
@@ -178,7 +178,7 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
 
     it 'applies can_ pattern for boolean columns' do
       schema_content = <<~YAML
-        schema_name: main
+        schema_name: public
         column_patterns:
           - pattern: "^can_"
             attributes: "boolean default=false not_null"
@@ -205,7 +205,7 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
 
     it 'applies _flag pattern for boolean columns' do
       schema_content = <<~YAML
-        schema_name: main
+        schema_name: public
         column_patterns:
           - pattern: "_flag$"
             attributes: "boolean default=false not_null"
@@ -234,7 +234,7 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
   describe 'Text Content Patterns' do
     it 'applies _content pattern for text columns' do
       schema_content = <<~YAML
-        schema_name: main
+        schema_name: public
         column_patterns:
           - pattern: "_content$"
             attributes: "text"
@@ -260,7 +260,7 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
 
     it 'applies _body pattern for text columns' do
       schema_content = <<~YAML
-        schema_name: main
+        schema_name: public
         column_patterns:
           - pattern: "_body$"
             attributes: "text"
@@ -286,7 +286,7 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
 
     it 'applies _text pattern for text columns' do
       schema_content = <<~YAML
-        schema_name: main
+        schema_name: public
         column_patterns:
           - pattern: "_text$"
             attributes: "text"
@@ -312,7 +312,7 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
 
     it 'applies _html pattern for text columns' do
       schema_content = <<~YAML
-        schema_name: main
+        schema_name: public
         column_patterns:
           - pattern: "_html$"
             attributes: "text"
@@ -340,7 +340,7 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
   describe 'Numeric Patterns' do
     it 'applies _count pattern for integer columns with default 0' do
       schema_content = <<~YAML
-        schema_name: main
+        schema_name: public
         column_patterns:
           - pattern: "_count$"
             attributes: "integer default=0 not_null"
@@ -369,7 +369,7 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
 
     it 'applies _score pattern for decimal columns' do
       schema_content = <<~YAML
-        schema_name: main
+        schema_name: public
         column_patterns:
           - pattern: "_score$"
             attributes: "decimal(8,2)"
@@ -395,7 +395,7 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
 
     it 'applies _amount pattern for decimal columns' do
       schema_content = <<~YAML
-        schema_name: main
+        schema_name: public
         column_patterns:
           - pattern: "_amount$"
             attributes: "decimal(10,2)"
@@ -421,7 +421,7 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
 
     it 'applies _price pattern for decimal columns' do
       schema_content = <<~YAML
-        schema_name: main
+        schema_name: public
         column_patterns:
           - pattern: "_price$"
             attributes: "decimal(10,2)"
@@ -449,7 +449,7 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
   describe 'String Patterns' do
     it 'applies _email pattern for string(255) columns' do
       schema_content = <<~YAML
-        schema_name: main
+        schema_name: public
         column_patterns:
           - pattern: "_email$"
             attributes: "string(255)"
@@ -475,7 +475,7 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
 
     it 'applies _url pattern for string(500) columns' do
       schema_content = <<~YAML
-        schema_name: main
+        schema_name: public
         column_patterns:
           - pattern: "_url$"
             attributes: "string(500)"
@@ -501,7 +501,7 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
 
     it 'applies _code pattern for string(50) columns' do
       schema_content = <<~YAML
-        schema_name: main
+        schema_name: public
         column_patterns:
           - pattern: "_code$"
             attributes: "string(50)"
@@ -527,7 +527,7 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
 
     it 'applies _slug pattern for unique string columns' do
       schema_content = <<~YAML
-        schema_name: main
+        schema_name: public
         column_patterns:
           - pattern: "_slug$"
             attributes: "string(255) unique"
@@ -556,7 +556,7 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
   describe 'Status and State Patterns' do
     it 'applies _status pattern for status columns with pending default' do
       schema_content = <<~YAML
-        schema_name: main
+        schema_name: public
         column_patterns:
           - pattern: "_status$"
             attributes: "string(20) default='pending' not_null"
@@ -584,7 +584,7 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
 
     it 'applies _state pattern for state columns' do
       schema_content = <<~YAML
-        schema_name: main
+        schema_name: public
         column_patterns:
           - pattern: "_state$"
             attributes: "string(20)"
@@ -612,7 +612,7 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
   describe 'Pattern Priority and Conflicts' do
     it 'applies patterns in order of specificity' do
       schema_content = <<~YAML
-        schema_name: main
+        schema_name: public
         column_patterns:
           - pattern: "_email$"
             attributes: "string(255)"
@@ -649,7 +649,7 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
 
     it 'allows explicit definitions to override patterns' do
       schema_content = <<~YAML
-        schema_name: main
+        schema_name: public
         column_patterns:
           - pattern: "_id$"
             template: "integer -> {table}.id on_delete=cascade not_null"
@@ -688,7 +688,7 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
   describe 'Real-world Complex Schema' do
     it 'handles a complex schema with mixed patterns' do
       schema_content = <<~YAML
-        schema_name: main
+        schema_name: public
         defaults:
           "*":
             columns:
@@ -801,7 +801,7 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
   describe 'Edge Cases and Error Handling' do
     it 'handles columns with multiple pattern matches gracefully' do
       schema_content = <<~YAML
-        schema_name: main
+        schema_name: public
         column_patterns:
           - pattern: "_email_.*"
             attributes: "string(100)"
@@ -828,7 +828,7 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
 
     it 'handles empty pattern lists gracefully' do
       schema_content = <<~YAML
-        schema_name: main
+        schema_name: public
         column_patterns: []
         tables:
           simple:
@@ -848,7 +848,7 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
 
     it 'handles malformed pattern configurations gracefully' do
       schema_content = <<~YAML
-        schema_name: main
+        schema_name: public
         column_patterns:
           - pattern: "_id$"
             # Missing template/attributes should not crash

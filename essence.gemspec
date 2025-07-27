@@ -31,6 +31,7 @@ Gem::Specification.new do |spec|
   spec.metadata["source_code_uri"] = "https://github.com/brandonzylstra/essence"
   spec.metadata["changelog_uri"] = "https://github.com/brandonzylstra/essence/blob/main/CHANGELOG.md"
   spec.metadata["documentation_uri"] = "https://github.com/brandonzylstra/essence/blob/main/README.md"
+  spec.metadata["supported_activerecord_versions"] = "8.0"
 
   # Specify which files should be added to the gem when it is released.
   spec.files = Dir.chdir(__dir__) do

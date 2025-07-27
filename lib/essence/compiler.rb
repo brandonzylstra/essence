@@ -10,6 +10,9 @@ module Essence
   # - Pattern-based column property inference
   # - Template generation for new schemas
   class Compiler
+    # Supported ActiveRecord::Schema versions
+    SUPPORTED_ACTIVERECORD_VERSIONS = ['8.0'].freeze
+
   def initialize(yaml_file = nil, hcl_file = nil)
     @yaml_file = yaml_file || find_schema_yaml_file
     @hcl_file = hcl_file || 'db/schema.hcl'
@@ -22,6 +25,7 @@ module Essence
     puts "🔄 Converting #{@yaml_file} to #{@hcl_file}..."
 
     load_yaml
+    validate_rails_version
     parse_defaults_and_patterns
     generate_hcl
 
@@ -36,8 +40,7 @@ module Essence
       # This file will be converted to HCL format automatically
 
       # Global settings
-      schema_name: main
-      rails_version: "8.0"
+      schema_name: public
 
       # Default columns applied to all tables (unless overridden)
       defaults:
@@ -47,122 +50,46 @@ module Essence
             created_at: datetime not_null
             updated_at: datetime not_null
 
-      # Pattern-based column attribute inference
+      # Pattern-based column attribute inference - simplified syntax
       column_patterns:
-        # Foreign key columns: _id suffix gets integer -> {table}.id on_delete=cascade not_null
-        - pattern: "_id$"
-          template: "integer -> {table}.id on_delete=cascade not_null"
-          description: "Foreign key columns automatically reference the related table"
-            
+        # Foreign key columns: _id suffix gets foreign key reference
+        - "_id$": "integer -> {table}.id on_delete=cascade not_null"
+        
         # Timestamp columns: _at suffix gets datetime not_null
-        - pattern: "_at$"
-          properties: "datetime not_null"
-          description: "Timestamp columns get datetime type with not_null constraint"
-          
-        # Date columns: _on suffix gets date type
-        - pattern: "_on$"
-          properties: "date"
-          description: "Date columns for events (due_on, completed_on, started_on)"
-          
-        # Date columns: _date suffix gets date type  
-        - pattern: "_date$"
-          properties: "date"
-          description: "Date columns (birth_date, hire_date, expiry_date)"
-          
-        # Boolean columns: is_ prefix gets boolean with false default
-        - pattern: "^is_"
-          properties: "boolean default=false not_null"
-          description: "Boolean columns with is_ prefix (is_active, is_public, is_verified)"
-          
-        # Boolean columns: has_ prefix gets boolean with false default
-        - pattern: "^has_"
-          properties: "boolean default=false not_null"
-          description: "Boolean columns with has_ prefix (has_premium, has_avatar, has_access)"
-          
-        # Boolean columns: can_ prefix gets boolean with false default
-        - pattern: "^can_"
-          properties: "boolean default=false not_null"
-          description: "Boolean columns with can_ prefix (can_edit, can_delete, can_view)"
-          
-        # Boolean columns: _flag suffix gets boolean with false default
-        - pattern: "_flag$"
-          properties: "boolean default=false not_null"
-          description: "Boolean flag columns (admin_flag, verified_flag, archived_flag)"
-          
-        # Text content columns: _content suffix gets text type
-        - pattern: "_content$"
-          properties: "text"
-          description: "Large text content columns (post_content, message_content)"
-          
-        # Text body columns: _body suffix gets text type
-        - pattern: "_body$"
-          properties: "text"
-          description: "Body text columns (email_body, article_body, description_body)"
-          
-        # Text columns: _text suffix gets text type
-        - pattern: "_text$"
-          properties: "text"
-          description: "Text columns (description_text, bio_text, notes_text)"
-          
-        # HTML columns: _html suffix gets text type
-        - pattern: "_html$"
-          properties: "text"
-          description: "HTML content columns (formatted_html, content_html)"
-          
-        # Counter columns: _count suffix gets integer with 0 default
-        - pattern: "_count$"
-          properties: "integer default=0 not_null"
-          description: "Counter columns (view_count, like_count, download_count)"
-          
-        # Score columns: _score suffix gets decimal
-        - pattern: "_score$"
-          properties: "decimal(8,2)"
-          description: "Score columns (rating_score, test_score, credit_score)"
-          
-        # Amount columns: _amount suffix gets decimal
-        - pattern: "_amount$"
-          properties: "decimal(10,2)"
-          description: "Amount columns (total_amount, fee_amount, discount_amount)"
-          
-        # Price columns: _price suffix gets decimal
-        - pattern: "_price$"
-          properties: "decimal(10,2)"
-          description: "Price columns (unit_price, sale_price, list_price)"
-          
-        # Email columns: _email suffix gets string(255)
-        - pattern: "_email$"
-          properties: "string(255)"
-          description: "Email columns (contact_email, backup_email, notification_email)"
-          
-        # URL columns: _url suffix gets string(500)
-        - pattern: "_url$"
-          properties: "string(500)"
-          description: "URL columns (website_url, avatar_url, callback_url)"
-          
-        # Code columns: _code suffix gets string(50)
-        - pattern: "_code$"
-          properties: "string(50)"
-          description: "Code columns (product_code, access_code, coupon_code)"
-          
-        # Slug columns: _slug suffix gets unique string
-        - pattern: "_slug$"
-          properties: "string(255) unique"
-          description: "URL slug columns (post_slug, category_slug, user_slug)"
-          
-        # Status columns: _status suffix gets string with pending default
-        - pattern: "_status$"
-          properties: "string(20) default='pending' not_null"
-          description: "Status columns (order_status, job_status, payment_status)"
-          
-        # State columns: _state suffix gets string
-        - pattern: "_state$"
-          properties: "string(20)"
-          description: "State columns (workflow_state, approval_state, current_state)"
+        - "_at$": "datetime not_null"
+        
+        # Date columns: _on and _date suffixes get date type
+        - "_on$": "date"
+        - "_date$": "date"
+        
+        # Boolean columns: various prefixes get boolean with false default
+        - "^is_": "boolean default=false not_null"
+        - "^has_": "boolean default=false not_null"
+        - "^can_": "boolean default=false not_null"
+        - "_flag$": "boolean default=false not_null"
+        
+        # Text content columns: various suffixes get text type
+        - "_content$": "text"
+        - "_body$": "text"
+        - "_text$": "text"
+        - "_html$": "text"
+        
+        # Numeric columns: counters, scores, amounts, prices
+        - "_count$": "integer default=0 not_null"
+        - "_score$": "decimal(8,2)"
+        - "_amount$": "decimal(10,2)"
+        - "_price$": "decimal(10,2)"
+        
+        # String columns: emails, URLs, codes, slugs
+        - "_email$": "string(255)"
+        - "_url$": "string(500)"
+        - "_code$": "string(50)"
+        - "_slug$": "string(255) unique"
+        - "_status$": "string(50)"
+        - "_state$": "string(50)"
             
         # Default fallback: unmatched columns become strings
-        - pattern: ".*"
-          properties: "string"
-          description: "Default type for columns that don't match other patterns"
+        - ".*": "string"
 
       # Table definitions
       tables:
@@ -237,6 +164,17 @@ module Essence
 
   private
 
+  def validate_rails_version
+    rails_version = @schema_data['rails_version']
+    return unless rails_version
+
+    unless SUPPORTED_ACTIVERECORD_VERSIONS.include?(rails_version.to_s)
+      supported_list = SUPPORTED_ACTIVERECORD_VERSIONS.map { |v| "ActiveRecord::Schema[#{v}]" }.join(', ')
+      raise "Unsupported rails_version '#{rails_version}'. Currently supported versions: #{supported_list}. " \
+            "Please remove rails_version from your schema.yaml or use a supported version."
+    end
+  end
+
   def find_schema_yaml_file
     # Prefer .yaml extension over .yml, and db/ directory over root
     candidates = [
@@ -277,14 +215,31 @@ module Essence
       # Pattern-based column property inference
       @column_patterns = @schema_data['column_patterns'].filter_map do |pattern_def|
         begin
-          {
-            regex: Regexp.new(pattern_def['pattern']),
-            template: pattern_def['template'],
-            properties: pattern_def['properties'] || pattern_def['attributes'], # Support both for migration
-            description: pattern_def['description']
-          }
+          # Support both old and new syntax
+          if pattern_def.is_a?(Hash) && pattern_def.key?('pattern')
+            # Old verbose syntax: {pattern: "_id$", properties: "integer not_null"}
+            {
+              regex: Regexp.new(pattern_def['pattern']),
+              template: pattern_def['template'],
+              properties: pattern_def['properties'] || pattern_def['attributes'], # Support both for migration
+              description: pattern_def['description']
+            }
+          elsif pattern_def.is_a?(Hash) && pattern_def.keys.length == 1
+            # New simplified syntax: {"_id$": "integer not_null"}
+            pattern, properties = pattern_def.first
+            {
+              regex: Regexp.new(pattern),
+              template: nil,
+              properties: properties,
+              description: nil
+            }
+          else
+            puts "⚠️  Skipping invalid pattern definition: #{pattern_def.inspect}"
+            nil
+          end
         rescue RegexpError => e
-          puts "⚠️  Skipping invalid regex pattern '#{pattern_def['pattern']}': #{e.message}"
+          pattern_key = pattern_def.is_a?(Hash) && pattern_def.key?('pattern') ? pattern_def['pattern'] : pattern_def.keys.first
+          puts "⚠️  Skipping invalid regex pattern '#{pattern_key}': #{e.message}"
           nil
         end
       end
@@ -333,7 +288,7 @@ module Essence
   end
 
   def generate_schema_block
-    schema_name = @schema_data['schema_name'] || 'main'
+    schema_name = @schema_data['schema_name'] || 'public'
     <<~HCL
       schema "#{schema_name}" {}
 
@@ -394,8 +349,13 @@ module Essence
           # Handle template with variable substitution
           return expand_template(pattern[:template], column_name, table_name)
         elsif pattern[:properties]
-          # Use direct properties
-          return pattern[:properties]
+          # Check if properties contains template variables
+          if pattern[:properties].include?('{table}')
+            return expand_template(pattern[:properties], column_name, table_name)
+          else
+            # Use direct properties
+            return pattern[:properties]
+          end
         end
       end
     end
@@ -430,7 +390,7 @@ module Essence
   end
 
   def generate_table_block(table_name, table_def)
-    schema_name = @schema_data['schema_name'] || 'main'
+    schema_name = @schema_data['schema_name'] || 'public'
 
     hcl = <<~HCL
       table "#{table_name}" {

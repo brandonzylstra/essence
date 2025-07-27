@@ -120,7 +120,7 @@ RSpec.configure do |config|
 
     def create_basic_schema
       schema_content = <<~YAML
-        schema_name: main
+        schema_name: public
         defaults:
           "*":
             columns:

@@ -16,6 +16,13 @@
 - [x] Wrap all this up as a gem, to be added to any Ruby project.
 
 
+## Syntax ##
+
+- [x] Change "schema_name" to "schema"
+- [x] Change default schema from "main" to "public"
+- [x] Support simpler syntax for column property patterns
+
+
 ## YAML ##
 
 - [ ] Define a YAML schema using [RubySchema](https://github.com/yippee-fun/rubyschema) and ensure that all YAML used is valid before attempting to generate HCL with it

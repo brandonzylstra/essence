@@ -107,7 +107,7 @@ RSpec.describe Essence do
       
       # Verify the output
       hcl_content = File.read('db/integration_test.hcl')
-      expect(hcl_content).to include('schema "main"')
+      expect(hcl_content).to include('schema "public"')
       expect(hcl_content).to include('table "users"')
       expect(hcl_content).to include('foreign_key')
     end

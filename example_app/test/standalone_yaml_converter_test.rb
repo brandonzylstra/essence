@@ -82,7 +82,7 @@ class StandaloneYamlConverterTest < Minitest::Test
 
   def test_converts_column_types_correctly
     yaml_content = <<~YAML
-      schema_name: main
+      schema_name: public
       tables:
         test_table:
           columns:
@@ -113,7 +113,7 @@ class StandaloneYamlConverterTest < Minitest::Test
 
   def test_handles_null_constraints_correctly
     yaml_content = <<~YAML
-      schema_name: main
+      schema_name: public
       tables:
         test_table:
           columns:
@@ -136,7 +136,7 @@ class StandaloneYamlConverterTest < Minitest::Test
 
   def test_handles_default_values_correctly
     yaml_content = <<~YAML
-      schema_name: main
+      schema_name: public
       tables:
         test_table:
           columns:
@@ -161,7 +161,7 @@ class StandaloneYamlConverterTest < Minitest::Test
 
   def test_generates_foreign_keys_correctly
     yaml_content = <<~YAML
-      schema_name: main
+      schema_name: public
       tables:
         users:
           columns:
@@ -205,7 +205,7 @@ class StandaloneYamlConverterTest < Minitest::Test
 
   def test_generates_simple_indexes_correctly
     yaml_content = <<~YAML
-      schema_name: main
+      schema_name: public
       tables:
         users:
           columns:
@@ -233,7 +233,7 @@ class StandaloneYamlConverterTest < Minitest::Test
 
   def test_generates_unique_indexes_correctly
     yaml_content = <<~YAML
-      schema_name: main
+      schema_name: public
       tables:
         users:
           columns:
@@ -263,7 +263,7 @@ class StandaloneYamlConverterTest < Minitest::Test
 
   def test_generates_multi_column_indexes_correctly
     yaml_content = <<~YAML
-      schema_name: main
+      schema_name: public
       tables:
         posts:
           columns:
@@ -344,7 +344,7 @@ class StandaloneYamlConverterTest < Minitest::Test
 
   def test_handles_empty_tables_section
     yaml_content = <<~YAML
-      schema_name: main
+      schema_name: public
       tables: {}
     YAML
     
@@ -362,7 +362,7 @@ class StandaloneYamlConverterTest < Minitest::Test
 
   def test_handles_table_without_columns
     yaml_content = <<~YAML
-      schema_name: main
+      schema_name: public
       tables:
         empty_table: {}
     YAML
@@ -411,7 +411,7 @@ class StandaloneYamlConverterTest < Minitest::Test
 
   def test_preserves_case_sensitivity_in_names
     case_yaml = <<~YAML
-      schema_name: main
+      schema_name: public
       tables:
         UserProfiles:
           columns:
@@ -437,7 +437,7 @@ class StandaloneYamlConverterTest < Minitest::Test
 
   def test_supports_all_column_types
     types_yaml = <<~YAML
-      schema_name: main
+      schema_name: public
       tables:
         test_types:
           columns:
@@ -472,7 +472,7 @@ class StandaloneYamlConverterTest < Minitest::Test
 
   def test_handles_polymorphic_relationships
     polymorphic_yaml = <<~YAML
-      schema_name: main
+      schema_name: public
       tables:
         comments:
           columns:
@@ -506,8 +506,7 @@ class StandaloneYamlConverterTest < Minitest::Test
 
   def test_yaml_content
     <<~YAML
-      schema_name: main
-      rails_version: "8.0"
+      schema_name: public
       
       tables:
         users:

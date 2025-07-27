@@ -77,7 +77,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
 
   test "converts column types correctly" do
     yaml_content = <<~YAML
-      schema_name: main
+      schema_name: public
       tables:
         test_table:
           columns:
@@ -108,7 +108,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
 
   test "handles null constraints correctly" do
     yaml_content = <<~YAML
-      schema_name: main
+      schema_name: public
       tables:
         test_table:
           columns:
@@ -131,7 +131,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
 
   test "handles default values correctly" do
     yaml_content = <<~YAML
-      schema_name: main
+      schema_name: public
       tables:
         test_table:
           columns:
@@ -156,7 +156,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
 
   test "generates foreign keys correctly" do
     yaml_content = <<~YAML
-      schema_name: main
+      schema_name: public
       tables:
         users:
           columns:
@@ -200,7 +200,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
 
   test "generates simple indexes correctly" do
     yaml_content = <<~YAML
-      schema_name: main
+      schema_name: public
       tables:
         users:
           columns:
@@ -228,7 +228,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
 
   test "generates unique indexes correctly" do
     yaml_content = <<~YAML
-      schema_name: main
+      schema_name: public
       tables:
         users:
           columns:
@@ -258,7 +258,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
 
   test "generates multi-column indexes correctly" do
     yaml_content = <<~YAML
-      schema_name: main
+      schema_name: public
       tables:
         posts:
           columns:
@@ -286,7 +286,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
 
   test "applies default columns to all tables" do
     yaml_content = <<~YAML
-      schema_name: main
+      schema_name: public
       defaults:
         "*":
           columns:
@@ -329,7 +329,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
 
   test "handles foreign key pattern matching" do
     yaml_content = <<~YAML
-      schema_name: main
+      schema_name: public
       defaults:
         "*":
           columns:
@@ -366,7 +366,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
 
   test "handles timestamp pattern matching" do
     yaml_content = <<~YAML
-      schema_name: main
+      schema_name: public
       defaults:
         "*":
           columns:
@@ -401,7 +401,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
 
   test "handles default pattern fallback" do
     yaml_content = <<~YAML
-      schema_name: main
+      schema_name: public
       defaults:
         "*":
           columns:
@@ -435,7 +435,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
 
   test "explicit columns override patterns and defaults" do
     yaml_content = <<~YAML
-      schema_name: main
+      schema_name: public
       defaults:
         "*":
           columns:
@@ -487,7 +487,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
 
   test "uses default patterns when none specified" do
     yaml_content = <<~YAML
-      schema_name: main
+      schema_name: public
       tables:
         posts:
           columns:
@@ -517,7 +517,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
 
   test "handles table-specific defaults" do
     yaml_content = <<~YAML
-      schema_name: main
+      schema_name: public
       defaults:
         "*":
           columns:
@@ -571,7 +571,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
     template_content = File.read(template_path)
 
     # Check for key sections
-    assert_includes template_content, 'schema_name: main'
+    assert_includes template_content, 'schema_name: public'
     assert_includes template_content, 'defaults:'
     assert_includes template_content, '"*":'
     assert_includes template_content, 'column_patterns:'
@@ -618,7 +618,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
 
   test "pluralization works correctly" do
     yaml_content = <<~YAML
-      schema_name: main
+      schema_name: public
       column_patterns:
         - pattern: "_id$"
           template: "integer -> {table}.id on_delete=cascade not_null"
@@ -701,7 +701,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
 
   test "handles empty tables section" do
     yaml_content = <<~YAML
-      schema_name: main
+      schema_name: public
       tables: {}
     YAML
 
@@ -719,7 +719,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
 
   test "handles table without columns" do
     yaml_content = <<~YAML
-      schema_name: main
+      schema_name: public
       tables:
         empty_table: {}
     YAML
@@ -751,8 +751,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
 
   def test_yaml_content
     <<~YAML
-      schema_name: main
-      rails_version: "8.0"
+      schema_name: public
 
       tables:
         users:

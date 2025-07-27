@@ -36,8 +36,7 @@ class YamlToHclConverter
       # This file will be converted to HCL format automatically
 
       # Global settings
-      schema_name: main
-      rails_version: "8.0"
+      schema_name: public
 
       # Default columns applied to all tables (unless overridden)
       defaults:
@@ -143,13 +142,35 @@ class YamlToHclConverter
 
     # Parse column patterns
     if @schema_data['column_patterns']
-      @column_patterns = @schema_data['column_patterns'].map do |pattern_def|
-        {
-          regex: Regexp.new(pattern_def['pattern']),
-          template: pattern_def['template'],
-          attributes: pattern_def['attributes'],
-          description: pattern_def['description']
-        }
+      @column_patterns = @schema_data['column_patterns'].filter_map do |pattern_def|
+        begin
+          # Support both old and new syntax
+          if pattern_def.is_a?(Hash) && pattern_def.key?('pattern')
+            # Old verbose syntax: {pattern: "_id$", attributes: "integer not_null"}
+            {
+              regex: Regexp.new(pattern_def['pattern']),
+              template: pattern_def['template'],
+              attributes: pattern_def['attributes'],
+              description: pattern_def['description']
+            }
+          elsif pattern_def.is_a?(Hash) && pattern_def.keys.length == 1
+            # New simplified syntax: {"_id$": "integer not_null"}
+            pattern, attributes = pattern_def.first
+            {
+              regex: Regexp.new(pattern),
+              template: nil,
+              attributes: attributes,
+              description: nil
+            }
+          else
+            puts "⚠️  Skipping invalid pattern definition: #{pattern_def.inspect}"
+            nil
+          end
+        rescue RegexpError => e
+          pattern_key = pattern_def.is_a?(Hash) && pattern_def.key?('pattern') ? pattern_def['pattern'] : pattern_def.keys.first
+          puts "⚠️  Skipping invalid regex pattern '#{pattern_key}': #{e.message}"
+          nil
+        end
       end
       puts "🎯 Loaded #{@column_patterns.length} column patterns"
     else
@@ -196,7 +217,7 @@ class YamlToHclConverter
   end
 
   def generate_schema_block
-    schema_name = @schema_data['schema_name'] || 'main'
+    schema_name = @schema_data['schema_name'] || 'public'
     <<~HCL
       schema "#{schema_name}" {}
 
@@ -293,7 +314,7 @@ class YamlToHclConverter
   end
 
   def generate_table_block(table_name, table_def)
-    schema_name = @schema_data['schema_name'] || 'main'
+    schema_name = @schema_data['schema_name'] || 'public'
 
     hcl = <<~HCL
       table "#{table_name}" {

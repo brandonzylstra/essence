@@ -247,7 +247,7 @@ class WorkflowDemo
 
   def simple_schema_yaml
     <<~YAML
-      schema_name: main
+      schema_name: public
       tables:
         users:
           columns:
@@ -278,7 +278,7 @@ class WorkflowDemo
 
   def tournament_schema_yaml
     <<~YAML
-      schema_name: main
+      schema_name: public
       tables:
         seasons:
           columns:

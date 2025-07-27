@@ -22,7 +22,7 @@ RSpec.describe 'CLI Integration Tests' do
         expect(File.exist?('db/schema.yaml')).to be true
         
         content = File.read('db/schema.yaml')
-        expect(content).to include('schema_name: main')
+        expect(content).to include('schema_name: public')
         expect(content).to include('defaults:')
         expect(content).to include('column_patterns:')
       end
@@ -273,11 +273,11 @@ RSpec.describe 'CLI Integration Tests' do
       yaml_content = File.read('workflow_test.yaml')
       hcl_content = File.read('workflow_test.hcl')
       
-      expect(yaml_content).to include('schema_name: main')
+      expect(yaml_content).to include('schema_name: public')
       expect(yaml_content).to include('column_patterns:')
       expect(yaml_content).to include('tables:')
       
-      expect(hcl_content).to include('schema "main"')
+      expect(hcl_content).to include('schema "public"')
       expect(hcl_content).to include('table "users"')
       expect(hcl_content).to include('table "leagues"')
       expect(hcl_content).to include('foreign_key')
