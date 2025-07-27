@@ -212,33 +212,23 @@ module Essence
 
     # Parse column patterns
     if @schema_data['column_patterns']
-      # Pattern-based column property inference
+      # Pattern-based column property inference - simplified syntax only
       @column_patterns = @schema_data['column_patterns'].filter_map do |pattern_def|
         begin
-          # Support both old and new syntax
-          if pattern_def.is_a?(Hash) && pattern_def.key?('pattern')
-            # Old verbose syntax: {pattern: "_id$", properties: "integer not_null"}
-            {
-              regex: Regexp.new(pattern_def['pattern']),
-              template: pattern_def['template'],
-              properties: pattern_def['properties'] || pattern_def['attributes'], # Support both for migration
-              description: pattern_def['description']
-            }
-          elsif pattern_def.is_a?(Hash) && pattern_def.keys.length == 1
-            # New simplified syntax: {"_id$": "integer not_null"}
+          if pattern_def.is_a?(Hash) && pattern_def.keys.length == 1
+            # Simplified syntax: {"_id$": "integer -> {table}.id on_delete=cascade not_null"}
             pattern, properties = pattern_def.first
             {
               regex: Regexp.new(pattern),
-              template: nil,
-              properties: properties,
-              description: nil
+              properties: properties
             }
           else
             puts "⚠️  Skipping invalid pattern definition: #{pattern_def.inspect}"
+            puts "⚠️  Expected format: {\"pattern\": \"properties\"}"
             nil
           end
         rescue RegexpError => e
-          pattern_key = pattern_def.is_a?(Hash) && pattern_def.key?('pattern') ? pattern_def['pattern'] : pattern_def.keys.first
+          pattern_key = pattern_def.is_a?(Hash) ? pattern_def.keys.first : pattern_def
           puts "⚠️  Skipping invalid regex pattern '#{pattern_key}': #{e.message}"
           nil
         end
@@ -255,18 +245,15 @@ module Essence
     [
       {
         regex: Regexp.new("_id$"),
-        template: "integer -> {table}.id on_delete=cascade not_null",
-        description: "Foreign key columns automatically reference the related table"
+        properties: "integer -> {table}.id on_delete=cascade not_null"
       },
       {
         regex: Regexp.new("_at$"),
-        attributes: "datetime not_null",
-        description: "Timestamp columns get datetime type with not_null constraint"
+        properties: "datetime not_null"
       },
       {
         regex: Regexp.new(".*"),
-        attributes: "string",
-        description: "Default type for columns that don't match other patterns"
+        properties: "string"
       }
     ]
   end
@@ -345,17 +332,12 @@ module Essence
   def infer_column_properties(column_name, table_name)
     @column_patterns.each do |pattern|
       if column_name.match?(pattern[:regex])
-        if pattern[:template]
-          # Handle template with variable substitution
-          return expand_template(pattern[:template], column_name, table_name)
-        elsif pattern[:properties]
-          # Check if properties contains template variables
-          if pattern[:properties].include?('{table}')
-            return expand_template(pattern[:properties], column_name, table_name)
-          else
-            # Use direct properties
-            return pattern[:properties]
-          end
+        # Check if properties contains template variables
+        if pattern[:properties].include?('{table}')
+          return expand_template(pattern[:properties], column_name, table_name)
+        else
+          # Use direct properties
+          return pattern[:properties]
         end
       end
     end

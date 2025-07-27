@@ -56,12 +56,9 @@ RSpec.describe 'CLI Integration Tests' do
                 id: primary_key
                 created_at: datetime not_null
           column_patterns:
-            - pattern: "_id$"
-              template: "integer -> {table}.id on_delete=cascade not_null"
-            - pattern: "_at$"
-              attributes: "datetime not_null"
-            - pattern: ".*"
-              attributes: "string"
+            - "_id$": "integer -> {table}.id on_delete=cascade not_null"
+            - "_at$": "datetime not_null"
+            - ".*": "string"
           tables:
             users:
               columns:
@@ -294,28 +291,17 @@ RSpec.describe 'CLI Integration Tests' do
               created_at: datetime not_null
               updated_at: datetime not_null
         column_patterns:
-          - pattern: "_id$"
-            template: "integer -> {table}.id on_delete=cascade not_null"
-          - pattern: "_at$"
-            attributes: "datetime not_null"
-          - pattern: "_on$"
-            attributes: "date"
-          - pattern: "^is_"
-            attributes: "boolean default=false not_null"
-          - pattern: "^has_"
-            attributes: "boolean default=false not_null"
-          - pattern: "_count$"
-            attributes: "integer default=0 not_null"
-          - pattern: "_email$"
-            attributes: "string(255)"
-          - pattern: "_url$"
-            attributes: "string(500)"
-          - pattern: "_slug$"
-            attributes: "string(255) unique"
-          - pattern: "_status$"
-            attributes: "string(20) default='pending' not_null"
-          - pattern: ".*"
-            attributes: "string"
+          - "_id$": "integer -> {table}.id on_delete=cascade not_null"
+          - "_at$": "datetime not_null"
+          - "_on$": "date"
+          - "^is_": "boolean default=false not_null"
+          - "^has_": "boolean default=false not_null"
+          - "_count$": "integer default=0 not_null"
+          - "_email$": "string(255)"
+          - "_url$": "string(500)"
+          - "_slug$": "string(255) unique"
+          - "_status$": "string(20) default='pending' not_null"
+          - ".*": "string"
         tables:
           users:
             columns:
@@ -386,10 +372,9 @@ RSpec.describe 'CLI Integration Tests' do
               created_at: datetime not_null
               updated_at: datetime not_null
         column_patterns:
-          - pattern: "_id$"
-            template: "integer -> {table}.id on_delete=cascade not_null"
-          - pattern: ".*"
-            attributes: "string"
+          - "_id$": "integer -> {table}.id on_delete=cascade not_null"
+          - ".*": "string"
+
         tables:
           users:
             columns:
@@ -417,14 +402,10 @@ RSpec.describe 'CLI Integration Tests' do
               created_at: datetime not_null
               updated_at: datetime not_null
         column_patterns:
-          - pattern: "_id$"
-            template: "integer -> {table}.id on_delete=cascade not_null"
-          - pattern: "_at$"
-            attributes: "datetime not_null"
-          - pattern: "^is_"
-            attributes: "boolean default=false not_null"
-          - pattern: ".*"
-            attributes: "string"
+          - "_id$": "integer -> {table}.id on_delete=cascade not_null"
+          - "_at$": "datetime not_null"
+          - "^is_": "boolean default=false not_null"
+          - ".*": "string"
         tables:
           users:
             columns:
@@ -469,12 +450,9 @@ RSpec.describe 'CLI Integration Tests' do
               created_at: datetime not_null
               updated_at: datetime not_null
         column_patterns:
-          - pattern: "_id$"
-            template: "integer -> {table}.id on_delete=cascade not_null"
-          - pattern: "_at$"
-            attributes: "datetime not_null"
-          - pattern: ".*"
-            attributes: "string"
+          - "_id$": "integer -> {table}.id on_delete=cascade not_null"
+          - "_at$": "datetime not_null"
+          - ".*": "string"
         tables:
           users:
             columns:
@@ -525,9 +503,9 @@ RSpec.describe 'CLI Integration Tests' do
           }
         },
         'column_patterns' => [
-          { 'pattern' => '_id$', 'template' => 'integer -> {table}.id on_delete=cascade not_null' },
-          { 'pattern' => '_at$', 'attributes' => 'datetime not_null' },
-          { 'pattern' => '.*', 'attributes' => 'string' }
+          { '_id$' => 'integer -> {table}.id on_delete=cascade not_null' },
+          { '_at$' => 'datetime not_null' },
+          { '.*' => 'string' }
         ],
         'tables' => {}
       }
@@ -579,10 +557,8 @@ RSpec.describe 'CLI Integration Tests' do
             columns:
               id: primary_key
         column_patterns:
-          - pattern: "_id$"
-            template: "integer -> {table}.id on_delete=cascade not_null"
-          - pattern: ".*"
-            attributes: "string"
+          - "_id$": "integer -> {table}.id on_delete=cascade not_null"
+          - ".*": "string"
         tables:
           users:
             columns:

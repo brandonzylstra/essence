@@ -49,19 +49,13 @@ class YamlToHclConverter
       # Pattern-based column attribute inference
       column_patterns:
         # Foreign key columns: _id suffix gets integer -> {table}.id on_delete=cascade not_null
-        - pattern: "_id$"
-          template: "integer -> {table}.id on_delete=cascade not_null"
-          description: "Foreign key columns automatically reference the related table"
-
+        - "_id$": "integer -> {table}.id on_delete=cascade not_null"
+        
         # Timestamp columns: _at suffix gets datetime not_null
-        - pattern: "_at$"
-          attributes: "datetime not_null"
-          description: "Timestamp columns get datetime type with not_null constraint"
-
+        - "_at$": "datetime not_null"
+        
         # Default fallback: unmatched columns become strings
-        - pattern: ".*"
-          attributes: "string"
-          description: "Default type for columns that don't match other patterns"
+        - ".*": "string"
 
       # Table definitions
       tables:
@@ -144,30 +138,20 @@ class YamlToHclConverter
     if @schema_data['column_patterns']
       @column_patterns = @schema_data['column_patterns'].filter_map do |pattern_def|
         begin
-          # Support both old and new syntax
-          if pattern_def.is_a?(Hash) && pattern_def.key?('pattern')
-            # Old verbose syntax: {pattern: "_id$", attributes: "integer not_null"}
-            {
-              regex: Regexp.new(pattern_def['pattern']),
-              template: pattern_def['template'],
-              attributes: pattern_def['attributes'],
-              description: pattern_def['description']
-            }
-          elsif pattern_def.is_a?(Hash) && pattern_def.keys.length == 1
-            # New simplified syntax: {"_id$": "integer not_null"}
+          if pattern_def.is_a?(Hash) && pattern_def.keys.length == 1
+            # Simplified syntax: {"_id$": "integer -> {table}.id on_delete=cascade not_null"}
             pattern, attributes = pattern_def.first
             {
               regex: Regexp.new(pattern),
-              template: nil,
-              attributes: attributes,
-              description: nil
+              attributes: attributes
             }
           else
             puts "⚠️  Skipping invalid pattern definition: #{pattern_def.inspect}"
+            puts "⚠️  Expected format: {\"pattern\": \"attributes\"}"
             nil
           end
         rescue RegexpError => e
-          pattern_key = pattern_def.is_a?(Hash) && pattern_def.key?('pattern') ? pattern_def['pattern'] : pattern_def.keys.first
+          pattern_key = pattern_def.is_a?(Hash) ? pattern_def.keys.first : pattern_def
           puts "⚠️  Skipping invalid regex pattern '#{pattern_key}': #{e.message}"
           nil
         end
@@ -184,18 +168,15 @@ class YamlToHclConverter
     [
       {
         regex: Regexp.new("_id$"),
-        template: "integer -> {table}.id on_delete=cascade not_null",
-        description: "Foreign key columns automatically reference the related table"
+        attributes: "integer -> {table}.id on_delete=cascade not_null"
       },
       {
         regex: Regexp.new("_at$"),
-        attributes: "datetime not_null",
-        description: "Timestamp columns get datetime type with not_null constraint"
+        attributes: "datetime not_null"
       },
       {
         regex: Regexp.new(".*"),
-        attributes: "string",
-        description: "Default type for columns that don't match other patterns"
+        attributes: "string"
       }
     ]
   end
@@ -274,10 +255,10 @@ class YamlToHclConverter
   def infer_column_attributes(column_name, table_name)
     @column_patterns.each do |pattern|
       if column_name.match?(pattern[:regex])
-        if pattern[:template]
-          # Handle template with variable substitution
-          return expand_template(pattern[:template], column_name, table_name)
-        elsif pattern[:attributes]
+        # Check if attributes contains template variables
+        if pattern[:attributes].include?('{table}')
+          return expand_template(pattern[:attributes], column_name, table_name)
+        else
           # Use direct attributes
           return pattern[:attributes]
         end

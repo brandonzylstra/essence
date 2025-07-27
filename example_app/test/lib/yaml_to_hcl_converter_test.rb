@@ -335,8 +335,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
           columns:
             id: primary_key
       column_patterns:
-        - pattern: "_id$"
-          template: "integer -> {table}.id on_delete=cascade not_null"
+        - "_id$": "integer -> {table}.id on_delete=cascade not_null"
       tables:
         users:
           columns:
@@ -372,8 +371,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
           columns:
             id: primary_key
       column_patterns:
-        - pattern: "_at$"
-          attributes: "datetime not_null"
+        - "_at$": "datetime not_null"
       tables:
         users:
           columns:
@@ -407,8 +405,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
           columns:
             id: primary_key
       column_patterns:
-        - pattern: ".*"
-          attributes: "string"
+        - ".*": "string"
       tables:
         users:
           columns:
@@ -442,10 +439,8 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
             id: primary_key
             created_at: datetime not_null
       column_patterns:
-        - pattern: "_id$"
-          template: "integer -> {table}.id on_delete=cascade not_null"
-        - pattern: "_at$"
-          attributes: "datetime not_null"
+        - "_id$": "integer -> {table}.id on_delete=cascade not_null"
+        - "_at$": "datetime not_null"
       tables:
         posts:
           columns:
@@ -620,8 +615,7 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
     yaml_content = <<~YAML
       schema_name: public
       column_patterns:
-        - pattern: "_id$"
-          template: "integer -> {table}.id on_delete=cascade not_null"
+        - "_id$": "integer -> {table}.id on_delete=cascade not_null"
       tables:
         posts:
           columns:

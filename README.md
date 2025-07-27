@@ -252,12 +252,9 @@ Define your own patterns in the schema:
 
 ```yaml
 column_patterns:
-  - pattern: "_uuid$"
-    properties: "uuid not_null unique"
-  - pattern: "_json$"
-    properties: "json"
-  - pattern: "encrypted_"
-    properties: "text not_null"
+  - "_uuid$": "uuid not_null unique"
+  - "_json$": "json"
+  - "encrypted_": "text not_null"
 ```
 
 ### Table-Specific Defaults

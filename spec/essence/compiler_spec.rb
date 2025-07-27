@@ -75,8 +75,7 @@ RSpec.describe Essence::Compiler do
               columns:
                 id: primary_key
           column_patterns:
-            - pattern: "_at$"
-              attributes: "datetime not_null"
+            - "_at$": "datetime not_null"
           tables:
             posts:
               columns:
@@ -104,8 +103,7 @@ RSpec.describe Essence::Compiler do
         schema_with_overrides = <<~YAML
           schema_name: public
           column_patterns:
-            - pattern: "_id$"
-              template: "integer -> {table}.id on_delete=cascade not_null"
+            - "_id$": "integer -> {table}.id on_delete=cascade not_null"
           tables:
             posts:
               columns:
@@ -256,8 +254,7 @@ RSpec.describe Essence::Compiler do
       schema_with_various_ids = <<~YAML
         schema_name: public
         column_patterns:
-          - pattern: "_id$"
-            template: "integer -> {table}.id on_delete=cascade not_null"
+          - "_id$": "integer -> {table}.id on_delete=cascade not_null"
         tables:
           posts:
             columns:

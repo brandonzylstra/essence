@@ -128,12 +128,9 @@ RSpec.configure do |config|
               created_at: datetime not_null
               updated_at: datetime not_null
         column_patterns:
-          - pattern: "_id$"
-            template: "integer -> {table}.id on_delete=cascade not_null"
-          - pattern: "_at$"
-            attributes: "datetime not_null"
-          - pattern: ".*"
-            attributes: "string"
+          - "_id$": "integer -> {table}.id on_delete=cascade not_null"
+          - "_at$": "datetime not_null"
+          - ".*": "string"
         tables:
           users:
             columns:
