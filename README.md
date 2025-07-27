@@ -9,7 +9,7 @@
 
 - **10x faster schema iteration** - Write schemas in clean YAML instead of verbose Rails migrations or GUI tools
 - **Smart defaults** - Automatic `id`, `created_at`, `updated_at` columns for every table
-- **Pattern-based inference** - `league_id: ~` automatically becomes a foreign key to `leagues.id`
+- **Pattern-based property inference** - `league_id: ~` automatically becomes a foreign key to `leagues.id`
 - **Version control friendly** - Text-based schemas that diff and merge cleanly
 - **Rails integration** - Seamless workflow with rake tasks and Atlas backend
 - **Template generation** - Quick project setup with sensible defaults
@@ -72,17 +72,17 @@ tables:
       name: string(100) not_null
       league_id: ~
       last_login_at: ~
-  
+
   leagues:
     columns:
       name: string(255) not_null unique
       description: text
 ```
 
-### 2. Convert to HCL format
+### 2. Compile to HCL format
 
 ```bash
-rake essence:convert
+rake essence:compile
 ```
 
 This generates `db/schema.hcl` in Atlas format with foreign keys automatically resolved:
@@ -152,14 +152,14 @@ rake essence:deploy["add tournament tables"]
 
 ### Smart Defaults
 Every table automatically gets:
-- `id` primary key column  
+- `id` primary key column
 - `created_at` and `updated_at` timestamps
 - Proper indexing and constraints
 
 ### Pattern-Based Intelligence
 Write `league_id: ~` and get:
 - Integer column
-- Foreign key to `leagues.id` 
+- Foreign key to `leagues.id`
 - Cascade delete
 - Proper indexing
 
@@ -221,11 +221,11 @@ Define your own patterns in the schema:
 ```yaml
 column_patterns:
   - pattern: "_uuid$"
-    attributes: "uuid not_null unique"
-  - pattern: "_json$" 
-    attributes: "json"
+    properties: "uuid not_null unique"
+  - pattern: "_json$"
+    properties: "json"
   - pattern: "encrypted_"
-    attributes: "text not_null"
+    properties: "text not_null"
 ```
 
 ### Table-Specific Defaults
@@ -270,7 +270,7 @@ rake essence:template       # Start fresh
 vim db/schema.yaml
 
 # 3. Iterate rapidly
-rake essence:convert        # YAML → HCL
+rake essence:compile        # YAML → HCL
 rake essence:preview        # See changes
 rake essence:generate[name] # Create migration
 rake essence:apply          # Apply to DB
@@ -303,7 +303,7 @@ jobs:
 ### CLI Commands
 ```bash
 essence template [path]         # Generate template
-essence convert [yaml] [hcl]    # Convert formats  
+essence compile [yaml] [hcl]    # Compile formats
 essence version                 # Show version
 essence help                    # Show help
 ```
@@ -311,7 +311,7 @@ essence help                    # Show help
 ### Rake Tasks
 ```bash
 rake essence:template[path]     # Generate schema template
-rake essence:convert[yaml,hcl]  # Convert YAML to HCL
+rake essence:compile[yaml,hcl]  # Compile YAML to HCL
 rake essence:preview            # Preview changes
 rake essence:generate[name]     # Generate Rails migration
 rake essence:apply              # Apply schema to database
@@ -329,7 +329,7 @@ Essence works by:
 
 1. **YAML Definition** - You write clean, pattern-rich schemas
 2. **Pattern Resolution** - Automatic foreign keys, constraints, indexes
-3. **HCL Generation** - Converts to Atlas-compatible HCL format  
+3. **HCL Generation** - Compiles to Atlas-compatible HCL format
 4. **Atlas Integration** - Uses Atlas for migration planning
 5. **Rails Compatibility** - Generates standard Rails migrations
 

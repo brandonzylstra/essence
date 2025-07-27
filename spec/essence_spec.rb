@@ -9,39 +9,39 @@ RSpec.describe Essence do
   end
 
   describe '.generate_template' do
-    it 'delegates to Converter.generate_template' do
+    it 'delegates to Compiler.generate_template' do
       file_path = 'custom/path.yaml'
       
-      expect(Essence::Converter).to receive(:generate_template).with(file_path)
+      expect(Essence::Compiler).to receive(:generate_template).with(file_path)
       
       Essence.generate_template(file_path)
     end
 
     it 'uses default path when none provided' do
-      expect(Essence::Converter).to receive(:generate_template).with('db/schema.yaml')
+      expect(Essence::Compiler).to receive(:generate_template).with('db/schema.yaml')
       
       Essence.generate_template
     end
   end
 
-  describe '.convert' do
-    it 'creates a converter instance and calls convert!' do
+  describe '.compile' do
+    it 'creates a compiler instance and calls compile!' do
       yaml_file = 'input.yaml'
       hcl_file = 'output.hcl'
       
-      converter_instance = instance_double(Essence::Converter)
-      expect(Essence::Converter).to receive(:new).with(yaml_file, hcl_file).and_return(converter_instance)
-      expect(converter_instance).to receive(:convert!)
+      compiler_instance = instance_double(Essence::Compiler)
+      expect(Essence::Compiler).to receive(:new).with(yaml_file, hcl_file).and_return(compiler_instance)
+      expect(compiler_instance).to receive(:compile!)
       
-      Essence.convert(yaml_file, hcl_file)
+      Essence.compile(yaml_file, hcl_file)
     end
 
     it 'handles nil arguments' do
-      converter_instance = instance_double(Essence::Converter)
-      expect(Essence::Converter).to receive(:new).with(nil, nil).and_return(converter_instance)
-      expect(converter_instance).to receive(:convert!)
+      compiler_instance = instance_double(Essence::Compiler)
+      expect(Essence::Compiler).to receive(:new).with(nil, nil).and_return(compiler_instance)
+      expect(compiler_instance).to receive(:compile!)
       
-      Essence.convert
+      Essence.compile
     end
   end
 
@@ -82,13 +82,13 @@ RSpec.describe Essence do
     end
 
     it 'includes all expected classes' do
-      expect(defined?(Essence::Converter)).to eq('constant')
+      expect(defined?(Essence::Compiler)).to eq('constant')
       expect(defined?(Essence::RailsBridge)).to eq('constant')
       expect(defined?(Essence::VERSION)).to eq('constant')
     end
 
     it 'has proper class inheritance' do
-      expect(Essence::Converter).to be_a(Class)
+      expect(Essence::Compiler).to be_a(Class)
       expect(Essence::RailsBridge).to be_a(Class)
     end
   end
@@ -100,8 +100,8 @@ RSpec.describe Essence do
       
       expect(File.exist?('db/integration_test.yaml')).to be true
       
-      # Convert the template
-      Essence.convert('db/integration_test.yaml', 'db/integration_test.hcl')
+      # Compile the template
+      Essence.compile('db/integration_test.yaml', 'db/integration_test.hcl')
       
       expect(File.exist?('db/integration_test.hcl')).to be true
       

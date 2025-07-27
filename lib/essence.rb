@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "essence/version"
-require_relative "essence/converter"
+require_relative "essence/compiler"
 require_relative "essence/rails_bridge"
 
 module Essence
@@ -14,17 +14,17 @@ module Essence
     # @param file_path [String] Path where to create the template
     # @return [void]
     def generate_template(file_path = 'db/schema.yaml')
-      Essence::Converter.generate_template(file_path)
+      Essence::Compiler.generate_template(file_path)
     end
 
-    # Convert YAML schema to HCL format
+    # Compile YAML schema to HCL format
     #
     # @param yaml_file [String] Input YAML file path
     # @param hcl_file [String] Output HCL file path
     # @return [void]
-    def convert(yaml_file = nil, hcl_file = nil)
-      converter = Essence::Converter.new(yaml_file, hcl_file)
-      converter.convert!
+    def compile(yaml_file = nil, hcl_file = nil)
+      compiler = Essence::Compiler.new(yaml_file, hcl_file)
+      compiler.compile!
     end
 
     # Create a Rails bridge instance for schema operations

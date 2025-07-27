@@ -2,14 +2,14 @@
 
 require 'spec_helper'
 
-RSpec.describe Essence::Converter do
-  describe '#convert!' do
+RSpec.describe Essence::Compiler do
+  describe '#compile!' do
     context 'with basic schema' do
-      it 'converts YAML to HCL format' do
+      it 'compiles YAML to HCL format' do
         create_basic_schema
         
-        converter = described_class.new('db/schema.yaml', 'db/schema.hcl')
-        converter.convert!
+        compiler = described_class.new('db/schema.yaml', 'db/schema.hcl')
+        compiler.compile!
         
         hcl_content = read_generated_hcl
         
@@ -23,8 +23,8 @@ RSpec.describe Essence::Converter do
       it 'applies default columns to all tables' do
         create_basic_schema
         
-        converter = described_class.new
-        converter.convert!
+        compiler = described_class.new
+        compiler.compile!
         
         hcl_content = read_generated_hcl
         
@@ -40,8 +40,8 @@ RSpec.describe Essence::Converter do
       it 'applies foreign key patterns correctly' do
         create_basic_schema
         
-        converter = described_class.new
-        converter.convert!
+        compiler = described_class.new
+        compiler.compile!
         
         hcl_content = read_generated_hcl
         
@@ -71,8 +71,8 @@ RSpec.describe Essence::Converter do
         
         create_test_yaml(schema_with_timestamps)
         
-        converter = described_class.new
-        converter.convert!
+        compiler = described_class.new
+        compiler.compile!
         
         hcl_content = read_generated_hcl
         
@@ -101,8 +101,8 @@ RSpec.describe Essence::Converter do
         
         create_test_yaml(schema_with_overrides)
         
-        converter = described_class.new
-        converter.convert!
+        compiler = described_class.new
+        compiler.compile!
         
         hcl_content = read_generated_hcl
         
@@ -133,8 +133,8 @@ RSpec.describe Essence::Converter do
         
         create_test_yaml(schema_with_indexes)
         
-        converter = described_class.new
-        converter.convert!
+        compiler = described_class.new
+        compiler.compile!
         
         hcl_content = read_generated_hcl
         
@@ -158,8 +158,8 @@ RSpec.describe Essence::Converter do
         
         create_test_yaml(schema_with_unique_indexes)
         
-        converter = described_class.new
-        converter.convert!
+        compiler = described_class.new
+        compiler.compile!
         
         hcl_content = read_generated_hcl
         
@@ -170,17 +170,17 @@ RSpec.describe Essence::Converter do
 
     context 'with invalid input' do
       it 'raises an error for missing YAML file' do
-        converter = described_class.new('nonexistent.yaml', 'output.hcl')
+        compiler = described_class.new('nonexistent.yaml', 'output.hcl')
         
-        expect { converter.convert! }.to raise_error(SystemExit)
+        expect { compiler.compile! }.to raise_error(SystemExit)
       end
 
       it 'handles invalid YAML gracefully' do
         File.write('db/schema.yaml', 'invalid: yaml: [content')
         
-        converter = described_class.new
+        compiler = described_class.new
         
-        expect { converter.convert! }.to raise_error(Psych::SyntaxError)
+        expect { compiler.compile! }.to raise_error(Psych::SyntaxError)
       end
     end
   end
@@ -216,8 +216,8 @@ RSpec.describe Essence::Converter do
       described_class.generate_template(template_path)
       
       # Convert the generated template
-      converter = described_class.new(template_path, 'db/generated.hcl')
-      converter.convert!
+      compiler = described_class.new(template_path, 'db/generated.hcl')
+      compiler.compile!
       
       hcl_content = File.read('db/generated.hcl')
       
@@ -255,8 +255,8 @@ RSpec.describe Essence::Converter do
       
       create_test_yaml(schema_with_various_ids)
       
-      converter = described_class.new
-      converter.convert!
+      compiler = described_class.new
+      compiler.compile!
       
       hcl_content = read_generated_hcl
       

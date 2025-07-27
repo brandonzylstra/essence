@@ -21,8 +21,8 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
       
       create_test_yaml(schema_content)
       
-      converter = Essence::Converter.new
-      converter.convert!
+      compiler = Essence::Compiler.new
+      compiler.compile!
       
       hcl_content = read_generated_hcl
       
@@ -54,8 +54,8 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = Essence::Converter.new
-      converter.convert!
+      compiler = Essence::Compiler.new
+      compiler.compile!
       hcl_content = read_generated_hcl
       
       %w[published_at deleted_at archived_at scheduled_at].each do |col|
@@ -82,8 +82,8 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = Essence::Converter.new
-      converter.convert!
+      compiler = Essence::Compiler.new
+      compiler.compile!
       hcl_content = read_generated_hcl
       
       %w[due_on completed_on started_on].each do |col|
@@ -108,8 +108,8 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = Essence::Converter.new
-      converter.convert!
+      compiler = Essence::Compiler.new
+      compiler.compile!
       hcl_content = read_generated_hcl
       
       %w[birth_date hire_date expiry_date].each do |col|
@@ -137,8 +137,8 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = Essence::Converter.new
-      converter.convert!
+      compiler = Essence::Compiler.new
+      compiler.compile!
       hcl_content = read_generated_hcl
       
       %w[is_active is_verified is_admin is_public].each do |col|
@@ -165,8 +165,8 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = Essence::Converter.new
-      converter.convert!
+      compiler = Essence::Compiler.new
+      compiler.compile!
       hcl_content = read_generated_hcl
       
       %w[has_premium has_avatar has_newsletter].each do |col|
@@ -192,8 +192,8 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = Essence::Converter.new
-      converter.convert!
+      compiler = Essence::Compiler.new
+      compiler.compile!
       hcl_content = read_generated_hcl
       
       %w[can_edit can_delete can_moderate].each do |col|
@@ -219,8 +219,8 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = Essence::Converter.new
-      converter.convert!
+      compiler = Essence::Compiler.new
+      compiler.compile!
       hcl_content = read_generated_hcl
       
       %w[admin_flag verified_flag archived_flag].each do |col|
@@ -248,8 +248,8 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = Essence::Converter.new
-      converter.convert!
+      compiler = Essence::Compiler.new
+      compiler.compile!
       hcl_content = read_generated_hcl
       
       %w[post_content message_content email_content].each do |col|
@@ -274,8 +274,8 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = Essence::Converter.new
-      converter.convert!
+      compiler = Essence::Compiler.new
+      compiler.compile!
       hcl_content = read_generated_hcl
       
       %w[email_body article_body response_body].each do |col|
@@ -300,8 +300,8 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = Essence::Converter.new
-      converter.convert!
+      compiler = Essence::Compiler.new
+      compiler.compile!
       hcl_content = read_generated_hcl
       
       %w[bio_text description_text notes_text].each do |col|
@@ -326,8 +326,8 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = Essence::Converter.new
-      converter.convert!
+      compiler = Essence::Compiler.new
+      compiler.compile!
       hcl_content = read_generated_hcl
       
       %w[content_html formatted_html raw_html].each do |col|
@@ -355,8 +355,8 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = Essence::Converter.new
-      converter.convert!
+      compiler = Essence::Compiler.new
+      compiler.compile!
       hcl_content = read_generated_hcl
       
       %w[view_count like_count download_count share_count].each do |col|
@@ -383,8 +383,8 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = Essence::Converter.new
-      converter.convert!
+      compiler = Essence::Compiler.new
+      compiler.compile!
       hcl_content = read_generated_hcl
       
       %w[rating_score test_score credit_score].each do |col|
@@ -409,8 +409,8 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = Essence::Converter.new
-      converter.convert!
+      compiler = Essence::Compiler.new
+      compiler.compile!
       hcl_content = read_generated_hcl
       
       %w[total_amount fee_amount discount_amount].each do |col|
@@ -435,8 +435,8 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = Essence::Converter.new
-      converter.convert!
+      compiler = Essence::Compiler.new
+      compiler.compile!
       hcl_content = read_generated_hcl
       
       %w[unit_price sale_price list_price].each do |col|
@@ -463,8 +463,8 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = Essence::Converter.new
-      converter.convert!
+      compiler = Essence::Compiler.new
+      compiler.compile!
       hcl_content = read_generated_hcl
       
       %w[contact_email backup_email notification_email].each do |col|
@@ -489,8 +489,8 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = Essence::Converter.new
-      converter.convert!
+      compiler = Essence::Compiler.new
+      compiler.compile!
       hcl_content = read_generated_hcl
       
       %w[website_url avatar_url callback_url].each do |col|
@@ -515,8 +515,8 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = Essence::Converter.new
-      converter.convert!
+      compiler = Essence::Compiler.new
+      compiler.compile!
       hcl_content = read_generated_hcl
       
       %w[product_code access_code coupon_code].each do |col|
@@ -541,8 +541,8 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = Essence::Converter.new
-      converter.convert!
+      compiler = Essence::Compiler.new
+      compiler.compile!
       hcl_content = read_generated_hcl
       
       %w[post_slug category_slug user_slug].each do |col|
@@ -570,8 +570,8 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = JAML::Converter.new
-      converter.convert!
+      compiler = Essence::Compiler.new
+      compiler.compile!
       hcl_content = read_generated_hcl
       
       %w[order_status job_status payment_status].each do |col|
@@ -598,8 +598,8 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = JAML::Converter.new
-      converter.convert!
+      compiler = Essence::Compiler.new
+      compiler.compile!
       hcl_content = read_generated_hcl
       
       %w[workflow_state approval_state current_state].each do |col|
@@ -630,8 +630,8 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = JAML::Converter.new
-      converter.convert!
+      compiler = Essence::Compiler.new
+      compiler.compile!
       hcl_content = read_generated_hcl
       
       # contact_email should match _email$ pattern first
@@ -665,8 +665,8 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = JAML::Converter.new
-      converter.convert!
+      compiler = Essence::Compiler.new
+      compiler.compile!
       hcl_content = read_generated_hcl
       
       # user_id should use explicit definition
@@ -753,8 +753,8 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = JAML::Converter.new
-      converter.convert!
+      compiler = Essence::Compiler.new
+      compiler.compile!
       hcl_content = read_generated_hcl
       
       # Verify defaults are applied
@@ -817,8 +817,8 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = JAML::Converter.new
-      converter.convert!
+      compiler = Essence::Compiler.new
+      compiler.compile!
       hcl_content = read_generated_hcl
       
       # Should use the first matching pattern
@@ -838,8 +838,8 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = JAML::Converter.new
-      converter.convert!
+      compiler = Essence::Compiler.new
+      compiler.compile!
       hcl_content = read_generated_hcl
       
       # Should use built-in default patterns
@@ -863,10 +863,10 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
       YAML
       
       create_test_yaml(schema_content)
-      converter = JAML::Converter.new
+      compiler = Essence::Compiler.new
       
       # Should not crash, may use fallback patterns
-      expect { converter.convert! }.not_to raise_error
+      expect { compiler.compile! }.not_to raise_error
     end
   end
 end

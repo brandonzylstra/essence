@@ -45,7 +45,7 @@ RSpec.describe 'CLI Integration Tests' do
       end
     end
 
-    describe 'essence convert' do
+    describe 'essence compile' do
       before do
         # Create a test schema file
         test_schema = <<~YAML
@@ -79,15 +79,15 @@ RSpec.describe 'CLI Integration Tests' do
         File.write('test_input.yaml', test_schema)
       end
 
-      it 'converts YAML to HCL with default paths' do
+      it 'compiles YAML to HCL with default paths' do
         # First create the default input file
         FileUtils.cp('test_input.yaml', 'db/schema.yaml')
         
-        stdout, stderr, status = Open3.capture3("ruby #{cli_path} convert")
+        stdout, stderr, status = Open3.capture3("ruby #{cli_path} compile")
         
         expect(status.success?).to be true
-        expect(stdout).to include('Converting schema to HCL format')
-        expect(stdout).to include('Conversion completed successfully')
+        expect(stdout).to include('Compiling schema to HCL format')
+        expect(stdout).to include('Compilation completed successfully')
         expect(File.exist?('db/schema.hcl')).to be true
         
         hcl_content = File.read('db/schema.hcl')
@@ -97,11 +97,11 @@ RSpec.describe 'CLI Integration Tests' do
         expect(hcl_content).to include('foreign_key')
       end
 
-      it 'converts YAML to HCL with custom paths' do
-        stdout, stderr, status = Open3.capture3("ruby #{cli_path} convert test_input.yaml test_output.hcl")
+      it 'compiles YAML to HCL with custom paths' do
+        stdout, stderr, status = Open3.capture3("ruby #{cli_path} compile test_input.yaml test_output.hcl")
         
         expect(status.success?).to be true
-        expect(stdout).to include('Converting schema to HCL format')
+        expect(stdout).to include('Compiling schema to HCL format')
         expect(File.exist?('test_output.hcl')).to be true
         
         hcl_content = File.read('test_output.hcl')
@@ -111,7 +111,7 @@ RSpec.describe 'CLI Integration Tests' do
       end
 
       it 'reports error for missing input file' do
-        stdout, stderr, status = Open3.capture3("ruby #{cli_path} convert nonexistent.yaml output.hcl")
+        stdout, stderr, status = Open3.capture3("ruby #{cli_path} compile nonexistent.yaml output.hcl")
         
         expect(status.success?).to be false
         expect(stdout).to include('YAML file not found: nonexistent.yaml')
@@ -120,10 +120,10 @@ RSpec.describe 'CLI Integration Tests' do
       it 'handles malformed YAML gracefully' do
         File.write('malformed.yaml', 'invalid: yaml: [content')
         
-        stdout, stderr, status = Open3.capture3("ruby #{cli_path} convert malformed.yaml output.hcl")
+        stdout, stderr, status = Open3.capture3("ruby #{cli_path} compile malformed.yaml output.hcl")
         
         expect(status.success?).to be false
-        expect(stdout).to include('Error during conversion')
+        expect(stdout).to include('Error during compilation')
       end
     end
 
@@ -161,7 +161,7 @@ RSpec.describe 'CLI Integration Tests' do
         expect(stdout).to include('EXAMPLES:')
         expect(stdout).to include('FEATURES:')
         expect(stdout).to include('template')
-        expect(stdout).to include('convert')
+        expect(stdout).to include('compile')
         expect(stdout).to include('version')
         expect(stdout).to include('EXAMPLES:')
         expect(stdout).to include('FEATURES:')
@@ -198,7 +198,7 @@ RSpec.describe 'CLI Integration Tests' do
         expect(File.exist?('custom_template.yaml')).to be true
       end
 
-      it 'accepts c as alias for convert' do
+      it 'accepts c as alias for compile' do
         # Create test input
         test_schema = <<~YAML
           schema_name: test
@@ -212,7 +212,7 @@ RSpec.describe 'CLI Integration Tests' do
         stdout, stderr, status = Open3.capture3("ruby #{cli_path} c alias_test.yaml alias_test.hcl")
         
         expect(status.success?).to be true
-        expect(stdout).to include('Converting schema to HCL format')
+        expect(stdout).to include('Compiling schema to HCL format')
         expect(File.exist?('alias_test.hcl')).to be true
       end
 
@@ -249,7 +249,7 @@ RSpec.describe 'CLI Integration Tests' do
       end
 
       it 'handles invalid file paths gracefully' do
-        stdout, stderr, status = Open3.capture3("ruby #{cli_path} convert /invalid/path/file.yaml output.hcl")
+        stdout, stderr, status = Open3.capture3("ruby #{cli_path} compile /invalid/path/file.yaml output.hcl")
         
         expect(status.success?).to be false
         expect(stdout).to include('YAML file not found')
@@ -258,14 +258,14 @@ RSpec.describe 'CLI Integration Tests' do
   end
 
   describe 'End-to-end workflows' do
-    it 'performs complete template -> convert -> validate workflow' do
+    it 'performs complete template -> compile -> validate workflow' do
       # Step 1: Generate template
       stdout, stderr, status = Open3.capture3("ruby #{cli_path} template workflow_test.yaml")
       expect(status.success?).to be true
       expect(File.exist?('workflow_test.yaml')).to be true
       
-      # Step 2: Convert to HCL
-      stdout, stderr, status = Open3.capture3("ruby #{cli_path} convert workflow_test.yaml workflow_test.hcl")
+      # Step 2: Compile to HCL
+      stdout, stderr, status = Open3.capture3("ruby #{cli_path} compile workflow_test.yaml workflow_test.hcl")
       expect(status.success?).to be true
       expect(File.exist?('workflow_test.hcl')).to be true
       
@@ -349,7 +349,7 @@ RSpec.describe 'CLI Integration Tests' do
       
       File.write('complex_test.yaml', complex_schema)
       
-      stdout, stderr, status = Open3.capture3("ruby #{cli_path} convert complex_test.yaml complex_test.hcl")
+      stdout, stderr, status = Open3.capture3("ruby #{cli_path} compile complex_test.yaml complex_test.hcl")
       
       expect(status.success?).to be true
       expect(File.exist?('complex_test.hcl')).to be true
@@ -399,8 +399,8 @@ RSpec.describe 'CLI Integration Tests' do
       
       File.write('incremental_v1.yaml', basic_schema)
       
-      # Convert v1
-      stdout, stderr, status = Open3.capture3("ruby #{cli_path} convert incremental_v1.yaml incremental_v1.hcl")
+      # Compile v1
+      stdout, stderr, status = Open3.capture3("ruby #{cli_path} compile incremental_v1.yaml incremental_v1.hcl")
       expect(status.success?).to be true
       
       v1_content = File.read('incremental_v1.hcl')
@@ -446,8 +446,8 @@ RSpec.describe 'CLI Integration Tests' do
       
       File.write('incremental_v2.yaml', enhanced_schema)
       
-      # Convert v2
-      stdout, stderr, status = Open3.capture3("ruby #{cli_path} convert incremental_v2.yaml incremental_v2.hcl")
+      # Compile v2
+      stdout, stderr, status = Open3.capture3("ruby #{cli_path} compile incremental_v2.yaml incremental_v2.hcl")
       expect(status.success?).to be true
       
       v2_content = File.read('incremental_v2.hcl')
@@ -492,7 +492,7 @@ RSpec.describe 'CLI Integration Tests' do
       
       File.write('mixed_test.yaml', mixed_schema)
       
-      stdout, stderr, status = Open3.capture3("ruby #{cli_path} convert mixed_test.yaml mixed_test.hcl")
+      stdout, stderr, status = Open3.capture3("ruby #{cli_path} compile mixed_test.yaml mixed_test.hcl")
       
       expect(status.success?).to be true
       
@@ -555,7 +555,7 @@ RSpec.describe 'CLI Integration Tests' do
       File.write('large_test.yaml', large_schema.to_yaml)
       
       start_time = Time.now
-      stdout, stderr, status = Open3.capture3("ruby #{cli_path} convert large_test.yaml large_test.hcl")
+      stdout, stderr, status = Open3.capture3("ruby #{cli_path} compile large_test.yaml large_test.hcl")
       end_time = Time.now
       
       expect(status.success?).to be true
@@ -598,7 +598,7 @@ RSpec.describe 'CLI Integration Tests' do
       # Run conversion multiple times
       outputs = []
       3.times do |i|
-        stdout, stderr, status = Open3.capture3("ruby #{cli_path} convert consistency_test.yaml consistency_#{i}.hcl")
+        stdout, stderr, status = Open3.capture3("ruby #{cli_path} compile consistency_test.yaml consistency_#{i}.hcl")
         expect(status.success?).to be true
         outputs << File.read("consistency_#{i}.hcl")
       end
@@ -624,7 +624,7 @@ RSpec.describe 'CLI Integration Tests' do
       threads = []
       5.times do |i|
         threads << Thread.new do
-          stdout, stderr, status = Open3.capture3("ruby #{cli_path} convert concurrent_test.yaml concurrent_#{i}.hcl")
+          stdout, stderr, status = Open3.capture3("ruby #{cli_path} compile concurrent_test.yaml concurrent_#{i}.hcl")
           { status: status.success?, file_exists: File.exist?("concurrent_#{i}.hcl") }
         end
       end

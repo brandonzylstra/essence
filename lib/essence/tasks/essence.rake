@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../rails_bridge'
-require_relative '../converter'
+require_relative '../compiler'
 
 namespace :essence do
   desc "Preview schema changes"
@@ -29,16 +29,16 @@ namespace :essence do
     bridge.generate_seed_data
   end
 
-  desc "Convert YAML schema to HCL format"
-  task :convert, [:yaml_file, :hcl_file] do |_task, args|
-    converter = Essence::Converter.new(args[:yaml_file], args[:hcl_file])
-    converter.convert!
+  desc "Compile YAML schema to HCL format"
+  task :compile, [:yaml_file, :hcl_file] do |_task, args|
+    compiler = Essence::Compiler.new(args[:yaml_file], args[:hcl_file])
+    compiler.compile!
   end
 
   desc "Generate a new schema.yaml template with defaults and patterns"
   task :template, [:file_path] do |_task, args|
     file_path = args[:file_path] || 'db/schema.yaml'
-    Essence::Converter.generate_template(file_path)
+    Essence::Compiler.generate_template(file_path)
   end
 
   desc "Full workflow: preview, generate migration, and apply"
@@ -121,7 +121,7 @@ namespace :essence do
       rake essence:apply                       # Apply schema to database
       rake essence:deploy[name]                # Full workflow: preview + generate + apply
       rake essence:seed                        # Generate seed data
-      rake essence:convert[yaml,hcl]           # Convert YAML schema to HCL format
+      rake essence:compile[yaml,hcl]           # Compile YAML schema to HCL format
       rake essence:template[file_path]         # Generate new schema.yaml template
       rake essence:init                        # Initialize with current Rails schema
       rake essence:validate                    # Validate schema file
@@ -134,7 +134,7 @@ namespace :essence do
       1. rake essence:template                 # Generate schema.yaml template (new projects)
          OR rake essence:init                  # Set up (existing projects)
       2. Edit db/schema.yaml                   # Define your schema in YAML
-      3. rake essence:convert                  # Convert to HCL format
+      3. rake essence:compile                  # Compile to HCL format
       4. rake essence:preview                  # See what would change
       5. rake essence:deploy[migration_name]   # Generate migration and apply
 
@@ -151,7 +151,7 @@ namespace :essence do
       rake essence:template[custom/path.yaml]  # Create template at custom location
       rake essence:generate["add user tables"]
       rake essence:deploy["tournament schema"]
-      rake essence:convert[db/schema.yaml,db/schema.hcl]
+      rake essence:compile[db/schema.yaml,db/schema.hcl]
     HELP
   end
 end

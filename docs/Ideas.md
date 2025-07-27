@@ -55,3 +55,11 @@
 
 - [ ] Add the ability to generate D3 diagrams of your schemas.
 - [ ] Add the ability to import D3 diagrams to create your tables.
+
+
+# Documentation #
+
+- [x] Normalize my terminology to be consistent with AML's terminology
+      - use "attributes" to refer to columns
+      - use "properties" to refer to the options on columns
+

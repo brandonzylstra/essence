@@ -4,12 +4,12 @@ require 'yaml'
 require 'fileutils'
 
 module Essence
-  # Enhanced YAML to HCL Converter
-  # Converts simplified YAML schema to HCL format with support for:
+  # Enhanced YAML to HCL Compiler
+  # Compiles simplified YAML schema to HCL format with support for:
   # - Default columns for all tables
-  # - Pattern-based column attribute inference
+  # - Pattern-based column property inference
   # - Template generation for new schemas
-  class Converter
+  class Compiler
   def initialize(yaml_file = nil, hcl_file = nil)
     @yaml_file = yaml_file || find_schema_yaml_file
     @hcl_file = hcl_file || 'db/schema.hcl'
@@ -18,14 +18,14 @@ module Essence
     @column_patterns = {}
   end
 
-  def convert!
+  def compile!
     puts "🔄 Converting #{@yaml_file} to #{@hcl_file}..."
 
     load_yaml
     parse_defaults_and_patterns
     generate_hcl
 
-    puts "✅ Conversion completed successfully!"
+    puts "✅ Compilation completed successfully!"
     puts "📄 Atlas HCL schema written to #{@hcl_file}"
   end
 
@@ -56,112 +56,112 @@ module Essence
             
         # Timestamp columns: _at suffix gets datetime not_null
         - pattern: "_at$"
-          attributes: "datetime not_null"
+          properties: "datetime not_null"
           description: "Timestamp columns get datetime type with not_null constraint"
           
         # Date columns: _on suffix gets date type
         - pattern: "_on$"
-          attributes: "date"
+          properties: "date"
           description: "Date columns for events (due_on, completed_on, started_on)"
           
         # Date columns: _date suffix gets date type  
         - pattern: "_date$"
-          attributes: "date"
+          properties: "date"
           description: "Date columns (birth_date, hire_date, expiry_date)"
           
         # Boolean columns: is_ prefix gets boolean with false default
         - pattern: "^is_"
-          attributes: "boolean default=false not_null"
+          properties: "boolean default=false not_null"
           description: "Boolean columns with is_ prefix (is_active, is_public, is_verified)"
           
         # Boolean columns: has_ prefix gets boolean with false default
         - pattern: "^has_"
-          attributes: "boolean default=false not_null"
+          properties: "boolean default=false not_null"
           description: "Boolean columns with has_ prefix (has_premium, has_avatar, has_access)"
           
         # Boolean columns: can_ prefix gets boolean with false default
         - pattern: "^can_"
-          attributes: "boolean default=false not_null"
+          properties: "boolean default=false not_null"
           description: "Boolean columns with can_ prefix (can_edit, can_delete, can_view)"
           
         # Boolean columns: _flag suffix gets boolean with false default
         - pattern: "_flag$"
-          attributes: "boolean default=false not_null"
+          properties: "boolean default=false not_null"
           description: "Boolean flag columns (admin_flag, verified_flag, archived_flag)"
           
         # Text content columns: _content suffix gets text type
         - pattern: "_content$"
-          attributes: "text"
+          properties: "text"
           description: "Large text content columns (post_content, message_content)"
           
         # Text body columns: _body suffix gets text type
         - pattern: "_body$"
-          attributes: "text"
+          properties: "text"
           description: "Body text columns (email_body, article_body, description_body)"
           
         # Text columns: _text suffix gets text type
         - pattern: "_text$"
-          attributes: "text"
+          properties: "text"
           description: "Text columns (description_text, bio_text, notes_text)"
           
         # HTML columns: _html suffix gets text type
         - pattern: "_html$"
-          attributes: "text"
+          properties: "text"
           description: "HTML content columns (formatted_html, content_html)"
           
         # Counter columns: _count suffix gets integer with 0 default
         - pattern: "_count$"
-          attributes: "integer default=0 not_null"
+          properties: "integer default=0 not_null"
           description: "Counter columns (view_count, like_count, download_count)"
           
         # Score columns: _score suffix gets decimal
         - pattern: "_score$"
-          attributes: "decimal(8,2)"
+          properties: "decimal(8,2)"
           description: "Score columns (rating_score, test_score, credit_score)"
           
         # Amount columns: _amount suffix gets decimal
         - pattern: "_amount$"
-          attributes: "decimal(10,2)"
+          properties: "decimal(10,2)"
           description: "Amount columns (total_amount, fee_amount, discount_amount)"
           
         # Price columns: _price suffix gets decimal
         - pattern: "_price$"
-          attributes: "decimal(10,2)"
+          properties: "decimal(10,2)"
           description: "Price columns (unit_price, sale_price, list_price)"
           
         # Email columns: _email suffix gets string(255)
         - pattern: "_email$"
-          attributes: "string(255)"
+          properties: "string(255)"
           description: "Email columns (contact_email, backup_email, notification_email)"
           
         # URL columns: _url suffix gets string(500)
         - pattern: "_url$"
-          attributes: "string(500)"
+          properties: "string(500)"
           description: "URL columns (website_url, avatar_url, callback_url)"
           
         # Code columns: _code suffix gets string(50)
         - pattern: "_code$"
-          attributes: "string(50)"
+          properties: "string(50)"
           description: "Code columns (product_code, access_code, coupon_code)"
           
         # Slug columns: _slug suffix gets unique string
         - pattern: "_slug$"
-          attributes: "string(255) unique"
+          properties: "string(255) unique"
           description: "URL slug columns (post_slug, category_slug, user_slug)"
           
         # Status columns: _status suffix gets string with pending default
         - pattern: "_status$"
-          attributes: "string(20) default='pending' not_null"
+          properties: "string(20) default='pending' not_null"
           description: "Status columns (order_status, job_status, payment_status)"
           
         # State columns: _state suffix gets string
         - pattern: "_state$"
-          attributes: "string(20)"
+          properties: "string(20)"
           description: "State columns (workflow_state, approval_state, current_state)"
             
         # Default fallback: unmatched columns become strings
         - pattern: ".*"
-          attributes: "string"
+          properties: "string"
           description: "Default type for columns that don't match other patterns"
 
       # Table definitions
@@ -230,9 +230,9 @@ module Essence
     FileUtils.mkdir_p(File.dirname(file_path))
     File.write(file_path, template_content)
 
-      puts "✅ Schema template created at #{file_path}"
-      puts "📝 Edit this file to define your database schema"
-      puts "🔧 Run 'rake essence:convert' to convert to HCL format"
+    puts "✅ Schema template created at #{file_path}"
+    puts "📝 Edit this file to define your database schema"
+    puts "🔧 Run 'rake essence:compile' to compile to HCL format"
     end
 
   private
@@ -274,12 +274,13 @@ module Essence
 
     # Parse column patterns
     if @schema_data['column_patterns']
+      # Pattern-based column property inference
       @column_patterns = @schema_data['column_patterns'].filter_map do |pattern_def|
         begin
           {
             regex: Regexp.new(pattern_def['pattern']),
             template: pattern_def['template'],
-            attributes: pattern_def['attributes'],
+            properties: pattern_def['properties'] || pattern_def['attributes'], # Support both for migration
             description: pattern_def['description']
           }
         rescue RegexpError => e
@@ -375,7 +376,7 @@ module Essence
       table_def['columns'].each do |column_name, column_def|
         if column_def.nil? || column_def == '~'
           # Use pattern matching for nil or ~ values
-          merged[column_name] = infer_column_attributes(column_name, table_name)
+          merged[column_name] = infer_column_properties(column_name, table_name)
         else
           # Use explicit definition
           merged[column_name] = column_def
@@ -386,15 +387,15 @@ module Essence
     merged
   end
 
-  def infer_column_attributes(column_name, table_name)
+  def infer_column_properties(column_name, table_name)
     @column_patterns.each do |pattern|
       if column_name.match?(pattern[:regex])
         if pattern[:template]
           # Handle template with variable substitution
           return expand_template(pattern[:template], column_name, table_name)
-        elsif pattern[:attributes]
-          # Use direct attributes
-          return pattern[:attributes]
+        elsif pattern[:properties]
+          # Use direct properties
+          return pattern[:properties]
         end
       end
     end
@@ -752,17 +753,17 @@ if __FILE__ == $0
   case command
   when 'template', 't'
     file_path = ARGV[1] || 'db/schema.yaml'
-    Essence::Converter.generate_template(file_path)
-  when 'convert', 'c'
+    Essence::Compiler.generate_template(file_path)
+  when 'compile', 'c'
     yaml_file = ARGV[1]
     hcl_file = ARGV[2]
-    converter = Essence::Converter.new(yaml_file, hcl_file)
-    converter.convert!
+    compiler = Essence::Compiler.new(yaml_file, hcl_file)
+    compiler.compile!
   else
     yaml_file = ARGV[0]
     hcl_file = ARGV[1]
-    converter = Essence::Converter.new(yaml_file, hcl_file)
-    converter.convert!
+    compiler = Essence::Compiler.new(yaml_file, hcl_file)
+    compiler.compile!
   end
 end
 
