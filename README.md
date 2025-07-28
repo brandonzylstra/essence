@@ -1,4 +1,4 @@
-# Essence - Database Schema Management
+# 🌿 Essence 🫧 - ActiveRecord Modeling #
 
 [![Gem Version](https://badge.fury.io/rb/essence.svg)](https://badge.fury.io/rb/essence)
 [![Ruby](https://github.com/brandonzylstra/essence/workflows/Ruby/badge.svg)](https://github.com/brandonzylstra/essence/actions)
@@ -14,7 +14,7 @@
 - **Rails integration** - Seamless workflow with rake tasks and Atlas backend
 - **Template generation** - Quick project setup with sensible defaults
 
-## 📦 Installation
+## 🔌 Installation ##
 
 Add this line to your application's Gemfile:
 
@@ -34,9 +34,9 @@ Or install it yourself as:
 $ gem install essence
 ```
 
-## 🏗️ Quick Start
+## 🚀 Quick Start ##
 
-### 1. Generate a schema template
+### 1. Generate a schema template ###
 
 ```bash
 # In your Rails project
@@ -134,7 +134,7 @@ table "users" {
 }
 ```
 
-### 3. Preview and apply changes
+### 3. Preview and apply changes ###
 
 ```bash
 # See what would change
@@ -144,34 +144,34 @@ rake essence:preview
 rake essence:deploy["add tournament tables"]
 ```
 
-## 🎯 Core Features
+## 🎯 Core Features ##
 
-### Smart Defaults
+### Smart Defaults ###
 Every table automatically gets:
 - `id` primary key column
 - `created_at` and `updated_at` timestamps
 - Proper indexing and constraints
 
-### Pattern-Based Intelligence
-Write `league_id: ~` and get:
+### Pattern-Based Intelligence ###
+Write `league_id: ~` and—based on the pattern that name matches—automatically get:
 - Integer column
 - Foreign key to `leagues.id`
-- Cascade delete
+- Cascading delete
 - Proper indexing
 
-### Clean YAML Syntax
+### Clean YAML Syntax ###
 ```yaml
 tables:
   tournaments:
     columns:
       name: string(255) not_null unique
-      league_id: ~  # Becomes foreign key automatically
+      league_id: ~   # Becomes foreign key automatically
       start_date: ~  # Becomes datetime not_null
       is_active: ~   # Becomes boolean default false
       max_teams: ~   # Becomes integer
 ```
 
-### Full Rails Integration
+### Full Rails Integration ###
 ```bash
 rake essence:template     # Generate schema template
 rake essence:convert      # Convert YAML to HCL
@@ -180,43 +180,38 @@ rake essence:apply        # Apply to database
 rake essence:deploy[name] # Full workflow
 ```
 
-## 🗃️ Supported Schema Elements
+## 🗃️ Supported Schema Elements ##
 
 Essence provides comprehensive support for database schema elements, with plans to expand coverage over time.
 
-### Currently Supported ✅
+|Status| Group    | Element                  | Explanation                                                        |
+|:----:|:--------:|:-------------------------|:-------------------------------------------------------------------|
+| ✅   | Core     | **Tables**               | Primary schema containers with columns, constraints, and metadata  |
+| ✅   | Core     | **Columns**              | All standard data types (string, integer, boolean, text, datetime, date, decimal, binary) |
+| ✅   | Core     | **Primary Keys**         | Auto-incrementing ID columns with proper constraints               |
+| ✅   | Core     | **Foreign Keys**         | Automatic relationship detection with cascade/set null options     |
+| ✅   | Core     | **Indexes**              | Single and multi-column indexes with unique constraints            |
+| ⏳   | Core     | **Check Constraints**    | Column-level validation rules *(planned for Rails 6.1+ support)*   |
+| ⏳   | Advanced | **Views**                | Read-only virtual tables (`scenic` gem integration)                |
+| ⏳   | Advanced | **Materialized Views**   | Cached query results (`scenic` gem integration)                    |
+| ⏳   | Advanced | **Functions/Stored Procedures**  | Database-level business logic (`scenic`, `fx` gems)        |
+| ❓   | Advanced | **Exclusion Constraints**| PostgreSQL-specific constraints                                    |
+| ❓   | Advanced | **Enums**                | Type-safe enumerated values (Rails native with PostgreSQL)         |
+| ❓   | Advanced | **Partitioned Tables**   | Large table performance optimization (Rails 6.1+ with PostgreSQL)  |
+| ❓   | Advanced | **Triggers**             | Event-driven database actions (`hair_trigger` gem integration)     |
+| ❓   | Advanced | **Full-text Search Indexes** | Advanced search capabilities (`pg_search` gem)                 |
 
-**Core Rails Elements:**
-- **Tables** - Primary schema containers with columns, constraints, and metadata
-- **Columns** - All standard data types (string, integer, boolean, text, datetime, date, decimal, binary)
-- **Primary Keys** - Auto-incrementing ID columns with proper constraints
-- **Foreign Keys** - Automatic relationship detection with cascade/set null options
-- **Indexes** - Single and multi-column indexes with unique constraints
-- **Check Constraints** - Column-level validation rules *(planned for Rails 6.1+ support)*
-- **Exclusion Constraints** - PostgreSQL-specific constraints *(planned)*
-
-### Planned Future Support 🚧
-
-**Advanced Schema Elements (via popular gems):**
-- **Views** - Read-only virtual tables (`scenic` gem integration)
-- **Materialized Views** - Cached query results (`scenic` gem integration)  
-- **Functions/Stored Procedures** - Database-level business logic (`scenic`, `fx` gems)
-- **Triggers** - Event-driven database actions (`hair_trigger` gem integration)
-- **Full-text Search Indexes** - Advanced search capabilities (`pg_search` gem)
-- **Enums** - Type-safe enumerated values (Rails native with PostgreSQL)
-- **Partitioned Tables** - Large table performance optimization (Rails 6.1+ with PostgreSQL)
-
-### Version Compatibility
+### Version Compatibility ###
 
 **ActiveRecord Schema Versions:**
 - ✅ **8.0** - Fully supported (current)
-- 🚧 **7.2** - Planned support
-- 🚧 **7.1** - Planned support  
-- 🚧 **7.0** - Planned support
+- 🚧 **7.2** - Possible support
+- 🚧 **7.1** - Possible support
+- 🚧 **7.0** - Possible support
 
 Priority is given to supporting newer Rails versions as they are released (8.1, 8.2, etc.) before adding backward compatibility.
 
-## 📋 Available Patterns
+## 📋 Available Patterns ##
 
 Essence automatically recognizes these column patterns:
 
@@ -245,9 +240,9 @@ Essence automatically recognizes these column patterns:
 | `*_status` | `order_status: ~` | `string(50) not_null` |
 | `*_state` | `workflow_state: ~` | `string(50) not_null` |
 
-## 🛠️ Advanced Usage
+## 🛠️ Advanced Usage ##
 
-### Custom Patterns
+### Custom Patterns ###
 Define your own patterns in the schema:
 
 ```yaml
@@ -257,7 +252,7 @@ column_patterns:
   - "encrypted_": "text not_null"
 ```
 
-### Table-Specific Defaults
+### Table-Specific Defaults ###
 Override defaults for specific tables:
 
 ```yaml
@@ -274,7 +269,7 @@ defaults:
       created_by: string(255) not_null
 ```
 
-### Explicit Overrides
+### Explicit Overrides ###
 Override pattern matching with explicit definitions:
 
 ```yaml
@@ -285,9 +280,9 @@ tables:
       created_at: timestamp not_null  # Override default
 ```
 
-## 🔄 Workflow Integration
+## 🔄 Workflow Integration ##
 
-### Complete Development Workflow
+### Complete Development Workflow ###
 
 ```bash
 # 1. Set up (first time)
@@ -308,7 +303,7 @@ rake essence:apply          # Apply to DB
 rake essence:deploy[name]   # All-in-one
 ```
 
-### CI/CD Integration
+### CI/CD Integration ###
 
 ```yaml
 # .github/workflows/schema.yml
@@ -327,9 +322,9 @@ jobs:
         run: rake essence:validate
 ```
 
-## 📚 Command Reference
+## 📚 Command Reference ##
 
-### CLI Commands
+### CLI Commands ###
 ```bash
 essence template [path]         # Generate template
 essence compile [yaml] [hcl]    # Compile formats
@@ -337,7 +332,7 @@ essence version                 # Show version
 essence help                    # Show help
 ```
 
-### Rake Tasks
+### Rake Tasks ###
 ```bash
 rake essence:template[path]     # Generate schema template
 rake essence:compile[yaml,hcl]  # Compile YAML to HCL
@@ -352,7 +347,7 @@ rake essence:history            # Show migration history
 rake essence:help               # Show all commands
 ```
 
-## 🏗️ Architecture
+## 🏗️ Architecture ##
 
 Essence works by:
 
@@ -366,9 +361,9 @@ Essence works by:
 schema.yaml → [Essence] → schema.hcl → [Atlas] → migration.rb → [Rails] → Database
 ```
 
-## 💻 Examples
+## 💻 Examples ##
 
-### Basic Blog Schema
+### Basic Blog Schema ###
 ```yaml
 schema_name: public
 tables:
@@ -399,7 +394,7 @@ tables:
       is_approved: ~
 ```
 
-### E-commerce Schema
+### E-commerce Schema ###
 ```yaml
 schema_name: public
 tables:
@@ -433,22 +428,22 @@ tables:
       shipped_at: ~
 ```
 
-## 💡 Tips and Best Practices
+## 💡 Tips and Best Practices ##
 
-### 1. Always Preview First
+### 1. Always Preview First ###
 ```bash
 rake essence:preview  # See what will change
 rake essence:apply    # Apply changes
 ```
 
-### 2. Use Descriptive Names
+### 2. Use Descriptive Names ###
 ```yaml
 # Good - descriptive and clear
 users:
   columns:
     email: string(255) not_null unique
     contact_email: string(255)
-    
+
 # Avoid - too generic
 users:
   columns:
@@ -456,7 +451,7 @@ users:
     field2: text
 ```
 
-### 3. Be Explicit About Constraints
+### 3. Be Explicit About Constraints ###
 ```yaml
 # Good - explicit constraints
 email: string(255) not_null unique
@@ -467,7 +462,7 @@ email: ~
 user_id: ~
 ```
 
-### 4. Group Related Tables
+### 4. Group Related Tables ###
 Organize your YAML file with related tables together for better readability:
 
 ```yaml
@@ -477,14 +472,14 @@ users:
 user_sessions:
   # ...
 
-# Content Management  
+# Content Management
 posts:
   # ...
 comments:
   # ...
 ```
 
-### 5. Use Pattern Matching Effectively
+### 5. Use Pattern Matching Effectively ###
 ```yaml
 # Let patterns handle repetitive definitions
 published_at: ~     # Becomes: datetime not_null
@@ -495,7 +490,7 @@ view_count: ~       # Becomes: integer default=0 not_null
 special_id: bigint -> special_table.id on_delete=set_null
 ```
 
-## 🤝 Contributing
+## 🤝 Contributing ##
 
 1. Fork it (https://github.com/brandonzylstra/essence/fork)
 2. Create your feature branch (`git checkout -b my-new-feature`)
@@ -503,11 +498,11 @@ special_id: bigint -> special_table.id on_delete=set_null
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
 
-## 📄 License
+## 📄 License ##
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
 
-## 🙏 Acknowledgments
+## 🙏 Acknowledgments ##
 
 - [Atlas](https://atlasgo.io/) for the powerful migration engine
 - [Rails](https://rubyonrails.org/) for the amazing framework

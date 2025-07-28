@@ -8,7 +8,9 @@
 - [ ] Enable column attribute concatenation, so that multiple patterns can be applied.
 - [ ] Allow modification of details during the preview stage of
       edit → convert → preview → apply
-- [ ]
+- [ ] Validate YAML before processing
+      Prompt: I want to add a validation step, to (1) make sure the YAML is well-formed and follows the structure we need, and (2) fix it if necessary and possible.  I would like to use RubySchema for this.
+
 
 
 ## Packaging ##
@@ -42,6 +44,18 @@
 - [ ] Add the ability to model generated/computed columns
 
 
+## Compilation ##
+
+- [ ] Investigate & fix indentation failures in HCL files
+
+
+## Guard ##
+
+- [ ] Automatically run commands when schema.yaml is saved.
+
+https://github.com/guard/guard
+
+
 ## Text Editors ##
 
 - [ ] Create a Zed language server plugin for schema.yaml
@@ -52,13 +66,19 @@
 
 ## DBML ##
 
+https://github.com/holistics/dbml
+
 - [ ] Add the ability to convert from YAML/JAML to [DBML](https://dbml.dbdiagram.io/home), possibly via [SQL](https://dbml.dbdiagram.io/cli) or from the [database](https://dbml.dbdiagram.io/cli#generate-dbml-directly-from-a-database)
 - [ ] Add the ability to use [DBML](https://dbml.dbdiagram.io/home) instead of YAML/JAML as your composition language
 - [ ] Add the ability to pull schemas to the [dbdiagram API](https://docs.dbdiagram.io/api/v1)
 - [ ] Add the ability to push schemas (or parts of schemas) from the [dbdiagram API](https://docs.dbdiagram.io/api/v1)
 
 
-## D3 ##
+## D2 ##
+
+- [ ] Add the ability to generate D2 diagrams of your schemas.
+- [ ] Add the ability to import D2 diagrams to create your tables.
+https://github.com/zekenie/d2-erd-from-postgres
 
 - [ ] Add the ability to generate D3 diagrams of your schemas.
 - [ ] Add the ability to import D3 diagrams to create your tables.
@@ -69,4 +89,18 @@
 - [x] Normalize my terminology to be consistent with AML's terminology
       - use "attributes" to refer to columns
       - use "properties" to refer to the options on columns
+- [ ] Document the differences between AML and Essence's YAML format
+      https://azimutt.app/docs/aml
+      https://azimutt.app/docs/aml/properties
+      https://azimutt.app/docs/aml/identifiers
+      https://azimutt.app/docs/aml/entities
 
+
+## Partials ##
+
+- [ ] Add support for partial YAML files that can be loaded by schema.yaml
+- [ ] Add support for partial SQL files that can be loaded by schema.yaml
+- [ ] Add support for partial Ruby files that can be loaded by schema.yaml
+- [ ] Add support for other post-processing using Ruby, JavaScript, or shell scripts
+  - [ ] triggered at the file level
+  - [ ] triggered at the table level
