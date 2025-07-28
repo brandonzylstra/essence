@@ -33,10 +33,10 @@ class AtlasRailsBridge
   # Main method to generate migration from current schema to Atlas HCL target
   def generate_migration(migration_name = nil)
     migration_name ||= "atlas_schema_update"
-    
+
     puts "🔄 Generating Atlas migration plan..."
     plan = get_atlas_migration_plan
-    
+
     if plan.empty?
       puts "✅ No schema changes detected"
       return
@@ -49,7 +49,7 @@ class AtlasRailsBridge
   # Apply Atlas schema to database and sync Rails schema.rb
   def apply_schema!
     puts "🚀 Applying Atlas schema to database..."
-    
+
     # Apply schema using Atlas
     result = system("atlas schema apply --env #{@atlas_env} --auto-approve")
     unless result
@@ -60,7 +60,7 @@ class AtlasRailsBridge
     # Update Rails schema.rb
     puts "📄 Updating Rails schema.rb..."
     system("cd #{@rails_root} && rails db:schema:dump")
-    
+
     puts "✅ Schema applied successfully!"
   end
 
@@ -73,7 +73,7 @@ class AtlasRailsBridge
   # Generate seed data from Atlas schema
   def generate_seed_data
     puts "🌱 Generating seed data for event types..."
-    
+
     event_types = [
       {
         name: "Persuasive Speaking",
@@ -84,7 +84,7 @@ class AtlasRailsBridge
         description: "A speech designed to convince the audience of a particular viewpoint"
       },
       {
-        name: "Informative Speaking", 
+        name: "Informative Speaking",
         abbreviation: "INFO",
         category: "speech",
         participant_type: "individual",
@@ -94,7 +94,7 @@ class AtlasRailsBridge
       {
         name: "Original Oratory",
         abbreviation: "OO",
-        category: "speech", 
+        category: "speech",
         participant_type: "individual",
         max_participants_per_match: 8,
         description: "An original speech on a topic of the speaker's choosing"
@@ -111,7 +111,7 @@ class AtlasRailsBridge
         name: "Team Policy Debate",
         abbreviation: "TP",
         category: "debate",
-        participant_type: "team", 
+        participant_type: "team",
         max_participants_per_match: 2,
         description: "A debate format with two-person teams arguing policy resolutions"
       },
@@ -125,7 +125,7 @@ class AtlasRailsBridge
       },
       {
         name: "Apologetics",
-        abbreviation: "APOL", 
+        abbreviation: "APOL",
         category: "speech",
         participant_type: "individual",
         max_participants_per_match: 8,
@@ -134,7 +134,7 @@ class AtlasRailsBridge
     ]
 
     seed_file = File.join(@db_dir, 'seeds.rb')
-    
+
     seed_content = "# Event Types for Speech & Debate Tournaments\n\n"
     event_types.each do |event_type|
       seed_content += "EventType.find_or_create_by(name: '#{event_type[:name]}') do |event|\n"
@@ -158,7 +158,7 @@ class AtlasRailsBridge
   def get_atlas_migration_plan
     # Get the SQL statements from Atlas dry run
     result = `atlas schema apply --env #{@atlas_env} --dry-run`
-    
+
     if $?.exitstatus != 0
       puts "❌ Failed to get Atlas migration plan"
       return []
@@ -173,12 +173,12 @@ class AtlasRailsBridge
         statements << sql unless sql.empty?
       end
     end
-    
+
     puts "Found #{statements.length} changes:"
     statements.each_with_index do |stmt, i|
       puts "  #{i + 1}. #{stmt}"
     end
-    
+
     statements
   end
 
@@ -186,15 +186,15 @@ class AtlasRailsBridge
     timestamp = Time.now.utc.strftime('%Y%m%d%H%M%S')
     filename = "#{timestamp}_#{name.downcase.gsub(/\s+/, '_')}.rb"
     filepath = File.join(@migrations_dir, filename)
-    
+
     class_name = name.split(/\s+/).map(&:capitalize).join
-    
+
     migration_content = generate_migration_content(class_name, sql_statements)
-    
+
     File.write(filepath, migration_content)
     puts "✅ Created migration: #{filename}"
     puts "📂 Location: #{filepath}"
-    
+
     # Show the migration content
     puts "\n📄 Migration content:"
     puts migration_content
@@ -202,7 +202,7 @@ class AtlasRailsBridge
 
   def generate_migration_content(class_name, sql_statements)
     rails_version = get_rails_version
-    
+
     content = <<~RUBY
       class #{class_name} < ActiveRecord::Migration[#{rails_version}]
         def up
@@ -236,43 +236,43 @@ class AtlasRailsBridge
 
   def convert_sql_to_rails(sql_statement)
     sql = sql_statement.strip.upcase
-    
+
     case sql
     when /^CREATE TABLE\s+["`]?(\w+)["`]?\s*\(/
       table_name = $1.downcase
       "create_table :#{table_name} do |t|"
-      
+
     when /^DROP TABLE\s+["`]?(\w+)["`]?/
-      table_name = $1.downcase  
+      table_name = $1.downcase
       "drop_table :#{table_name}"
-      
+
     when /^ALTER TABLE\s+["`]?(\w+)["`]?\s+ADD COLUMN\s+["`]?(\w+)["`]?\s+(\w+)/
       table_name = $1.downcase
       column_name = $2.downcase
       column_type = convert_sql_type_to_rails($3.downcase)
       "add_column :#{table_name}, :#{column_name}, :#{column_type}"
-      
+
     when /^ALTER TABLE\s+["`]?(\w+)["`]?\s+DROP COLUMN\s+["`]?(\w+)["`]?/
       table_name = $1.downcase
       column_name = $2.downcase
       "remove_column :#{table_name}, :#{column_name}"
-      
+
     when /^CREATE INDEX\s+["`]?(\w+)["`]?\s+ON\s+["`]?(\w+)["`]?\s*\(\s*["`]?(\w+)["`]?\s*\)/
       index_name = $1
-      table_name = $2.downcase  
+      table_name = $2.downcase
       column_name = $3.downcase
       "add_index :#{table_name}, :#{column_name}, name: '#{index_name}'"
-      
+
     when /^CREATE UNIQUE INDEX\s+["`]?(\w+)["`]?\s+ON\s+["`]?(\w+)["`]?\s*\(\s*["`]?(\w+)["`]?\s*\)/
       index_name = $1
       table_name = $2.downcase
       column_name = $3.downcase
       "add_index :#{table_name}, :#{column_name}, name: '#{index_name}', unique: true"
-      
+
     when /^DROP INDEX\s+["`]?(\w+)["`]?/
       index_name = $1
       "remove_index name: '#{index_name}'"
-      
+
     else
       # Return nil for complex statements that need raw SQL
       nil
@@ -305,43 +305,43 @@ class AtlasRailsBridge
   end
 
   def get_rails_version
-    return "8.0" # Default for new Rails apps
+    "8.0" # Default for new Rails apps
   end
 end
 
 # CLI Interface
 if __FILE__ == $0
   command = ARGV[0]
-  
+
   bridge = AtlasRailsBridge.new
 
   case command
   when 'generate', 'g'
     migration_name = ARGV[1] || 'atlas_schema_update'
     bridge.generate_migration(migration_name)
-    
+
   when 'apply'
     bridge.apply_schema!
-    
+
   when 'preview', 'p'
     bridge.preview_changes
-    
+
   when 'seed'
     bridge.generate_seed_data
-    
+
   else
     puts <<~HELP
       Atlas Rails Bridge - Generate Rails migrations from Atlas HCL schema changes
-      
+
       Usage:
         ruby lib/atlas_rails_bridge.rb <command> [options]
-      
+
       Commands:
         generate [name]  Generate Rails migration from Atlas schema diff (alias: g)
         apply           Apply Atlas schema and update Rails schema.rb
-        preview         Preview Atlas schema changes (alias: p)  
+        preview         Preview Atlas schema changes (alias: p)#{'  '}
         seed            Generate seed data for event types
-        
+      #{'  '}
       Examples:
         ruby lib/atlas_rails_bridge.rb generate "add tournament tables"
         ruby lib/atlas_rails_bridge.rb apply

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'yaml'
-require 'fileutils'
+require "yaml"
+require "fileutils"
 
 module Essence
   # Enhanced YAML to HCL Compiler
@@ -11,11 +11,11 @@ module Essence
   # - Template generation for new schemas
   class Compiler
     # Supported ActiveRecord::Schema versions
-    SUPPORTED_ACTIVERECORD_VERSIONS = ['8.0'].freeze
+    SUPPORTED_ACTIVERECORD_VERSIONS = [ "8.0" ].freeze
 
   def initialize(yaml_file = nil, hcl_file = nil)
     @yaml_file = yaml_file || find_schema_yaml_file
-    @hcl_file = hcl_file || 'db/schema.hcl'
+    @hcl_file = hcl_file || "db/schema.hcl"
     @schema_data = nil
     @defaults = {}
     @column_patterns = {}
@@ -34,7 +34,7 @@ module Essence
   end
 
     # Generate a new schema.yaml template with default patterns
-    def self.generate_template(file_path = 'db/schema.yaml')
+    def self.generate_template(file_path = "db/schema.yaml")
     template_content = <<~YAML
       # Enhanced Essence Schema with Default Columns and Pattern Matching
       # This file will be converted to HCL format automatically
@@ -54,32 +54,32 @@ module Essence
       column_patterns:
         # Foreign key columns: _id suffix gets foreign key reference
         - "_id$": "integer -> {table}.id on_delete=cascade not_null"
-        
+      #{'  '}
         # Timestamp columns: _at suffix gets datetime not_null
         - "_at$": "datetime not_null"
-        
+      #{'  '}
         # Date columns: _on and _date suffixes get date type
         - "_on$": "date"
         - "_date$": "date"
-        
+      #{'  '}
         # Boolean columns: various prefixes get boolean with false default
         - "^is_": "boolean default=false not_null"
         - "^has_": "boolean default=false not_null"
         - "^can_": "boolean default=false not_null"
         - "_flag$": "boolean default=false not_null"
-        
+      #{'  '}
         # Text content columns: various suffixes get text type
         - "_content$": "text"
         - "_body$": "text"
         - "_text$": "text"
         - "_html$": "text"
-        
+      #{'  '}
         # Numeric columns: counters, scores, amounts, prices
         - "_count$": "integer default=0 not_null"
         - "_score$": "decimal(8,2)"
         - "_amount$": "decimal(10,2)"
         - "_price$": "decimal(10,2)"
-        
+      #{'  '}
         # String columns: emails, URLs, codes, slugs
         - "_email$": "string(255)"
         - "_url$": "string(500)"
@@ -87,7 +87,7 @@ module Essence
         - "_slug$": "string(255) unique"
         - "_status$": "string(50)"
         - "_state$": "string(50)"
-            
+      #{'      '}
         # Default fallback: unmatched columns become strings
         - ".*": "string"
 
@@ -165,11 +165,11 @@ module Essence
   private
 
   def validate_rails_version
-    rails_version = @schema_data['rails_version']
+    rails_version = @schema_data["rails_version"]
     return unless rails_version
 
     unless SUPPORTED_ACTIVERECORD_VERSIONS.include?(rails_version.to_s)
-      supported_list = SUPPORTED_ACTIVERECORD_VERSIONS.map { |v| "ActiveRecord::Schema[#{v}]" }.join(', ')
+      supported_list = SUPPORTED_ACTIVERECORD_VERSIONS.map { |v| "ActiveRecord::Schema[#{v}]" }.join(", ")
       raise "Unsupported rails_version '#{rails_version}'. Currently supported versions: #{supported_list}. " \
             "Please remove rails_version from your schema.yaml or use a supported version."
     end
@@ -178,10 +178,10 @@ module Essence
   def find_schema_yaml_file
     # Prefer .yaml extension over .yml, and db/ directory over root
     candidates = [
-      'db/schema.yaml',
-      'db/schema.yml',
-      'schema.yaml',
-      'schema.yml'
+      "db/schema.yaml",
+      "db/schema.yml",
+      "schema.yaml",
+      "schema.yml"
     ]
 
     candidates.each do |file|
@@ -189,7 +189,7 @@ module Essence
     end
 
     # Default to preferred location/extension if none exist
-    'db/schema.yaml'
+    "db/schema.yaml"
   end
 
   def load_yaml
@@ -205,15 +205,15 @@ module Essence
 
   def parse_defaults_and_patterns
     # Parse default columns
-    if @schema_data['defaults']
-      @defaults = @schema_data['defaults']
+    if @schema_data["defaults"]
+      @defaults = @schema_data["defaults"]
       puts "🔧 Loaded default columns for #{@defaults.keys.length} patterns"
     end
 
     # Parse column patterns
-    if @schema_data['column_patterns']
+    if @schema_data["column_patterns"]
       # Pattern-based column property inference - simplified syntax only
-      @column_patterns = @schema_data['column_patterns'].filter_map do |pattern_def|
+      @column_patterns = @schema_data["column_patterns"].filter_map do |pattern_def|
         begin
           if pattern_def.is_a?(Hash) && pattern_def.keys.length == 1
             # Simplified syntax: {"_id$": "integer -> {table}.id on_delete=cascade not_null"}
@@ -275,7 +275,7 @@ module Essence
   end
 
   def generate_schema_block
-    schema_name = @schema_data['schema_name'] || 'public'
+    schema_name = @schema_data["schema_name"] || "public"
     <<~HCL
       schema "#{schema_name}" {}
 
@@ -283,14 +283,14 @@ module Essence
   end
 
   def generate_table_blocks
-    return "" unless @schema_data['tables']
+    return "" unless @schema_data["tables"]
 
     hcl_content = ""
 
-    @schema_data['tables'].each do |table_name, table_def|
+    @schema_data["tables"].each do |table_name, table_def|
       # Merge default columns with table-specific columns
       merged_columns = merge_default_columns(table_name, table_def)
-      table_def_with_defaults = table_def.merge('columns' => merged_columns)
+      table_def_with_defaults = table_def.merge("columns" => merged_columns)
 
       hcl_content += generate_table_block(table_name, table_def_with_defaults)
       hcl_content += "\n"
@@ -304,19 +304,19 @@ module Essence
     merged = {}
 
     # Apply defaults from "*" pattern
-    if @defaults['*'] && @defaults['*']['columns']
-      merged.merge!(@defaults['*']['columns'])
+    if @defaults["*"] && @defaults["*"]["columns"]
+      merged.merge!(@defaults["*"]["columns"])
     end
 
     # Apply table-specific defaults if they exist
-    if @defaults[table_name] && @defaults[table_name]['columns']
-      merged.merge!(@defaults[table_name]['columns'])
+    if @defaults[table_name] && @defaults[table_name]["columns"]
+      merged.merge!(@defaults[table_name]["columns"])
     end
 
     # Apply explicit table columns (these override defaults)
-    if table_def['columns']
-      table_def['columns'].each do |column_name, column_def|
-        if column_def.nil? || column_def == '~'
+    if table_def["columns"]
+      table_def["columns"].each do |column_name, column_def|
+        if column_def.nil? || column_def == "~"
           # Use pattern matching for nil or ~ values
           merged[column_name] = infer_column_properties(column_name, table_name)
         else
@@ -333,7 +333,7 @@ module Essence
     @column_patterns.each do |pattern|
       if column_name.match?(pattern[:regex])
         # Check if properties contains template variables
-        if pattern[:properties].include?('{table}')
+        if pattern[:properties].include?("{table}")
           return expand_template(pattern[:properties], column_name, table_name)
         else
           # Use direct properties
@@ -350,7 +350,7 @@ module Essence
     # Extract the table name from column name (e.g., "league_id" -> "leagues")
     if column_name.match(/^(.+)_id$/)
       referenced_table = pluralize($1)
-      return template.gsub('{table}', referenced_table)
+      return template.gsub("{table}", referenced_table)
     end
     template
   end
@@ -359,20 +359,20 @@ module Essence
     # Simple pluralization rules - could be enhanced with a proper library
     case word
     when /y$/
-      word.sub(/y$/, 'ies')
+      word.sub(/y$/, "ies")
     when /s$/, /sh$/, /ch$/, /x$/, /z$/
-      word + 'es'
+      word + "es"
     when /f$/
-      word.sub(/f$/, 'ves')
+      word.sub(/f$/, "ves")
     when /fe$/
-      word.sub(/fe$/, 'ves')
+      word.sub(/fe$/, "ves")
     else
-      word + 's'
+      word + "s"
     end
   end
 
   def generate_table_block(table_name, table_def)
-    schema_name = @schema_data['schema_name'] || 'public'
+    schema_name = @schema_data["schema_name"] || "public"
 
     hcl = <<~HCL
       table "#{table_name}" {
@@ -380,27 +380,27 @@ module Essence
     HCL
 
     # Generate columns
-    if table_def['columns']
-      table_def['columns'].each do |column_name, column_def|
+    if table_def["columns"]
+      table_def["columns"].each do |column_name, column_def|
         hcl += generate_column_block(column_name, column_def)
       end
     end
 
     # Generate primary key (if not already defined as primary_key type)
-    primary_key_column = find_primary_key_column(table_def['columns'])
+    primary_key_column = find_primary_key_column(table_def["columns"])
     if primary_key_column
       hcl += generate_primary_key_block(primary_key_column)
     end
 
     # Generate foreign keys
-    foreign_keys = extract_foreign_keys(table_def['columns'])
+    foreign_keys = extract_foreign_keys(table_def["columns"])
     foreign_keys.each do |fk|
       hcl += generate_foreign_key_block(fk, table_name)
     end
 
     # Generate indexes
-    if table_def['indexes']
-      table_def['indexes'].each do |index_def|
+    if table_def["indexes"]
+      table_def["indexes"].each do |index_def|
         hcl += generate_index_block(index_def, table_name)
       end
     end
@@ -411,8 +411,8 @@ module Essence
 
   def generate_column_block(column_name, column_def)
     # Handle primary key columns specially but still generate them
-    if column_def == 'primary_key'
-      parsed = { type: 'integer', not_null: true, hcl_type: 'integer' }
+    if column_def == "primary_key"
+      parsed = { type: "integer", not_null: true, hcl_type: "integer" }
     else
       parsed = parse_column_definition(column_def)
     end
@@ -425,14 +425,14 @@ module Essence
     if parsed[:not_null]
       hcl += "    null = false\n"
     else
-      hcl += "    null = true\n" unless parsed[:type] == 'primary_key'
+      hcl += "    null = true\n" unless parsed[:type] == "primary_key"
     end
 
     # Add type
     hcl += "    type = #{parsed[:hcl_type]}\n"
 
     # Add auto_increment for primary keys
-    if column_def == 'primary_key' || (parsed[:type] == 'integer' && column_name == 'id')
+    if column_def == "primary_key" || (parsed[:type] == "integer" && column_name == "id")
       hcl += "    auto_increment = true\n"
     end
 
@@ -446,11 +446,11 @@ module Essence
   end
 
   def parse_column_definition(column_def)
-    return { type: 'primary_key' } if column_def == 'primary_key'
+    return { type: "primary_key" } if column_def == "primary_key"
 
     # Handle foreign key references
-    if column_def.include?('->')
-      parts = column_def.split('->')
+    if column_def.include?("->")
+      parts = column_def.split("->")
       base_def = parts[0].strip
       reference = parts[1].strip
 
@@ -479,8 +479,8 @@ module Essence
     end
 
     # Check for modifiers
-    result[:not_null] = true if def_str.include?('not_null')
-    result[:unique] = true if def_str.include?('unique')
+    result[:not_null] = true if def_str.include?("not_null")
+    result[:unique] = true if def_str.include?("unique")
 
     # Extract default value
     if def_str.match(/default=([^\s]+)/)
@@ -493,21 +493,21 @@ module Essence
 
   def convert_type_to_hcl(type, size_info)
     case type
-    when 'string'
+    when "string"
       size_info ? "varchar(#{size_info})" : "varchar"
-    when 'integer'
-      'integer'
-    when 'text'
-      'text'
-    when 'boolean'
-      'boolean'
-    when 'datetime'
-      'datetime'
-    when 'date'
-      'date'
-    when 'decimal'
+    when "integer"
+      "integer"
+    when "text"
+      "text"
+    when "boolean"
+      "boolean"
+    when "datetime"
+      "datetime"
+    when "date"
+      "date"
+    when "decimal"
       size_info ? "decimal(#{size_info})" : "decimal"
-    when 'binary'
+    when "binary"
       size_info ? "binary(#{size_info})" : "binary"
     else
       type
@@ -516,27 +516,27 @@ module Essence
 
   def format_default_value(value)
     case value.downcase
-    when 'true'
-      'true'
-    when 'false'
-      'false'
+    when "true"
+      "true"
+    when "false"
+      "false"
     when /^\d+$/
       value
     when /^\d+\.\d+$/
       value
     else
       # Remove existing quotes if present, then add our own
-      cleaned_value = value.to_s.gsub(/^['"]|['"]$/, '')
+      cleaned_value = value.to_s.gsub(/^['"]|['"]$/, "")
       "\"#{cleaned_value}\""
     end
   end
 
   def parse_foreign_key_reference(reference)
     # Format: "leagues.id on_delete=cascade"
-    parts = reference.split(' ')
+    parts = reference.split(" ")
     table_column = parts[0] # "leagues.id"
 
-    table, column = table_column.split('.')
+    table, column = table_column.split(".")
 
     fk = {
       ref_table: table,
@@ -545,9 +545,9 @@ module Essence
 
     # Parse on_delete action
     parts.each do |part|
-      if part.start_with?('on_delete=')
-        action = part.split('=')[1]
-        fk[:on_delete] = action.upcase.gsub('_', ' ')
+      if part.start_with?("on_delete=")
+        action = part.split("=")[1]
+        fk[:on_delete] = action.upcase.gsub("_", " ")
       end
     end
 
@@ -558,11 +558,11 @@ module Essence
     return nil unless columns
 
     columns.each do |column_name, column_def|
-      return column_name if column_def == 'primary_key'
+      return column_name if column_def == "primary_key"
     end
 
     # Default to 'id' if no explicit primary key and id column exists
-    return 'id' if columns&.key?('id')
+    return "id" if columns&.key?("id")
 
     nil
   end
@@ -581,7 +581,7 @@ module Essence
     foreign_keys = []
 
     columns.each do |column_name, column_def|
-      next if column_def == 'primary_key'
+      next if column_def == "primary_key"
 
       parsed = parse_column_definition(column_def)
       if parsed[:foreign_key]
@@ -607,11 +607,11 @@ module Essence
 
     if fk[:on_delete]
       case fk[:on_delete].downcase
-      when 'set null', 'set_null'
+      when "set null", "set_null"
         hcl += "    on_delete = SET_NULL\n"
-      when 'cascade'
+      when "cascade"
         hcl += "    on_delete = CASCADE\n"
-      when 'restrict'
+      when "restrict"
         hcl += "    on_delete = RESTRICT\n"
       end
     end
@@ -634,13 +634,13 @@ module Essence
 
     elsif index_def.is_a?(Hash)
       # New hash format with columns and options
-      columns = index_def['columns'] || []
-      is_unique = index_def['unique'] || false
+      columns = index_def["columns"] || []
+      is_unique = index_def["unique"] || false
 
       if columns.is_a?(Array) && columns.length > 0
-        column_names = columns.join('_and_')
+        column_names = columns.join("_and_")
         index_name = "index_#{table_name}_on_#{column_names}"
-        index_name += '_unique' if is_unique
+        index_name += "_unique" if is_unique
 
         hcl = <<~HCL
         index "#{index_name}" {
@@ -668,12 +668,12 @@ module Essence
         HCL
       else
         # Multi-column index
-        columns = index_def.reject { |item| item.is_a?(String) && item == 'unique' }
-        is_unique = index_def.include?('unique')
+        columns = index_def.reject { |item| item.is_a?(String) && item == "unique" }
+        is_unique = index_def.include?("unique")
 
-        column_names = columns.join('_and_')
+        column_names = columns.join("_and_")
         index_name = "index_#{table_name}_on_#{column_names}"
-        index_name += '_unique' if is_unique
+        index_name += "_unique" if is_unique
 
         hcl = <<~HCL
         index "#{index_name}" {
@@ -686,17 +686,17 @@ module Essence
       end
     end
   end
-end
+  end
 
 # CLI Interface
 if __FILE__ == $0
   command = ARGV[0]
-  
+
   case command
-  when 'template', 't'
-    file_path = ARGV[1] || 'db/schema.yaml'
+  when "template", "t"
+    file_path = ARGV[1] || "db/schema.yaml"
     Essence::Compiler.generate_template(file_path)
-  when 'compile', 'c'
+  when "compile", "c"
     yaml_file = ARGV[1]
     hcl_file = ARGV[2]
     compiler = Essence::Compiler.new(yaml_file, hcl_file)
@@ -708,5 +708,4 @@ if __FILE__ == $0
     compiler.compile!
   end
 end
-
 end

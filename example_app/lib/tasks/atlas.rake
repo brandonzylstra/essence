@@ -30,13 +30,13 @@ namespace :jaml do
   end
 
   desc "Convert YAML schema to HCL format"
-  task :convert, [:yaml_file, :hcl_file] do |_task, args|
+  task :convert, [ :yaml_file, :hcl_file ] do |_task, args|
     converter = YamlToHclConverter.new(args[:yaml_file], args[:hcl_file])
     converter.convert!
   end
 
   desc "Generate a new schema.yaml template with defaults and patterns"
-  task :template, [:file_path] do |_task, args|
+  task :template, [ :file_path ] do |_task, args|
     file_path = args[:file_path] || 'db/schema.yaml'
     YamlToHclConverter.generate_template(file_path)
   end

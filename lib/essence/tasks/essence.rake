@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require_relative '../rails_bridge'
-require_relative '../compiler'
+require_relative "../rails_bridge"
+require_relative "../compiler"
 
 namespace :essence do
   desc "Preview schema changes"
@@ -30,14 +30,14 @@ namespace :essence do
   end
 
   desc "Compile YAML schema to HCL format"
-  task :compile, [:yaml_file, :hcl_file] do |_task, args|
+  task :compile, [ :yaml_file, :hcl_file ] do |_task, args|
     compiler = Essence::Compiler.new(args[:yaml_file], args[:hcl_file])
     compiler.compile!
   end
 
   desc "Generate a new schema.yaml template with defaults and patterns"
-  task :template, [:file_path] do |_task, args|
-    file_path = args[:file_path] || 'db/schema.yaml'
+  task :template, [ :file_path ] do |_task, args|
+    file_path = args[:file_path] || "db/schema.yaml"
     Essence::Compiler.generate_template(file_path)
   end
 

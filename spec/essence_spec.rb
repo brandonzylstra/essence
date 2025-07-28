@@ -11,15 +11,15 @@ RSpec.describe Essence do
   describe '.generate_template' do
     it 'delegates to Compiler.generate_template' do
       file_path = 'custom/path.yaml'
-      
+
       expect(Essence::Compiler).to receive(:generate_template).with(file_path)
-      
+
       Essence.generate_template(file_path)
     end
 
     it 'uses default path when none provided' do
       expect(Essence::Compiler).to receive(:generate_template).with('db/schema.yaml')
-      
+
       Essence.generate_template
     end
   end
@@ -28,11 +28,11 @@ RSpec.describe Essence do
     it 'creates a compiler instance and calls compile!' do
       yaml_file = 'input.yaml'
       hcl_file = 'output.hcl'
-      
+
       compiler_instance = instance_double(Essence::Compiler)
       expect(Essence::Compiler).to receive(:new).with(yaml_file, hcl_file).and_return(compiler_instance)
       expect(compiler_instance).to receive(:compile!)
-      
+
       Essence.compile(yaml_file, hcl_file)
     end
 
@@ -40,7 +40,7 @@ RSpec.describe Essence do
       compiler_instance = instance_double(Essence::Compiler)
       expect(Essence::Compiler).to receive(:new).with(nil, nil).and_return(compiler_instance)
       expect(compiler_instance).to receive(:compile!)
-      
+
       Essence.compile
     end
   end
@@ -49,18 +49,18 @@ RSpec.describe Essence do
     it 'creates a RailsBridge instance with default options' do
       bridge_instance = instance_double(Essence::RailsBridge)
       expect(Essence::RailsBridge).to receive(:new).with(atlas_env: 'dev', rails_root: '.').and_return(bridge_instance)
-      
+
       result = Essence.rails_bridge
-      
+
       expect(result).to eq(bridge_instance)
     end
 
     it 'creates a RailsBridge instance with custom options' do
       bridge_instance = instance_double(Essence::RailsBridge)
       expect(Essence::RailsBridge).to receive(:new).with(atlas_env: 'production', rails_root: '/app').and_return(bridge_instance)
-      
+
       result = Essence.rails_bridge(atlas_env: 'production', rails_root: '/app')
-      
+
       expect(result).to eq(bridge_instance)
     end
   end
@@ -97,14 +97,14 @@ RSpec.describe Essence do
     it 'performs end-to-end template generation and conversion' do
       # Generate template
       Essence.generate_template('db/integration_test.yaml')
-      
+
       expect(File.exist?('db/integration_test.yaml')).to be true
-      
+
       # Compile the template
       Essence.compile('db/integration_test.yaml', 'db/integration_test.hcl')
-      
+
       expect(File.exist?('db/integration_test.hcl')).to be true
-      
+
       # Verify the output
       hcl_content = File.read('db/integration_test.hcl')
       expect(hcl_content).to include('schema "public"')

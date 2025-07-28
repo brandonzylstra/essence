@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Essence::RailsBridge do
   let(:bridge) { described_class.new(atlas_env: 'test', rails_root: '.') }
-  
+
   before do
     # Create necessary directories
     FileUtils.mkdir_p('db/migrate')
@@ -42,25 +42,25 @@ RSpec.describe Essence::RailsBridge do
 
     it 'generates a migration with default name' do
       allow(Time).to receive_message_chain(:now, :utc, :strftime).and_return('20240101120000')
-      
+
       bridge.generate_migration
-      
+
       expect(File.exist?('db/migrate/20240101120000_essence_schema_update.rb')).to be true
     end
 
     it 'generates a migration with custom name' do
       allow(Time).to receive_message_chain(:now, :utc, :strftime).and_return('20240101120000')
-      
+
       bridge.generate_migration('add_user_tables')
-      
+
       expect(File.exist?('db/migrate/20240101120000_add_user_tables.rb')).to be true
     end
 
     it 'creates properly formatted migration content' do
       allow(Time).to receive_message_chain(:now, :utc, :strftime).and_return('20240101120000')
-      
+
       bridge.generate_migration('test_migration')
-      
+
       migration_content = File.read('db/migrate/20240101120000_test_migration.rb')
       expect(migration_content).to include('class TestMigration < ActiveRecord::Migration[8.0]')
       expect(migration_content).to include('def up')
@@ -70,7 +70,7 @@ RSpec.describe Essence::RailsBridge do
 
     it 'handles empty migration plan' do
       allow(bridge).to receive(:get_atlas_migration_plan).and_return([])
-      
+
       expect { bridge.generate_migration }.to output(/No schema changes detected/).to_stdout
     end
 
@@ -80,9 +80,9 @@ RSpec.describe Essence::RailsBridge do
         'DROP TABLE old_table'
       ])
       allow(Time).to receive_message_chain(:now, :utc, :strftime).and_return('20240101120000')
-      
+
       bridge.generate_migration('conversion_test')
-      
+
       migration_content = File.read('db/migrate/20240101120000_conversion_test.rb')
       expect(migration_content).to include('create_table :users do |t|')
       expect(migration_content).to include('drop_table :old_table')
@@ -93,9 +93,9 @@ RSpec.describe Essence::RailsBridge do
         'COMPLEX STATEMENT THAT CANNOT BE CONVERTED'
       ])
       allow(Time).to receive_message_chain(:now, :utc, :strftime).and_return('20240101120000')
-      
+
       bridge.generate_migration('complex_test')
-      
+
       migration_content = File.read('db/migrate/20240101120000_complex_test.rb')
       expect(migration_content).to include('execute <<~SQL')
       expect(migration_content).to include('COMPLEX STATEMENT THAT CANNOT BE CONVERTED')
@@ -106,20 +106,20 @@ RSpec.describe Essence::RailsBridge do
     it 'calls atlas schema apply with correct environment' do
       expect(bridge).to receive(:system).with('atlas schema apply --env test --auto-approve').and_return(true)
       expect(bridge).to receive(:system).with('cd . && rails db:schema:dump').and_return(true)
-      
+
       bridge.apply_schema!
     end
 
     it 'exits with error code 1 if atlas apply fails' do
       expect(bridge).to receive(:system).with('atlas schema apply --env test --auto-approve').and_return(false)
-      
+
       expect { bridge.apply_schema! }.to raise_error(SystemExit)
     end
 
     it 'updates Rails schema.rb after successful apply' do
       expect(bridge).to receive(:system).with('atlas schema apply --env test --auto-approve').and_return(true)
       expect(bridge).to receive(:system).with('cd . && rails db:schema:dump').and_return(true)
-      
+
       expect { bridge.apply_schema! }.to output(/Schema applied successfully/).to_stdout
     end
   end
@@ -127,7 +127,7 @@ RSpec.describe Essence::RailsBridge do
   describe '#preview_changes' do
     it 'calls atlas schema apply with dry-run flag' do
       expect(bridge).to receive(:system).with('atlas schema apply --env test --dry-run')
-      
+
       bridge.preview_changes
     end
   end
@@ -135,7 +135,7 @@ RSpec.describe Essence::RailsBridge do
   describe '#generate_seed_data' do
     it 'creates seed data file with event types' do
       bridge.generate_seed_data
-      
+
       expect(File.exist?('db/seeds.rb')).to be true
       seed_content = File.read('db/seeds.rb')
       expect(seed_content).to include('EventType.find_or_create_by')
@@ -146,7 +146,7 @@ RSpec.describe Essence::RailsBridge do
 
     it 'includes all required event type fields' do
       bridge.generate_seed_data
-      
+
       seed_content = File.read('db/seeds.rb')
       expect(seed_content).to include('abbreviation')
       expect(seed_content).to include('category')
@@ -263,24 +263,24 @@ RSpec.describe Essence::RailsBridge do
           --------
           Migration complete
         OUTPUT
-        
-        allow(bridge).to receive(:execute_atlas_command).and_return([mock_output, true])
-        
+
+        allow(bridge).to receive(:execute_atlas_command).and_return([ mock_output, true ])
+
         result = bridge.send(:get_atlas_migration_plan)
         expect(result).to include('CREATE TABLE users (id INTEGER PRIMARY KEY);')
         expect(result).to include('CREATE INDEX idx_users_name ON users (name);')
       end
 
       it 'handles empty atlas output' do
-        allow(bridge).to receive(:execute_atlas_command).and_return(['', true])
-        
+        allow(bridge).to receive(:execute_atlas_command).and_return([ '', true ])
+
         result = bridge.send(:get_atlas_migration_plan)
         expect(result).to eq([])
       end
 
       it 'handles atlas command failure' do
-        allow(bridge).to receive(:execute_atlas_command).and_return(['', false])
-        
+        allow(bridge).to receive(:execute_atlas_command).and_return([ '', false ])
+
         result = bridge.send(:get_atlas_migration_plan)
         expect(result).to eq([])
       end
@@ -295,9 +295,9 @@ RSpec.describe Essence::RailsBridge do
             -> ALTER TABLE users ADD COLUMN name VARCHAR(255);
           End text
         OUTPUT
-        
-        allow(bridge).to receive(:execute_atlas_command).and_return([mock_output, true])
-        
+
+        allow(bridge).to receive(:execute_atlas_command).and_return([ mock_output, true ])
+
         result = bridge.send(:get_atlas_migration_plan)
         expect(result).to include('CREATE TABLE users (id INTEGER);')
         expect(result).to include('ALTER TABLE users ADD COLUMN name VARCHAR(255);')
@@ -312,9 +312,9 @@ RSpec.describe Essence::RailsBridge do
           'CREATE TABLE users (id INTEGER PRIMARY KEY)',
           'CREATE INDEX idx_users_name ON users (name)'
         ]
-        
+
         content = bridge.send(:generate_migration_content, 'TestMigration', sql_statements)
-        
+
         expect(content).to include('class TestMigration < ActiveRecord::Migration[8.0]')
         expect(content).to include('def up')
         expect(content).to include('def down')
@@ -328,9 +328,9 @@ RSpec.describe Essence::RailsBridge do
           'CREATE TABLE users (id INTEGER PRIMARY KEY)',
           'COMPLEX SQL THAT CANNOT BE CONVERTED'
         ]
-        
+
         content = bridge.send(:generate_migration_content, 'MixedMigration', sql_statements)
-        
+
         expect(content).to include('create_table :users do |t|')
         expect(content).to include('execute <<~SQL')
         expect(content).to include('COMPLEX SQL THAT CANNOT BE CONVERTED')
@@ -338,7 +338,7 @@ RSpec.describe Essence::RailsBridge do
 
       it 'handles empty SQL statements list' do
         content = bridge.send(:generate_migration_content, 'EmptyMigration', [])
-        
+
         expect(content).to include('class EmptyMigration < ActiveRecord::Migration[8.0]')
         expect(content).to include('def up')
         expect(content).to include('def down')
@@ -348,7 +348,7 @@ RSpec.describe Essence::RailsBridge do
       it 'properly handles class name formatting' do
         content = bridge.send(:generate_migration_content, 'add user tables', [])
         expect(content).to include('class AddUserTables')
-        
+
         content = bridge.send(:generate_migration_content, 'create_posts_table', [])
         expect(content).to include('class CreatePostsTable')
       end
@@ -360,28 +360,28 @@ RSpec.describe Essence::RailsBridge do
       end
 
       it 'creates migration file with correct timestamp and name' do
-        sql_statements = ['CREATE TABLE users (id INTEGER PRIMARY KEY)']
-        
+        sql_statements = [ 'CREATE TABLE users (id INTEGER PRIMARY KEY)' ]
+
         bridge.send(:create_rails_migration, 'add user tables', sql_statements)
-        
+
         expect(File.exist?('db/migrate/20240101120000_add_user_tables.rb')).to be true
       end
 
       it 'writes correct content to migration file' do
-        sql_statements = ['CREATE TABLE users (id INTEGER PRIMARY KEY)']
-        
+        sql_statements = [ 'CREATE TABLE users (id INTEGER PRIMARY KEY)' ]
+
         bridge.send(:create_rails_migration, 'test migration', sql_statements)
-        
+
         content = File.read('db/migrate/20240101120000_test_migration.rb')
         expect(content).to include('class TestMigration')
         expect(content).to include('create_table :users do |t|')
       end
 
       it 'handles special characters in migration names' do
-        sql_statements = ['CREATE TABLE users (id INTEGER PRIMARY KEY)']
-        
+        sql_statements = [ 'CREATE TABLE users (id INTEGER PRIMARY KEY)' ]
+
         bridge.send(:create_rails_migration, 'add user-tables & indexes', sql_statements)
-        
+
         expect(File.exist?('db/migrate/20240101120000_add_user_tables_indexes.rb')).to be true
       end
     end
@@ -398,13 +398,13 @@ RSpec.describe Essence::RailsBridge do
     it 'handles file system errors gracefully' do
       # Make db directory read-only to simulate permission error
       FileUtils.chmod(0444, 'db')
-      
+
       # Create bridge instance after permission change to test error handling
       expect {
         local_bridge = described_class.new(atlas_env: 'test', rails_root: '.')
         local_bridge.generate_seed_data
       }.not_to raise_error
-      
+
       # Restore permissions
       FileUtils.chmod(0755, 'db')
     end
@@ -416,36 +416,36 @@ RSpec.describe Essence::RailsBridge do
         'DROP TABLE'           # Missing table name
       ])
       allow(Time).to receive_message_chain(:now, :utc, :strftime).and_return('20240101120000')
-      
+
       expect { bridge.generate_migration('malformed_test') }.not_to raise_error
-      
+
       # Should still create a migration file
       expect(File.exist?('db/migrate/20240101120000_malformed_test.rb')).to be true
     end
 
     it 'handles very long migration names' do
       long_name = 'a' * 200  # Very long name
-      allow(bridge).to receive(:get_atlas_migration_plan).and_return(['CREATE TABLE users (id INTEGER)'])
+      allow(bridge).to receive(:get_atlas_migration_plan).and_return([ 'CREATE TABLE users (id INTEGER)' ])
       allow(Time).to receive_message_chain(:now, :utc, :strftime).and_return('20240101120000')
-      
+
       expect { bridge.generate_migration(long_name) }.not_to raise_error
     end
 
     it 'handles concurrent migration generation' do
       # Simulate multiple migrations being generated at the same time
       allow(Time).to receive_message_chain(:now, :utc, :strftime).and_return('20240101120000')
-      allow(bridge).to receive(:get_atlas_migration_plan).and_return(['CREATE TABLE test (id INTEGER)'])
-      
+      allow(bridge).to receive(:get_atlas_migration_plan).and_return([ 'CREATE TABLE test (id INTEGER)' ])
+
       bridge.generate_migration('first_migration')
-      
+
       # Second migration with same timestamp should not overwrite
       allow(Time).to receive_message_chain(:now, :utc, :strftime).and_return('20240101120000')
       bridge.generate_migration('second_migration')
-      
+
       # Both files should exist (or second should have different name)
       first_exists = File.exist?('db/migrate/20240101120000_first_migration.rb')
       second_exists = File.exist?('db/migrate/20240101120000_second_migration.rb')
-      
+
       expect(first_exists || second_exists).to be true
     end
   end
@@ -461,14 +461,14 @@ RSpec.describe Essence::RailsBridge do
         'ALTER TABLE posts ADD COLUMN title VARCHAR(255)',
         'CREATE UNIQUE INDEX idx_posts_title ON posts (title)'
       ]
-      
+
       allow(bridge).to receive(:get_atlas_migration_plan).and_return(complex_plan)
       allow(Time).to receive_message_chain(:now, :utc, :strftime).and_return('20240101120000')
-      
+
       bridge.generate_migration('complete_schema_setup')
-      
+
       migration_content = File.read('db/migrate/20240101120000_complete_schema_setup.rb')
-      
+
       # Verify all SQL statements are handled
       expect(migration_content).to include('create_table :users do |t|')
       expect(migration_content).to include('create_table :posts do |t|')
@@ -484,19 +484,19 @@ RSpec.describe Essence::RailsBridge do
         'CREATE TABLE posts (id INTEGER PRIMARY KEY)',
         'ALTER TABLE posts ADD COLUMN user_id INTEGER'
       ]
-      
+
       allow(bridge).to receive(:get_atlas_migration_plan).and_return(plan)
       allow(Time).to receive_message_chain(:now, :utc, :strftime).and_return('20240101120000')
-      
+
       bridge.generate_migration('order_test')
-      
+
       migration_content = File.read('db/migrate/20240101120000_order_test.rb')
-      
+
       # Check that statements appear in correct order
       users_pos = migration_content.index('create_table :users')
       posts_pos = migration_content.index('create_table :posts')
       alter_pos = migration_content.index('add_column :posts, :user_id')
-      
+
       expect(users_pos).to be < posts_pos
       expect(posts_pos).to be < alter_pos
     end

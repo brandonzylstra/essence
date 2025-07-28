@@ -25,7 +25,7 @@ class WorkflowDemo
     puts
 
     setup_demo_environment
-    
+
     puts "📋 Demo Steps:"
     puts "1. File extension and location preferences"
     puts "2. Simple schema conversion"
@@ -39,9 +39,9 @@ class WorkflowDemo
     demo_complex_schema
     demo_atlas_integration
     demo_seed_generation
-    
+
     cleanup_demo_environment
-    
+
     puts "✅ Full workflow demonstration completed successfully!"
     puts
     puts "📊 Summary:"
@@ -111,28 +111,28 @@ class WorkflowDemo
     puts
 
     File.write('db/schema.yaml', simple_schema_yaml)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
 
     hcl_content = File.read('db/schema.hcl')
-    
+
     puts "   YAML Schema → HCL Schema conversion:"
     puts "   📥 Input: 2 tables (users, posts)"
     puts "   📤 Output: Valid Atlas HCL with foreign keys and indexes"
-    
+
     # Validate key features
     validations = [
-      ['Schema block', 'schema "main" {}'],
-      ['Users table', 'table "users"'],
-      ['Posts table', 'table "posts"'],
-      ['Foreign key', 'foreign_key "fk_posts_user_id"'],
-      ['Primary key', 'primary_key {'],
-      ['Index', 'index "index_users_on_email"'],
-      ['Auto increment', 'auto_increment = true'],
-      ['Default value', 'default = true']
+      [ 'Schema block', 'schema "main" {}' ],
+      [ 'Users table', 'table "users"' ],
+      [ 'Posts table', 'table "posts"' ],
+      [ 'Foreign key', 'foreign_key "fk_posts_user_id"' ],
+      [ 'Primary key', 'primary_key {' ],
+      [ 'Index', 'index "index_users_on_email"' ],
+      [ 'Auto increment', 'auto_increment = true' ],
+      [ 'Default value', 'default = true' ]
     ]
-    
+
     validations.each do |name, pattern|
       if hcl_content.include?(pattern)
         puts "   ✅ #{name} generated correctly"
@@ -148,21 +148,21 @@ class WorkflowDemo
     puts
 
     File.write('db/schema.yaml', tournament_schema_yaml)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
 
     yaml_data = YAML.load_file('db/schema.yaml')
     table_count = yaml_data['tables']&.keys&.length || 0
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     puts "   📊 Schema Statistics:"
     puts "   - Tables: #{table_count}"
     puts "   - Foreign Keys: #{hcl_content.scan(/foreign_key/).length}"
     puts "   - Indexes: #{hcl_content.scan(/index /).length}"
     puts "   - Unique Constraints: #{hcl_content.scan(/unique = true/).length}"
-    
+
     # Check for key tournament tables
     tournament_tables = %w[seasons leagues users teams tournaments matches judges awards]
     tournament_tables.each do |table|
@@ -181,13 +181,13 @@ class WorkflowDemo
 
     if atlas_available?
       puts "   🔍 Atlas CLI detected - testing HCL syntax validation"
-      
+
       # Create a minimal atlas.hcl for testing
       File.write('atlas.hcl', atlas_config)
-      
+
       # Test Atlas HCL syntax validation
       result = system("atlas schema validate --env demo > /dev/null 2>&1")
-      
+
       if result
         puts "   ✅ Generated HCL passes Atlas syntax validation"
         puts "   ✅ Schema is ready for Atlas commands"
@@ -210,16 +210,16 @@ class WorkflowDemo
 
     if File.exist?('db/seeds.rb')
       seed_content = File.read('db/seeds.rb')
-      
+
       puts "   📄 Generated db/seeds.rb with event types:"
-      
+
       event_types = [
         'Persuasive Speaking',
-        'Lincoln Douglas Debate', 
+        'Lincoln Douglas Debate',
         'Team Policy Debate',
         'Apologetics'
       ]
-      
+
       event_types.each do |event|
         if seed_content.include?("name: '#{event}'")
           puts "   ✅ #{event}"
@@ -227,7 +227,7 @@ class WorkflowDemo
           puts "   ❌ #{event} missing"
         end
       end
-      
+
       # Validate Ruby syntax
       begin
         RubyVM::InstructionSequence.compile(seed_content)
@@ -340,4 +340,12 @@ class WorkflowDemo
             name: string(100) not_null unique
             abbreviation: string(10)
             category: string(20) not_null
-            participant_type
+            participant_type: string(20) not_null
+            created_at: datetime not_null
+            updated_at: datetime not_null
+          indexes:
+            - name
+            - category
+    YAML
+  end
+end

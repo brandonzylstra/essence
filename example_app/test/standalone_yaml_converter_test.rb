@@ -15,7 +15,7 @@ class StandaloneYamlConverterTest < Minitest::Test
     @test_dir = Dir.mktmpdir('yaml_converter_test')
     @original_dir = Dir.pwd
     Dir.chdir(@test_dir)
-    
+
     # Create db directory
     FileUtils.mkdir_p('db')
   end
@@ -29,10 +29,10 @@ class StandaloneYamlConverterTest < Minitest::Test
     # Create both files
     File.write('db/schema.yaml', test_yaml_content)
     File.write('db/schema.yml', 'invalid: yaml: content')
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     # Should use .yaml file, not .yml
     assert File.exist?('db/schema.hcl')
     hcl_content = File.read('db/schema.hcl')
@@ -44,10 +44,10 @@ class StandaloneYamlConverterTest < Minitest::Test
     # Create files in both locations
     File.write('db/schema.yaml', test_yaml_content)
     File.write('schema.yaml', 'invalid: yaml: content')
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     # Should use db/ file
     assert File.exist?('db/schema.hcl')
     hcl_content = File.read('db/schema.hcl')
@@ -57,10 +57,10 @@ class StandaloneYamlConverterTest < Minitest::Test
 
   def test_falls_back_to_yml_if_yaml_doesnt_exist
     File.write('db/schema.yml', test_yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     assert File.exist?('db/schema.hcl')
     hcl_content = File.read('db/schema.hcl')
     assert_includes hcl_content, 'table "users"'
@@ -68,12 +68,12 @@ class StandaloneYamlConverterTest < Minitest::Test
 
   def test_converts_basic_table_structure
     File.write('db/schema.yaml', test_yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Check for basic structure
     assert_includes hcl_content, 'schema "main" {}'
     assert_includes hcl_content, 'table "users" {'
@@ -94,14 +94,14 @@ class StandaloneYamlConverterTest < Minitest::Test
             created_at: datetime not_null
             score: decimal(8,2)
     YAML
-    
+
     File.write('db/schema.yaml', yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Check column type conversions
     assert_includes hcl_content, 'type = varchar(255)'
     assert_includes hcl_content, 'type = integer'
@@ -121,14 +121,14 @@ class StandaloneYamlConverterTest < Minitest::Test
             required_field: string(100) not_null
             optional_field: string(100)
     YAML
-    
+
     File.write('db/schema.yaml', yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Check null constraints
     assert_match(/column "required_field".*null = false/m, hcl_content)
     assert_match(/column "optional_field".*null = true/m, hcl_content)
@@ -145,14 +145,14 @@ class StandaloneYamlConverterTest < Minitest::Test
             role: string(20) default='user' not_null
             count: integer default=0 not_null
     YAML
-    
+
     File.write('db/schema.yaml', yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Check default values
     assert_includes hcl_content, 'default = true'
     assert_includes hcl_content, 'default = "user"'
@@ -173,14 +173,14 @@ class StandaloneYamlConverterTest < Minitest::Test
             user_id: integer -> users.id on_delete=cascade not_null
             author_id: integer -> users.id on_delete=set_null
     YAML
-    
+
     File.write('db/schema.yaml', yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Check foreign keys
     assert_includes hcl_content, 'foreign_key "fk_posts_user_id"'
     assert_includes hcl_content, 'columns = [column.user_id]'
@@ -191,12 +191,12 @@ class StandaloneYamlConverterTest < Minitest::Test
 
   def test_generates_primary_keys_correctly
     File.write('db/schema.yaml', test_yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Check primary key generation
     assert_includes hcl_content, 'primary_key {'
     assert_includes hcl_content, 'columns = [column.id]'
@@ -216,14 +216,14 @@ class StandaloneYamlConverterTest < Minitest::Test
             - email
             - role
     YAML
-    
+
     File.write('db/schema.yaml', yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Check simple indexes
     assert_includes hcl_content, 'index "index_users_on_email"'
     assert_includes hcl_content, 'columns = [column.email]'
@@ -246,14 +246,14 @@ class StandaloneYamlConverterTest < Minitest::Test
             - columns: [username, email]
               unique: true
     YAML
-    
+
     File.write('db/schema.yaml', yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Check unique indexes
     assert_includes hcl_content, 'index "index_users_on_email_unique"'
     assert_includes hcl_content, 'unique = true'
@@ -275,14 +275,14 @@ class StandaloneYamlConverterTest < Minitest::Test
             - columns: [user_id, created_at]
             - columns: [category_id, user_id, created_at]
     YAML
-    
+
     File.write('db/schema.yaml', yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Check multi-column indexes
     assert_includes hcl_content, 'index "index_posts_on_user_id_and_created_at"'
     assert_includes hcl_content, 'columns = [column.user_id, column.created_at]'
@@ -291,7 +291,7 @@ class StandaloneYamlConverterTest < Minitest::Test
 
   def test_handles_missing_yaml_file_gracefully
     converter = YamlToHclConverter.new('nonexistent.yaml', 'output.hcl')
-    
+
     assert_raises(SystemExit) do
       capture_output { converter.convert! }
     end
@@ -299,9 +299,9 @@ class StandaloneYamlConverterTest < Minitest::Test
 
   def test_handles_invalid_yaml_gracefully
     File.write('db/schema.yaml', 'invalid: yaml: [content')
-    
+
     converter = YamlToHclConverter.new
-    
+
     assert_raises(Psych::SyntaxError) do
       converter.convert!
     end
@@ -309,12 +309,12 @@ class StandaloneYamlConverterTest < Minitest::Test
 
   def test_generates_proper_hcl_header
     File.write('db/schema.yaml', test_yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Check header
     assert_includes hcl_content, '# Auto-generated Atlas HCL schema from db/schema.yaml'
     assert_includes hcl_content, '# Edit the YAML file and re-run the converter'
@@ -329,14 +329,14 @@ class StandaloneYamlConverterTest < Minitest::Test
             id: primary_key
             name: string(100) not_null
     YAML
-    
+
     File.write('db/schema.yaml', yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Check custom schema name
     assert_includes hcl_content, 'schema "custom_schema" {}'
     assert_includes hcl_content, 'schema = schema.custom_schema'
@@ -347,14 +347,14 @@ class StandaloneYamlConverterTest < Minitest::Test
       schema_name: public
       tables: {}
     YAML
-    
+
     File.write('db/schema.yaml', yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Should generate valid HCL with just schema
     assert_includes hcl_content, 'schema "main" {}'
     refute_includes hcl_content, 'table'
@@ -366,14 +366,14 @@ class StandaloneYamlConverterTest < Minitest::Test
       tables:
         empty_table: {}
     YAML
-    
+
     File.write('db/schema.yaml', yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Should generate empty table
     assert_includes hcl_content, 'table "empty_table" {'
     assert_includes hcl_content, 'schema = schema.main'
@@ -381,10 +381,10 @@ class StandaloneYamlConverterTest < Minitest::Test
 
   def test_preserves_file_paths_correctly
     File.write('db/schema.yaml', test_yaml_content)
-    
+
     converter = YamlToHclConverter.new('db/schema.yaml', 'db/output.hcl')
     converter.convert!
-    
+
     assert File.exist?('db/output.hcl')
     hcl_content = File.read('db/output.hcl')
     assert_includes hcl_content, 'table "users"'
@@ -392,17 +392,17 @@ class StandaloneYamlConverterTest < Minitest::Test
 
   def test_validates_generated_hcl_syntax
     File.write('db/schema.yaml', test_yaml_content)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Basic HCL syntax validation
     assert_match(/schema "main" \{\}/, hcl_content)
     assert_match(/table "\w+" \{/, hcl_content)
     assert_match(/column "\w+" \{/, hcl_content)
-    
+
     # Ensure braces are balanced
     open_braces = hcl_content.scan(/\{/).length
     close_braces = hcl_content.scan(/\}/).length
@@ -420,14 +420,14 @@ class StandaloneYamlConverterTest < Minitest::Test
             lastName: string(100) not_null
             emailAddress: string(255) not_null unique
     YAML
-    
+
     File.write('db/schema.yaml', case_yaml)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Should preserve exact case
     assert_includes hcl_content, 'table "UserProfiles"'
     assert_includes hcl_content, 'column "firstName"'
@@ -451,14 +451,14 @@ class StandaloneYamlConverterTest < Minitest::Test
             score: decimal(8,2)
             data: binary(1024)
     YAML
-    
+
     File.write('db/schema.yaml', types_yaml)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Verify all column types
     assert_includes hcl_content, 'type = varchar(255)'
     assert_includes hcl_content, 'type = integer'
@@ -485,18 +485,18 @@ class StandaloneYamlConverterTest < Minitest::Test
             - columns: [commentable_id, commentable_type]
             - columns: [commentable_type]
     YAML
-    
+
     File.write('db/schema.yaml', polymorphic_yaml)
-    
+
     converter = YamlToHclConverter.new
     converter.convert!
-    
+
     hcl_content = File.read('db/schema.hcl')
-    
+
     # Verify polymorphic columns
     assert_includes hcl_content, 'column "commentable_id"'
     assert_includes hcl_content, 'column "commentable_type"'
-    
+
     # Verify polymorphic index
     assert_includes hcl_content, 'index "index_comments_on_commentable_id_and_commentable_type"'
     assert_includes hcl_content, 'columns = [column.commentable_id, column.commentable_type]'
@@ -507,7 +507,7 @@ class StandaloneYamlConverterTest < Minitest::Test
   def test_yaml_content
     <<~YAML
       schema_name: public
-      
+
       tables:
         users:
           columns:
@@ -521,7 +521,7 @@ class StandaloneYamlConverterTest < Minitest::Test
           indexes:
             - email
             - active
-            
+      #{'      '}
         posts:
           columns:
             id: primary_key
@@ -541,16 +541,16 @@ class StandaloneYamlConverterTest < Minitest::Test
   def capture_output
     original_stdout = $stdout
     original_stderr = $stderr
-    
+
     captured_stdout = StringIO.new
     captured_stderr = StringIO.new
-    
+
     $stdout = captured_stdout
     $stderr = captured_stderr
-    
+
     yield
-    
-    [captured_stdout.string, captured_stderr.string]
+
+    [ captured_stdout.string, captured_stderr.string ]
   ensure
     $stdout = original_stdout
     $stderr = original_stderr

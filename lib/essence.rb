@@ -13,7 +13,7 @@ module Essence
     #
     # @param file_path [String] Path where to create the template
     # @return [void]
-    def generate_template(file_path = 'db/schema.yaml')
+    def generate_template(file_path = "db/schema.yaml")
       Essence::Compiler.generate_template(file_path)
     end
 
@@ -32,7 +32,7 @@ module Essence
     # @param atlas_env [String] Atlas environment name
     # @param rails_root [String] Rails application root directory
     # @return [Essence::RailsBridge]
-    def rails_bridge(atlas_env: 'dev', rails_root: '.')
+    def rails_bridge(atlas_env: "dev", rails_root: ".")
       Essence::RailsBridge.new(atlas_env: atlas_env, rails_root: rails_root)
     end
   end

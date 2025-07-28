@@ -50,10 +50,10 @@ class YamlToHclConverter
       column_patterns:
         # Foreign key columns: _id suffix gets integer -> {table}.id on_delete=cascade not_null
         - "_id$": "integer -> {table}.id on_delete=cascade not_null"
-        
+      #{'  '}
         # Timestamp columns: _at suffix gets datetime not_null
         - "_at$": "datetime not_null"
-        
+      #{'  '}
         # Default fallback: unmatched columns become strings
         - ".*": "string"
 

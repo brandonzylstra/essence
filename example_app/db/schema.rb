@@ -22,10 +22,10 @@ ActiveRecord::Schema[8.0].define(version: 0) do
     t.datetime "awarded_at", precision: nil, null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.index ["award_type"], name: "index_awards_on_award_type"
-    t.index ["position"], name: "index_awards_on_position"
-    t.index ["recipient_id", "recipient_type"], name: "index_awards_on_recipient"
-    t.index ["tournament_event_id"], name: "index_awards_on_tournament_event_id"
+    t.index [ "award_type" ], name: "index_awards_on_award_type"
+    t.index [ "position" ], name: "index_awards_on_position"
+    t.index [ "recipient_id", "recipient_type" ], name: "index_awards_on_recipient"
+    t.index [ "tournament_event_id" ], name: "index_awards_on_tournament_event_id"
   end
 
   create_table "event_types", force: :cascade do |t|
@@ -39,9 +39,9 @@ ActiveRecord::Schema[8.0].define(version: 0) do
     t.boolean "active", null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.index ["category"], name: "index_event_types_on_category"
-    t.index ["name"], name: "index_event_types_on_name", unique: true
-    t.index ["participant_type"], name: "index_event_types_on_participant_type"
+    t.index [ "category" ], name: "index_event_types_on_category"
+    t.index [ "name" ], name: "index_event_types_on_name", unique: true
+    t.index [ "participant_type" ], name: "index_event_types_on_participant_type"
   end
 
   create_table "judges", force: :cascade do |t|
@@ -54,9 +54,9 @@ ActiveRecord::Schema[8.0].define(version: 0) do
     t.boolean "active", null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.index ["tournament_id"], name: "index_judges_on_tournament_id"
-    t.index ["user_id", "tournament_id"], name: "index_judges_unique", unique: true
-    t.index ["user_id"], name: "index_judges_on_user_id"
+    t.index [ "tournament_id" ], name: "index_judges_on_tournament_id"
+    t.index [ "user_id", "tournament_id" ], name: "index_judges_unique", unique: true
+    t.index [ "user_id" ], name: "index_judges_on_user_id"
   end
 
   create_table "leagues", force: :cascade do |t|
@@ -68,7 +68,7 @@ ActiveRecord::Schema[8.0].define(version: 0) do
     t.boolean "active", null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.index ["name"], name: "index_leagues_on_name", unique: true
+    t.index [ "name" ], name: "index_leagues_on_name", unique: true
   end
 
   create_table "match_judges", force: :cascade do |t|
@@ -78,9 +78,9 @@ ActiveRecord::Schema[8.0].define(version: 0) do
     t.string "status", default: "assigned", null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.index ["judge_id"], name: "index_match_judges_on_judge_id"
-    t.index ["match_id", "judge_id"], name: "index_match_judges_unique", unique: true
-    t.index ["match_id"], name: "index_match_judges_on_match_id"
+    t.index [ "judge_id" ], name: "index_match_judges_on_judge_id"
+    t.index [ "match_id", "judge_id" ], name: "index_match_judges_unique", unique: true
+    t.index [ "match_id" ], name: "index_match_judges_on_match_id"
   end
 
   create_table "match_participants", force: :cascade do |t|
@@ -93,9 +93,9 @@ ActiveRecord::Schema[8.0].define(version: 0) do
     t.integer "rank"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.index ["match_id", "participant_id", "participant_type"], name: "index_match_participants_unique", unique: true
-    t.index ["match_id"], name: "index_match_participants_on_match_id"
-    t.index ["participant_id", "participant_type"], name: "index_match_participants_on_participant"
+    t.index [ "match_id", "participant_id", "participant_type" ], name: "index_match_participants_unique", unique: true
+    t.index [ "match_id" ], name: "index_match_participants_on_match_id"
+    t.index [ "participant_id", "participant_type" ], name: "index_match_participants_on_participant"
   end
 
   create_table "matches", force: :cascade do |t|
@@ -110,10 +110,10 @@ ActiveRecord::Schema[8.0].define(version: 0) do
     t.text "notes"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.index ["room_id"], name: "index_matches_on_room_id"
-    t.index ["round_id", "match_number"], name: "index_matches_on_match_number", unique: true
-    t.index ["round_id"], name: "index_matches_on_round_id"
-    t.index ["start_time"], name: "index_matches_on_start_time"
+    t.index [ "room_id" ], name: "index_matches_on_room_id"
+    t.index [ "round_id", "match_number" ], name: "index_matches_on_match_number", unique: true
+    t.index [ "round_id" ], name: "index_matches_on_round_id"
+    t.index [ "start_time" ], name: "index_matches_on_start_time"
   end
 
   create_table "registrations", force: :cascade do |t|
@@ -127,10 +127,10 @@ ActiveRecord::Schema[8.0].define(version: 0) do
     t.text "notes"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.index ["participant_id", "participant_type"], name: "index_registrations_on_participant"
-    t.index ["status"], name: "index_registrations_on_status"
-    t.index ["tournament_event_id", "participant_id", "participant_type"], name: "index_registrations_unique", unique: true
-    t.index ["tournament_event_id"], name: "index_registrations_on_tournament_event_id"
+    t.index [ "participant_id", "participant_type" ], name: "index_registrations_on_participant"
+    t.index [ "status" ], name: "index_registrations_on_status"
+    t.index [ "tournament_event_id", "participant_id", "participant_type" ], name: "index_registrations_unique", unique: true
+    t.index [ "tournament_event_id" ], name: "index_registrations_on_tournament_event_id"
   end
 
   create_table "rooms", force: :cascade do |t|
@@ -145,8 +145,8 @@ ActiveRecord::Schema[8.0].define(version: 0) do
     t.boolean "available", null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.index ["room_type"], name: "index_rooms_on_room_type"
-    t.index ["tournament_id"], name: "index_rooms_on_tournament_id"
+    t.index [ "room_type" ], name: "index_rooms_on_room_type"
+    t.index [ "tournament_id" ], name: "index_rooms_on_tournament_id"
   end
 
   create_table "rounds", force: :cascade do |t|
@@ -160,9 +160,9 @@ ActiveRecord::Schema[8.0].define(version: 0) do
     t.text "notes"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.index ["start_time"], name: "index_rounds_on_start_time"
-    t.index ["tournament_event_id", "round_number"], name: "index_rounds_on_round_number", unique: true
-    t.index ["tournament_event_id"], name: "index_rounds_on_tournament_event_id"
+    t.index [ "start_time" ], name: "index_rounds_on_start_time"
+    t.index [ "tournament_event_id", "round_number" ], name: "index_rounds_on_round_number", unique: true
+    t.index [ "tournament_event_id" ], name: "index_rounds_on_tournament_event_id"
   end
 
   create_table "seasons", force: :cascade do |t|
@@ -172,7 +172,7 @@ ActiveRecord::Schema[8.0].define(version: 0) do
     t.boolean "active", null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.index ["active"], name: "index_seasons_on_active"
+    t.index [ "active" ], name: "index_seasons_on_active"
   end
 
   create_table "team_memberships", force: :cascade do |t|
@@ -181,9 +181,9 @@ ActiveRecord::Schema[8.0].define(version: 0) do
     t.string "role", default: "member", null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.index ["team_id", "user_id"], name: "index_team_memberships_unique", unique: true
-    t.index ["team_id"], name: "index_team_memberships_on_team_id"
-    t.index ["user_id"], name: "index_team_memberships_on_user_id"
+    t.index [ "team_id", "user_id" ], name: "index_team_memberships_unique", unique: true
+    t.index [ "team_id" ], name: "index_team_memberships_on_team_id"
+    t.index [ "user_id" ], name: "index_team_memberships_on_user_id"
   end
 
   create_table "teams", force: :cascade do |t|
@@ -194,8 +194,8 @@ ActiveRecord::Schema[8.0].define(version: 0) do
     t.boolean "active", null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.index ["league_id"], name: "index_teams_on_league_id"
-    t.index ["season_id"], name: "index_teams_on_season_id"
+    t.index [ "league_id" ], name: "index_teams_on_league_id"
+    t.index [ "season_id" ], name: "index_teams_on_season_id"
   end
 
   create_table "tournament_events", force: :cascade do |t|
@@ -207,9 +207,9 @@ ActiveRecord::Schema[8.0].define(version: 0) do
     t.string "status", default: "open", null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.index ["event_type_id"], name: "index_tournament_events_on_event_type_id"
-    t.index ["tournament_id", "event_type_id"], name: "index_tournament_events_unique", unique: true
-    t.index ["tournament_id"], name: "index_tournament_events_on_tournament_id"
+    t.index [ "event_type_id" ], name: "index_tournament_events_on_event_type_id"
+    t.index [ "tournament_id", "event_type_id" ], name: "index_tournament_events_unique", unique: true
+    t.index [ "tournament_id" ], name: "index_tournament_events_on_tournament_id"
   end
 
   create_table "tournaments", force: :cascade do |t|
@@ -227,10 +227,10 @@ ActiveRecord::Schema[8.0].define(version: 0) do
     t.text "description"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.index ["league_id"], name: "index_tournaments_on_league_id"
-    t.index ["season_id"], name: "index_tournaments_on_season_id"
-    t.index ["start_date"], name: "index_tournaments_on_start_date"
-    t.index ["status"], name: "index_tournaments_on_status"
+    t.index [ "league_id" ], name: "index_tournaments_on_league_id"
+    t.index [ "season_id" ], name: "index_tournaments_on_season_id"
+    t.index [ "start_date" ], name: "index_tournaments_on_start_date"
+    t.index [ "status" ], name: "index_tournaments_on_status"
   end
 
   create_table "users", force: :cascade do |t|
@@ -245,9 +245,9 @@ ActiveRecord::Schema[8.0].define(version: 0) do
     t.boolean "active", null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.index ["email"], name: "index_users_on_email", unique: true
-    t.index ["league_id"], name: "index_users_on_league_id"
-    t.index ["role"], name: "index_users_on_role"
+    t.index [ "email" ], name: "index_users_on_email", unique: true
+    t.index [ "league_id" ], name: "index_users_on_league_id"
+    t.index [ "role" ], name: "index_users_on_role"
   end
 
   add_foreign_key "awards", "tournament_events", on_delete: :cascade

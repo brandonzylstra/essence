@@ -46,9 +46,9 @@ class EssenceCli
 
   def generate_template
     file_path = @args[1] || 'db/schema.yaml'
-    
+
     puts "🎯 Generating Essence schema template at #{file_path}..."
-    
+
     begin
       Essence.generate_template(file_path)
     rescue => e
@@ -60,14 +60,14 @@ class EssenceCli
   def compile_schema
     yaml_file = @args[1]
     hcl_file = @args[2]
-    
+
     if yaml_file && !File.exist?(yaml_file)
       puts "❌ YAML file not found: #{yaml_file}"
       exit 1
     end
-    
+
     puts "🔄 Compiling schema to HCL format..."
-    
+
     begin
       Essence.compile(yaml_file, hcl_file)
     rescue => e
@@ -85,45 +85,45 @@ class EssenceCli
     puts <<~HELP
       Essence - Database Schema Management
       ====================================
-      
+
       Rapid database schema iteration for Rails applications.
-      
+
       USAGE:
         essence <command> [options]
-      
+
       COMMANDS:
         template [file]       Generate a new schema.yaml template (alias: t)
         compile [yaml] [hcl]  Compile YAML schema to HCL format (alias: c)
         version               Show Essence version (alias: v)
         help                  Show this help message (alias: h)
-      
+
       EXAMPLES:
         essence template                        # Generate db/schema.yaml template
         essence template custom/schema.yaml     # Generate template at custom path
         essence compile                         # Compile db/schema.yaml to db/schema.hcl
         essence compile input.yaml output.hcl   # Compile with custom file paths
         essence version                         # Show version information
-      
+
       FEATURES:
         ✅ Default columns (id, created_at, updated_at) for all tables
         ✅ Smart pattern matching for column properties:
            • _id columns → automatic foreign keys with references
-           • _at columns → datetime not_null constraints  
+           • _at columns → datetime not_null constraints#{'  '}
            • Fallback to string type for unmatched columns
         ✅ Automatic pluralization for foreign key references
         ✅ Clean YAML syntax that's version-control friendly
         ✅ Template generation for quick project setup
         ✅ Seamless Rails integration via rake tasks
-      
+
       RAILS INTEGRATION:
         In a Rails project, use rake tasks for full workflow:
-        
+      #{'  '}
         rake essence:template                # Generate schema template
         rake essence:compile                 # Compile YAML to HCL
         rake essence:preview                 # Preview schema changes
         rake essence:apply                   # Apply changes to database
         rake essence:deploy[name]            # Full workflow with migration
-      
+
       For more information, visit: https://github.com/brandonzylstra/essence
     HELP
   end

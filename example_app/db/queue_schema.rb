@@ -23,7 +23,7 @@ ActiveRecord::Schema[7.1].define(version: 1) do
     t.bigint    "job_id",     null: false
     t.text      "error"
     t.datetime  "created_at", null: false
-    t.index   [ "job_id" ],   name: "index_solid_queue_failed_executions_on_job_id", unique: true
+    t.index [ "job_id" ],   name: "index_solid_queue_failed_executions_on_job_id", unique: true
   end
 
   create_table "solid_queue_jobs", force: :cascade do |t|
@@ -47,7 +47,7 @@ ActiveRecord::Schema[7.1].define(version: 1) do
   create_table "solid_queue_pauses", force: :cascade do |t|
     t.string    "queue_name",   null: false
     t.datetime  "created_at",   null: false
-    t.index   [ "queue_name" ], name: "index_solid_queue_pauses_on_queue_name", unique: true
+    t.index [ "queue_name" ], name: "index_solid_queue_pauses_on_queue_name", unique: true
   end
 
   create_table "solid_queue_processes", force: :cascade do |t|

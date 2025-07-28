@@ -7,7 +7,7 @@ require "rubocop/rake_task"
 # Set up RSpec task
 RSpec::Core::RakeTask.new(:spec) do |spec|
   spec.pattern = FileList['spec/**/*_spec.rb']
-  spec.rspec_opts = ['--format documentation', '--color']
+  spec.rspec_opts = [ '--format documentation', '--color' ]
 end
 
 # Set up RuboCop task
@@ -21,7 +21,7 @@ end
 RuboCop::RakeTask.new('rubocop:autocorrect') do |task|
   task.requires << 'rubocop-rails'
   task.requires << 'rubocop-rspec'
-  task.options = ['--autocorrect']
+  task.options = [ '--autocorrect' ]
   task.fail_on_error = false
 end
 
@@ -29,7 +29,7 @@ end
 begin
   require 'yard'
   YARD::Rake::YardocTask.new(:doc) do |task|
-    task.files = ['lib/**/*.rb']
+    task.files = [ 'lib/**/*.rb' ]
     task.options = [
       '--output-dir', 'doc',
       '--markup', 'markdown',
@@ -44,19 +44,19 @@ end
 
 # Quality control task that runs all checks
 desc "Run all quality control checks"
-task :qa => [:rubocop, :spec]
+task qa: [ :rubocop, :spec ]
 
 # Development setup task
 desc "Set up development environment"
 task :setup do
   puts "Installing dependencies..."
   system("bundle install")
-  
+
   puts "Creating directories..."
   require 'fileutils'
   FileUtils.mkdir_p('tmp')
   FileUtils.mkdir_p('log')
-  
+
   puts "✅ Development environment ready!"
   puts ""
   puts "Available tasks:"
@@ -74,11 +74,11 @@ desc "Start an interactive console with JAML loaded"
 task :console do
   require 'irb'
   require_relative 'lib/jaml'
-  
+
   puts "🎯 JAML Console"
   puts "Available: JAML, JAML::Converter, JAML::RailsBridge"
   puts ""
-  
+
   IRB.start
 end
 
@@ -86,7 +86,7 @@ end
 desc "Test the example Rails application"
 task :test_example do
   example_dir = File.join(__dir__, 'example_app')
-  
+
   if Dir.exist?(example_dir)
     puts "🚂 Testing example Rails application..."
     Dir.chdir(example_dir) do
@@ -102,22 +102,22 @@ end
 desc "Clean up generated files"
 task :clean do
   puts "🧹 Cleaning up..."
-  
+
   # Remove gem files
   FileUtils.rm_rf('pkg/')
-  
+
   # Remove coverage reports
   FileUtils.rm_rf('coverage/')
-  
+
   # Remove documentation
   FileUtils.rm_rf('doc/')
-  
+
   # Remove log files
   FileUtils.rm_rf('log/')
-  
+
   # Remove temp files
   FileUtils.rm_rf('tmp/')
-  
+
   puts "✅ Cleanup complete!"
 end
 
@@ -125,11 +125,11 @@ end
 desc "Run performance benchmarks"
 task :benchmark do
   puts "🏃‍♂️ Running JAML performance benchmarks..."
-  
+
   require 'benchmark'
   require_relative 'lib/jaml'
   require 'tempfile'
-  
+
   # Create a large test schema
   large_schema = {
     'schema_name' => 'main',
@@ -149,7 +149,7 @@ task :benchmark do
     ],
     'tables' => {}
   }
-  
+
   # Generate 50 tables with various columns
   50.times do |i|
     table_name = "table_#{i}"
@@ -161,22 +161,22 @@ task :benchmark do
         'created_at' => '~',
         'active' => 'boolean default=true'
       },
-      'indexes' => ['name', 'other_table_id']
+      'indexes' => [ 'name', 'other_table_id' ]
     }
   end
-  
-  Tempfile.create(['large_schema', '.yaml']) do |yaml_file|
-    Tempfile.create(['large_schema', '.hcl']) do |hcl_file|
+
+  Tempfile.create([ 'large_schema', '.yaml' ]) do |yaml_file|
+    Tempfile.create([ 'large_schema', '.hcl' ]) do |hcl_file|
       File.write(yaml_file.path, large_schema.to_yaml)
-      
+
       time = Benchmark.realtime do
         converter = JAML::Converter.new(yaml_file.path, hcl_file.path)
         converter.convert!
       end
-      
+
       file_size = File.size(hcl_file.path)
       table_count = large_schema['tables'].size
-      
+
       puts ""
       puts "📊 Benchmark Results:"
       puts "  Tables processed: #{table_count}"
@@ -188,7 +188,7 @@ task :benchmark do
 end
 
 # Default task
-task default: [:qa]
+task default: [ :qa ]
 
 # Help task
 desc "Show available rake tasks"
@@ -196,12 +196,12 @@ task :help do
   puts "🎯 JAML Gem - Available Rake Tasks"
   puts "=" * 50
   puts ""
-  
+
   Rake.application.tasks.each do |task|
     next if task.comment.nil?
     printf "%-20s # %s\n", task.name, task.comment
   end
-  
+
   puts ""
   puts "For more information about JAML, visit:"
   puts "https://github.com/brandonzylstra/jaml"

@@ -5,7 +5,7 @@ require 'open3'
 
 RSpec.describe 'CLI Integration Tests' do
   let(:cli_path) { File.expand_path('../../exe/essence', __dir__) }
-  
+
   before do
     # Ensure CLI is executable
     FileUtils.chmod(0755, cli_path)
@@ -15,12 +15,12 @@ RSpec.describe 'CLI Integration Tests' do
     describe 'essence template' do
       it 'generates a template file with default path' do
         stdout, stderr, status = Open3.capture3("ruby #{cli_path} template")
-        
+
         expect(status.success?).to be true
         expect(stdout).to include('Generating Essence schema template')
         expect(stdout).to include('Schema template created at db/schema.yaml')
         expect(File.exist?('db/schema.yaml')).to be true
-        
+
         content = File.read('db/schema.yaml')
         expect(content).to include('schema_name: public')
         expect(content).to include('defaults:')
@@ -30,7 +30,7 @@ RSpec.describe 'CLI Integration Tests' do
       it 'generates a template file with custom path' do
         custom_path = 'custom/my_schema.yaml'
         stdout, stderr, status = Open3.capture3("ruby #{cli_path} template #{custom_path}")
-        
+
         expect(status.success?).to be true
         expect(stdout).to include("Generating Essence schema template at #{custom_path}")
         expect(File.exist?(custom_path)).to be true
@@ -39,7 +39,7 @@ RSpec.describe 'CLI Integration Tests' do
       it 'creates directories if they do not exist' do
         deep_path = 'very/deep/nested/schema.yaml'
         stdout, stderr, status = Open3.capture3("ruby #{cli_path} template #{deep_path}")
-        
+
         expect(status.success?).to be true
         expect(File.exist?(deep_path)).to be true
       end
@@ -71,7 +71,7 @@ RSpec.describe 'CLI Integration Tests' do
                 user_id: ~
                 published_at: ~
         YAML
-        
+
         FileUtils.mkdir_p('db')
         File.write('test_input.yaml', test_schema)
       end
@@ -79,14 +79,14 @@ RSpec.describe 'CLI Integration Tests' do
       it 'compiles YAML to HCL with default paths' do
         # First create the default input file
         FileUtils.cp('test_input.yaml', 'db/schema.yaml')
-        
+
         stdout, stderr, status = Open3.capture3("ruby #{cli_path} compile")
-        
+
         expect(status.success?).to be true
         expect(stdout).to include('Compiling schema to HCL format')
         expect(stdout).to include('Compilation completed successfully')
         expect(File.exist?('db/schema.hcl')).to be true
-        
+
         hcl_content = File.read('db/schema.hcl')
         expect(hcl_content).to include('schema "test"')
         expect(hcl_content).to include('table "users"')
@@ -96,11 +96,11 @@ RSpec.describe 'CLI Integration Tests' do
 
       it 'compiles YAML to HCL with custom paths' do
         stdout, stderr, status = Open3.capture3("ruby #{cli_path} compile test_input.yaml test_output.hcl")
-        
+
         expect(status.success?).to be true
         expect(stdout).to include('Compiling schema to HCL format')
         expect(File.exist?('test_output.hcl')).to be true
-        
+
         hcl_content = File.read('test_output.hcl')
         expect(hcl_content).to include('table "users"')
         expect(hcl_content).to include('foreign_key "fk_users_league_id"')
@@ -109,16 +109,16 @@ RSpec.describe 'CLI Integration Tests' do
 
       it 'reports error for missing input file' do
         stdout, stderr, status = Open3.capture3("ruby #{cli_path} compile nonexistent.yaml output.hcl")
-        
+
         expect(status.success?).to be false
         expect(stdout).to include('YAML file not found: nonexistent.yaml')
       end
 
       it 'handles malformed YAML gracefully' do
         File.write('malformed.yaml', 'invalid: yaml: [content')
-        
+
         stdout, stderr, status = Open3.capture3("ruby #{cli_path} compile malformed.yaml output.hcl")
-        
+
         expect(status.success?).to be false
         expect(stdout).to include('Error during compilation')
       end
@@ -127,7 +127,7 @@ RSpec.describe 'CLI Integration Tests' do
     describe 'essence version' do
       it 'displays version information' do
         stdout, stderr, status = Open3.capture3("ruby #{cli_path} version")
-        
+
         expect(status.success?).to be true
         expect(stdout).to include('Essence v0.1.0')
         expect(stdout).to include('Essence - Database Schema Management')
@@ -135,14 +135,14 @@ RSpec.describe 'CLI Integration Tests' do
 
       it 'responds to -v flag' do
         stdout, stderr, status = Open3.capture3("ruby #{cli_path} -v")
-        
+
         expect(status.success?).to be true
         expect(stdout).to include('Essence v0.1.0')
       end
 
       it 'responds to --version flag' do
         stdout, stderr, status = Open3.capture3("ruby #{cli_path} --version")
-        
+
         expect(status.success?).to be true
         expect(stdout).to include('Essence v0.1.0')
         expect(stdout).to include('Essence - Database Schema Management')
@@ -152,7 +152,7 @@ RSpec.describe 'CLI Integration Tests' do
     describe 'essence help' do
       it 'displays help information' do
         stdout, stderr, status = Open3.capture3("ruby #{cli_path} --help")
-        
+
         expect(status.success?).to be true
         expect(stdout).to include('Essence - Database Schema Management')
         expect(stdout).to include('EXAMPLES:')
@@ -166,21 +166,21 @@ RSpec.describe 'CLI Integration Tests' do
 
       it 'responds to -h flag' do
         stdout, stderr, status = Open3.capture3("ruby #{cli_path} -h")
-        
+
         expect(status.success?).to be true
         expect(stdout).to include('Essence - Database Schema Management')
       end
 
       it 'responds to --help flag' do
         stdout, stderr, status = Open3.capture3("ruby #{cli_path} --help")
-        
+
         expect(status.success?).to be true
         expect(stdout).to include('USAGE:')
       end
 
       it 'shows help when no command is provided' do
         stdout, stderr, status = Open3.capture3("ruby #{cli_path}")
-        
+
         expect(status.success?).to be true
         expect(stdout).to include('Essence - Database Schema Management')
       end
@@ -189,7 +189,7 @@ RSpec.describe 'CLI Integration Tests' do
     describe 'command aliases' do
       it 'accepts t as alias for template' do
         stdout, stderr, status = Open3.capture3("ruby #{cli_path} t custom_template.yaml")
-        
+
         expect(status.success?).to be true
         expect(stdout).to include('Schema template created')
         expect(File.exist?('custom_template.yaml')).to be true
@@ -205,9 +205,9 @@ RSpec.describe 'CLI Integration Tests' do
                 id: primary_key
         YAML
         File.write('alias_test.yaml', test_schema)
-        
+
         stdout, stderr, status = Open3.capture3("ruby #{cli_path} c alias_test.yaml alias_test.hcl")
-        
+
         expect(status.success?).to be true
         expect(stdout).to include('Compiling schema to HCL format')
         expect(File.exist?('alias_test.hcl')).to be true
@@ -215,7 +215,7 @@ RSpec.describe 'CLI Integration Tests' do
 
       it 'accepts v as alias for version' do
         stdout, stderr, status = Open3.capture3("ruby #{cli_path} v")
-        
+
         expect(status.success?).to be true
         expect(stdout).to include('Essence v0.1.0')
       end
@@ -224,7 +224,7 @@ RSpec.describe 'CLI Integration Tests' do
     describe 'error handling' do
       it 'reports unknown commands' do
         stdout, stderr, status = Open3.capture3("ruby #{cli_path} unknown_command")
-        
+
         expect(status.success?).to be false
         expect(stdout).to include('Unknown command: unknown_command')
         expect(stdout).to include("Run 'essence help' for available commands")
@@ -234,12 +234,12 @@ RSpec.describe 'CLI Integration Tests' do
         # Create a read-only directory
         FileUtils.mkdir_p('readonly_dir')
         FileUtils.chmod(0444, 'readonly_dir')
-        
+
         stdout, stderr, status = Open3.capture3("ruby #{cli_path} template readonly_dir/schema.yaml")
-        
+
         expect(status.success?).to be false
         expect(stdout).to include('Error generating template')
-        
+
         # Clean up
         FileUtils.chmod(0755, 'readonly_dir')
         FileUtils.rm_rf('readonly_dir')
@@ -247,7 +247,7 @@ RSpec.describe 'CLI Integration Tests' do
 
       it 'handles invalid file paths gracefully' do
         stdout, stderr, status = Open3.capture3("ruby #{cli_path} compile /invalid/path/file.yaml output.hcl")
-        
+
         expect(status.success?).to be false
         expect(stdout).to include('YAML file not found')
       end
@@ -260,20 +260,20 @@ RSpec.describe 'CLI Integration Tests' do
       stdout, stderr, status = Open3.capture3("ruby #{cli_path} template workflow_test.yaml")
       expect(status.success?).to be true
       expect(File.exist?('workflow_test.yaml')).to be true
-      
+
       # Step 2: Compile to HCL
       stdout, stderr, status = Open3.capture3("ruby #{cli_path} compile workflow_test.yaml workflow_test.hcl")
       expect(status.success?).to be true
       expect(File.exist?('workflow_test.hcl')).to be true
-      
+
       # Step 3: Validate content
       yaml_content = File.read('workflow_test.yaml')
       hcl_content = File.read('workflow_test.hcl')
-      
+
       expect(yaml_content).to include('schema_name: public')
       expect(yaml_content).to include('column_patterns:')
       expect(yaml_content).to include('tables:')
-      
+
       expect(hcl_content).to include('schema "public"')
       expect(hcl_content).to include('table "users"')
       expect(hcl_content).to include('table "leagues"')
@@ -332,25 +332,25 @@ RSpec.describe 'CLI Integration Tests' do
               contact_email: ~
               is_verified: ~
       YAML
-      
+
       File.write('complex_test.yaml', complex_schema)
-      
+
       stdout, stderr, status = Open3.capture3("ruby #{cli_path} compile complex_test.yaml complex_test.hcl")
-      
+
       expect(status.success?).to be true
       expect(File.exist?('complex_test.hcl')).to be true
-      
+
       hcl_content = File.read('complex_test.hcl')
-      
+
       # Verify all tables are generated
       expect(hcl_content).to include('table "users"')
       expect(hcl_content).to include('table "posts"')
       expect(hcl_content).to include('table "companies"')
-      
+
       # Verify foreign keys are generated
       expect(hcl_content).to include('foreign_key "fk_users_company_id"')
       expect(hcl_content).to include('foreign_key "fk_posts_user_id"')
-      
+
       # Verify pattern applications
       expect(hcl_content).to match(/column "last_login_at".*?type = datetime/m)
       expect(hcl_content).to match(/column "is_active".*?type = boolean.*?default = false/m)
@@ -381,17 +381,17 @@ RSpec.describe 'CLI Integration Tests' do
               email: string(255) not_null unique
               name: string(100) not_null
       YAML
-      
+
       File.write('incremental_v1.yaml', basic_schema)
-      
+
       # Compile v1
       stdout, stderr, status = Open3.capture3("ruby #{cli_path} compile incremental_v1.yaml incremental_v1.hcl")
       expect(status.success?).to be true
-      
+
       v1_content = File.read('incremental_v1.hcl')
       expect(v1_content).to include('table "users"')
       expect(v1_content).not_to include('table "posts"')
-      
+
       # Add more tables and patterns
       enhanced_schema = <<~YAML
         schema_name: incremental
@@ -424,13 +424,13 @@ RSpec.describe 'CLI Integration Tests' do
               name: string(100) not_null
               is_active: ~
       YAML
-      
+
       File.write('incremental_v2.yaml', enhanced_schema)
-      
+
       # Compile v2
       stdout, stderr, status = Open3.capture3("ruby #{cli_path} compile incremental_v2.yaml incremental_v2.hcl")
       expect(status.success?).to be true
-      
+
       v2_content = File.read('incremental_v2.hcl')
       expect(v2_content).to include('table "users"')
       expect(v2_content).to include('table "posts"')
@@ -467,21 +467,21 @@ RSpec.describe 'CLI Integration Tests' do
               published_at: timestamp not_null                       # Override pattern
               content: text not_null
       YAML
-      
+
       File.write('mixed_test.yaml', mixed_schema)
-      
+
       stdout, stderr, status = Open3.capture3("ruby #{cli_path} compile mixed_test.yaml mixed_test.hcl")
-      
+
       expect(status.success?).to be true
-      
+
       hcl_content = File.read('mixed_test.hcl')
-      
+
       # Verify overrides work
       expect(hcl_content).to match(/column "company_id".*?type = bigint/m)
       expect(hcl_content).to include('on_delete = SET_NULL')
       expect(hcl_content).to match(/column "published_at".*?type = timestamp/m)
       expect(hcl_content).to match(/column "bio".*?type = text/m)
-      
+
       # Verify patterns still work where not overridden
       expect(hcl_content).to include('foreign_key "fk_posts_user_id"')
       expect(hcl_content).to match(/column "last_login_at".*?type = datetime/m)
@@ -509,7 +509,7 @@ RSpec.describe 'CLI Integration Tests' do
         ],
         'tables' => {}
       }
-      
+
       # Generate 25 tables with 10 columns each
       25.times do |i|
         table_name = "table_#{i}"
@@ -526,23 +526,23 @@ RSpec.describe 'CLI Integration Tests' do
             'metadata' => 'text',
             'notes' => 'string(500)'
           },
-          'indexes' => ['name', 'other_table_id', 'published_at']
+          'indexes' => [ 'name', 'other_table_id', 'published_at' ]
         }
       end
-      
+
       File.write('large_test.yaml', large_schema.to_yaml)
-      
+
       start_time = Time.now
       stdout, stderr, status = Open3.capture3("ruby #{cli_path} compile large_test.yaml large_test.hcl")
       end_time = Time.now
-      
+
       expect(status.success?).to be true
       expect(File.exist?('large_test.hcl')).to be true
-      
+
       # Should complete within reasonable time (under 5 seconds)
       execution_time = end_time - start_time
       expect(execution_time).to be < 5.0
-      
+
       # Verify output correctness
       hcl_content = File.read('large_test.hcl')
       expect(hcl_content.scan(/table "table_\d+"/).length).to eq(25)
@@ -568,9 +568,9 @@ RSpec.describe 'CLI Integration Tests' do
             columns:
               name: string(100) not_null
       YAML
-      
+
       File.write('consistency_test.yaml', test_schema)
-      
+
       # Run conversion multiple times
       outputs = []
       3.times do |i|
@@ -578,7 +578,7 @@ RSpec.describe 'CLI Integration Tests' do
         expect(status.success?).to be true
         outputs << File.read("consistency_#{i}.hcl")
       end
-      
+
       # All outputs should be identical
       expect(outputs[0]).to eq(outputs[1])
       expect(outputs[1]).to eq(outputs[2])
@@ -593,9 +593,9 @@ RSpec.describe 'CLI Integration Tests' do
               id: primary_key
               name: string(100) not_null
       YAML
-      
+
       File.write('concurrent_test.yaml', test_schema)
-      
+
       # Run multiple conversions concurrently
       threads = []
       5.times do |i|
@@ -604,9 +604,9 @@ RSpec.describe 'CLI Integration Tests' do
           { status: status.success?, file_exists: File.exist?("concurrent_#{i}.hcl") }
         end
       end
-      
+
       results = threads.map(&:value)
-      
+
       # All should succeed
       expect(results.all? { |r| r[:status] }).to be true
       expect(results.all? { |r| r[:file_exists] }).to be true

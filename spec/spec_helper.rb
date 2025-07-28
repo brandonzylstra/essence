@@ -8,12 +8,12 @@ SimpleCov.start do
   add_filter '/spec/'
   add_filter '/example_app/'
   add_filter '/vendor/'
-  
+
   add_group 'Core', 'lib/jaml'
   add_group 'Tasks', 'lib/jaml/tasks'
-  
+
   minimum_coverage 90
-  
+
   formatter SimpleCov::Formatter::MultiFormatter.new([
     SimpleCov::Formatter::HTMLFormatter
   ])
@@ -86,7 +86,7 @@ RSpec.configure do |config|
     @test_dir = Dir.mktmpdir('jaml_test')
     @original_dir = Dir.pwd
     Dir.chdir(@test_dir)
-    
+
     # Create a basic directory structure for tests
     FileUtils.mkdir_p('db')
     FileUtils.mkdir_p('lib')

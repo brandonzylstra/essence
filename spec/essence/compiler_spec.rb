@@ -22,12 +22,12 @@ RSpec.describe Essence::Compiler do
     context 'with basic schema' do
       it 'compiles YAML to HCL format' do
         create_basic_schema
-        
+
         compiler = described_class.new('db/schema.yaml', 'db/schema.hcl')
         compiler.compile!
-        
+
         hcl_content = read_generated_hcl
-        
+
         expect(hcl_content).to include('schema "public" {}')
         expect(hcl_content).to include('table "users" {')
         expect(hcl_content).to include('table "leagues" {')
@@ -37,12 +37,12 @@ RSpec.describe Essence::Compiler do
     context 'with default columns' do
       it 'applies default columns to all tables' do
         create_basic_schema
-        
+
         compiler = described_class.new
         compiler.compile!
-        
+
         hcl_content = read_generated_hcl
-        
+
         # Check that default columns are present in both tables
         expect(hcl_content).to include('column "id" {')
         expect(hcl_content).to include('column "created_at" {')
@@ -54,12 +54,12 @@ RSpec.describe Essence::Compiler do
     context 'with pattern matching' do
       it 'applies foreign key patterns correctly' do
         create_basic_schema
-        
+
         compiler = described_class.new
         compiler.compile!
-        
+
         hcl_content = read_generated_hcl
-        
+
         # Check foreign key generation
         expect(hcl_content).to include('foreign_key "fk_users_league_id"')
         expect(hcl_content).to include('columns = [column.league_id]')
@@ -82,14 +82,14 @@ RSpec.describe Essence::Compiler do
                 published_at: ~
                 deleted_at: ~
         YAML
-        
+
         create_test_yaml(schema_with_timestamps)
-        
+
         compiler = described_class.new
         compiler.compile!
-        
+
         hcl_content = read_generated_hcl
-        
+
         # Check timestamp pattern application
         expect(hcl_content).to include('column "published_at"')
         expect(hcl_content).to include('type = datetime')
@@ -111,18 +111,18 @@ RSpec.describe Essence::Compiler do
                 user_id: bigint -> users.id on_delete=set_null
                 category_id: ~
         YAML
-        
+
         create_test_yaml(schema_with_overrides)
-        
+
         compiler = described_class.new
         compiler.compile!
-        
+
         hcl_content = read_generated_hcl
-        
+
         # user_id should use explicit definition (bigint, SET_NULL)
         expect(hcl_content).to include('type = bigint')
         expect(hcl_content).to include('on_delete = SET_NULL')
-        
+
         # category_id should use pattern (integer, CASCADE)
         expect(hcl_content).to include('ref_columns = [table.categories.column.id]')
         expect(hcl_content).to include('on_delete = CASCADE')
@@ -143,14 +143,14 @@ RSpec.describe Essence::Compiler do
                 - email
                 - username
         YAML
-        
+
         create_test_yaml(schema_with_indexes)
-        
+
         compiler = described_class.new
         compiler.compile!
-        
+
         hcl_content = read_generated_hcl
-        
+
         expect(hcl_content).to include('index "index_users_on_email"')
         expect(hcl_content).to include('columns = [column.email]')
         expect(hcl_content).to include('index "index_users_on_username"')
@@ -168,14 +168,14 @@ RSpec.describe Essence::Compiler do
                 - columns: [email]
                   unique: true
         YAML
-        
+
         create_test_yaml(schema_with_unique_indexes)
-        
+
         compiler = described_class.new
         compiler.compile!
-        
+
         hcl_content = read_generated_hcl
-        
+
         expect(hcl_content).to include('index "index_users_on_email_unique"')
         expect(hcl_content).to include('unique = true')
       end
@@ -184,15 +184,15 @@ RSpec.describe Essence::Compiler do
     context 'with invalid input' do
       it 'raises an error for missing YAML file' do
         compiler = described_class.new('nonexistent.yaml', 'output.hcl')
-        
+
         expect { compiler.compile! }.to raise_error(SystemExit)
       end
 
       it 'handles invalid YAML gracefully' do
         File.write('db/schema.yaml', 'invalid: yaml: [content')
-        
+
         compiler = described_class.new
-        
+
         expect { compiler.compile! }.to raise_error(Psych::SyntaxError)
       end
     end
@@ -201,13 +201,13 @@ RSpec.describe Essence::Compiler do
   describe '.generate_template' do
     it 'creates a valid schema template' do
       template_path = 'db/test_template.yaml'
-      
+
       described_class.generate_template(template_path)
-      
+
       expect(File.exist?(template_path)).to be true
-      
+
       template_content = File.read(template_path)
-      
+
       # Check for key sections
       expect(template_content).to include('schema_name: public')
       expect(template_content).to include('defaults:')
@@ -216,7 +216,7 @@ RSpec.describe Essence::Compiler do
       expect(template_content).to include('"_id$": "integer -> {table}.id on_delete=cascade not_null"')
       expect(template_content).to include('"_at$": "datetime not_null"')
       expect(template_content).to include('tables:')
-      
+
       # Verify it's valid YAML
       parsed = YAML.load_file(template_path)
       expect(parsed['defaults']['*']['columns']['id']).to eq('primary_key')
@@ -227,22 +227,22 @@ RSpec.describe Essence::Compiler do
     it 'generates a convertible template' do
       template_path = 'db/generated_template.yaml'
       described_class.generate_template(template_path)
-      
+
       # Convert the generated template
       compiler = described_class.new(template_path, 'db/generated.hcl')
       compiler.compile!
-      
+
       hcl_content = File.read('db/generated.hcl')
-      
+
       # Should generate valid HCL with example tables
       expect(hcl_content).to include('table "users"')
       expect(hcl_content).to include('table "leagues"')
-      
+
       # Should have applied defaults and patterns
       expect(hcl_content).to include('column "id"')
       expect(hcl_content).to include('column "created_at"')
       expect(hcl_content).to include('column "league_id"')
-      
+
       # Should have foreign key for league_id
       expect(hcl_content).to include('foreign_key "fk_users_league_id"')
       expect(hcl_content).to include('ref_columns = [table.leagues.column.id]')
@@ -264,14 +264,14 @@ RSpec.describe Essence::Compiler do
               leaf_id: ~
               wife_id: ~
       YAML
-      
+
       create_test_yaml(schema_with_various_ids)
-      
+
       compiler = described_class.new
       compiler.compile!
-      
+
       hcl_content = read_generated_hcl
-      
+
       # Test various pluralization rules
       expect(hcl_content).to include('ref_columns = [table.categories.column.id]')  # y -> ies
       expect(hcl_content).to include('ref_columns = [table.companies.column.id]')   # y -> ies

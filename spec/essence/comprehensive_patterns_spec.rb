@@ -17,14 +17,14 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
               category_id: ~
               author_id: ~
       YAML
-      
+
       create_test_yaml(schema_content)
-      
+
       compiler = Essence::Compiler.new
       compiler.compile!
-      
+
       hcl_content = read_generated_hcl
-      
+
       expect(hcl_content).to include('foreign_key "fk_posts_user_id"')
       expect(hcl_content).to include('ref_columns = [table.users.column.id]')
       expect(hcl_content).to include('foreign_key "fk_posts_category_id"')
@@ -50,12 +50,12 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
               archived_at: ~
               scheduled_at: ~
       YAML
-      
+
       create_test_yaml(schema_content)
       compiler = Essence::Compiler.new
       compiler.compile!
       hcl_content = read_generated_hcl
-      
+
       %w[published_at deleted_at archived_at scheduled_at].each do |col|
         expect(hcl_content).to include("column \"#{col}\"")
         column_section = hcl_content[/column "#{col}".*?}/m]
@@ -77,12 +77,12 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
               completed_on: ~
               started_on: ~
       YAML
-      
+
       create_test_yaml(schema_content)
       compiler = Essence::Compiler.new
       compiler.compile!
       hcl_content = read_generated_hcl
-      
+
       %w[due_on completed_on started_on].each do |col|
         column_section = hcl_content[/column "#{col}".*?}/m]
         expect(column_section).to include('type = date')
@@ -102,12 +102,12 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
               hire_date: ~
               expiry_date: ~
       YAML
-      
+
       create_test_yaml(schema_content)
       compiler = Essence::Compiler.new
       compiler.compile!
       hcl_content = read_generated_hcl
-      
+
       %w[birth_date hire_date expiry_date].each do |col|
         column_section = hcl_content[/column "#{col}".*?}/m]
         expect(column_section).to include('type = date')
@@ -130,12 +130,12 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
               is_admin: ~
               is_public: ~
       YAML
-      
+
       create_test_yaml(schema_content)
       compiler = Essence::Compiler.new
       compiler.compile!
       hcl_content = read_generated_hcl
-      
+
       %w[is_active is_verified is_admin is_public].each do |col|
         column_section = hcl_content[/column "#{col}".*?}/m]
         expect(column_section).to include('type = boolean')
@@ -157,12 +157,12 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
               has_avatar: ~
               has_newsletter: ~
       YAML
-      
+
       create_test_yaml(schema_content)
       compiler = Essence::Compiler.new
       compiler.compile!
       hcl_content = read_generated_hcl
-      
+
       %w[has_premium has_avatar has_newsletter].each do |col|
         column_section = hcl_content[/column "#{col}".*?}/m]
         expect(column_section).to include('type = boolean')
@@ -183,12 +183,12 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
               can_delete: ~
               can_moderate: ~
       YAML
-      
+
       create_test_yaml(schema_content)
       compiler = Essence::Compiler.new
       compiler.compile!
       hcl_content = read_generated_hcl
-      
+
       %w[can_edit can_delete can_moderate].each do |col|
         column_section = hcl_content[/column "#{col}".*?}/m]
         expect(column_section).to include('type = boolean')
@@ -209,12 +209,12 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
               verified_flag: ~
               archived_flag: ~
       YAML
-      
+
       create_test_yaml(schema_content)
       compiler = Essence::Compiler.new
       compiler.compile!
       hcl_content = read_generated_hcl
-      
+
       %w[admin_flag verified_flag archived_flag].each do |col|
         column_section = hcl_content[/column "#{col}".*?}/m]
         expect(column_section).to include('type = boolean')
@@ -237,12 +237,12 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
               message_content: ~
               email_content: ~
       YAML
-      
+
       create_test_yaml(schema_content)
       compiler = Essence::Compiler.new
       compiler.compile!
       hcl_content = read_generated_hcl
-      
+
       %w[post_content message_content email_content].each do |col|
         column_section = hcl_content[/column "#{col}".*?}/m]
         expect(column_section).to include('type = text')
@@ -262,12 +262,12 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
               article_body: ~
               response_body: ~
       YAML
-      
+
       create_test_yaml(schema_content)
       compiler = Essence::Compiler.new
       compiler.compile!
       hcl_content = read_generated_hcl
-      
+
       %w[email_body article_body response_body].each do |col|
         column_section = hcl_content[/column "#{col}".*?}/m]
         expect(column_section).to include('type = text')
@@ -287,12 +287,12 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
               description_text: ~
               notes_text: ~
       YAML
-      
+
       create_test_yaml(schema_content)
       compiler = Essence::Compiler.new
       compiler.compile!
       hcl_content = read_generated_hcl
-      
+
       %w[bio_text description_text notes_text].each do |col|
         column_section = hcl_content[/column "#{col}".*?}/m]
         expect(column_section).to include('type = text')
@@ -312,12 +312,12 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
               formatted_html: ~
               raw_html: ~
       YAML
-      
+
       create_test_yaml(schema_content)
       compiler = Essence::Compiler.new
       compiler.compile!
       hcl_content = read_generated_hcl
-      
+
       %w[content_html formatted_html raw_html].each do |col|
         column_section = hcl_content[/column "#{col}".*?}/m]
         expect(column_section).to include('type = text')
@@ -340,12 +340,12 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
               download_count: ~
               share_count: ~
       YAML
-      
+
       create_test_yaml(schema_content)
       compiler = Essence::Compiler.new
       compiler.compile!
       hcl_content = read_generated_hcl
-      
+
       %w[view_count like_count download_count share_count].each do |col|
         column_section = hcl_content[/column "#{col}".*?}/m]
         expect(column_section).to include('type = integer')
@@ -367,12 +367,12 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
               test_score: ~
               credit_score: ~
       YAML
-      
+
       create_test_yaml(schema_content)
       compiler = Essence::Compiler.new
       compiler.compile!
       hcl_content = read_generated_hcl
-      
+
       %w[rating_score test_score credit_score].each do |col|
         column_section = hcl_content[/column "#{col}".*?}/m]
         expect(column_section).to include('type = decimal(8,2)')
@@ -392,12 +392,12 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
               fee_amount: ~
               discount_amount: ~
       YAML
-      
+
       create_test_yaml(schema_content)
       compiler = Essence::Compiler.new
       compiler.compile!
       hcl_content = read_generated_hcl
-      
+
       %w[total_amount fee_amount discount_amount].each do |col|
         column_section = hcl_content[/column "#{col}".*?}/m]
         expect(column_section).to include('type = decimal(10,2)')
@@ -417,12 +417,12 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
               sale_price: ~
               list_price: ~
       YAML
-      
+
       create_test_yaml(schema_content)
       compiler = Essence::Compiler.new
       compiler.compile!
       hcl_content = read_generated_hcl
-      
+
       %w[unit_price sale_price list_price].each do |col|
         column_section = hcl_content[/column "#{col}".*?}/m]
         expect(column_section).to include('type = decimal(10,2)')
@@ -444,12 +444,12 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
               backup_email: ~
               notification_email: ~
       YAML
-      
+
       create_test_yaml(schema_content)
       compiler = Essence::Compiler.new
       compiler.compile!
       hcl_content = read_generated_hcl
-      
+
       %w[contact_email backup_email notification_email].each do |col|
         column_section = hcl_content[/column "#{col}".*?}/m]
         expect(column_section).to include('type = varchar(255)')
@@ -469,12 +469,12 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
               avatar_url: ~
               callback_url: ~
       YAML
-      
+
       create_test_yaml(schema_content)
       compiler = Essence::Compiler.new
       compiler.compile!
       hcl_content = read_generated_hcl
-      
+
       %w[website_url avatar_url callback_url].each do |col|
         column_section = hcl_content[/column "#{col}".*?}/m]
         expect(column_section).to include('type = varchar(500)')
@@ -494,12 +494,12 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
               access_code: ~
               coupon_code: ~
       YAML
-      
+
       create_test_yaml(schema_content)
       compiler = Essence::Compiler.new
       compiler.compile!
       hcl_content = read_generated_hcl
-      
+
       %w[product_code access_code coupon_code].each do |col|
         column_section = hcl_content[/column "#{col}".*?}/m]
         expect(column_section).to include('type = varchar(50)')
@@ -519,12 +519,12 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
               category_slug: ~
               user_slug: ~
       YAML
-      
+
       create_test_yaml(schema_content)
       compiler = Essence::Compiler.new
       compiler.compile!
       hcl_content = read_generated_hcl
-      
+
       %w[post_slug category_slug user_slug].each do |col|
         column_section = hcl_content[/column "#{col}".*?}/m]
         expect(column_section).to include('type = varchar(255)')
@@ -547,12 +547,12 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
               job_status: ~
               payment_status: ~
       YAML
-      
+
       create_test_yaml(schema_content)
       compiler = Essence::Compiler.new
       compiler.compile!
       hcl_content = read_generated_hcl
-      
+
       %w[order_status job_status payment_status].each do |col|
         column_section = hcl_content[/column "#{col}".*?}/m]
         expect(column_section).to include('type = varchar(20)')
@@ -574,12 +574,12 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
               approval_state: ~
               current_state: ~
       YAML
-      
+
       create_test_yaml(schema_content)
       compiler = Essence::Compiler.new
       compiler.compile!
       hcl_content = read_generated_hcl
-      
+
       %w[workflow_state approval_state current_state].each do |col|
         column_section = hcl_content[/column "#{col}".*?}/m]
         expect(column_section).to include('type = varchar(20)')
@@ -600,23 +600,23 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
             columns:
               id: primary_key
               contact_email: ~  # Should match _email$ first
-              contact_name: ~   # Should match contact_.* 
+              contact_name: ~   # Should match contact_.*#{' '}
               bio: ~            # Should match .* fallback
       YAML
-      
+
       create_test_yaml(schema_content)
       compiler = Essence::Compiler.new
       compiler.compile!
       hcl_content = read_generated_hcl
-      
+
       # contact_email should match _email$ pattern first
       contact_email_section = hcl_content[/column "contact_email".*?}/m]
       expect(contact_email_section).to include('type = varchar(255)')
-      
+
       # contact_name should match contact_.* pattern
       contact_name_section = hcl_content[/column "contact_name".*?}/m]
       expect(contact_name_section).to include('type = varchar(100)')
-      
+
       # bio should match .* fallback
       bio_section = hcl_content[/column "bio".*?}/m]
       expect(bio_section).to include('type = varchar')
@@ -636,22 +636,22 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
               view_count: ~                                    # Use pattern
               special_count: decimal(10,2)                     # Override pattern
       YAML
-      
+
       create_test_yaml(schema_content)
       compiler = Essence::Compiler.new
       compiler.compile!
       hcl_content = read_generated_hcl
-      
+
       # user_id should use explicit definition
       user_id_section = hcl_content[/column "user_id".*?}/m]
       expect(user_id_section).to include('type = bigint')
       expect(hcl_content).to include('on_delete = SET_NULL')
-      
+
       # view_count should use pattern
       view_count_section = hcl_content[/column "view_count".*?}/m]
       expect(view_count_section).to include('type = integer')
       expect(view_count_section).to include('default = 0')
-      
+
       # special_count should use explicit definition
       special_count_section = hcl_content[/column "special_count".*?}/m]
       expect(special_count_section).to include('type = decimal(10,2)')
@@ -715,46 +715,46 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
               - is_featured
               - slug
       YAML
-      
+
       create_test_yaml(schema_content)
       compiler = Essence::Compiler.new
       compiler.compile!
       hcl_content = read_generated_hcl
-      
+
       # Verify defaults are applied
       expect(hcl_content).to include('column "id"')
       expect(hcl_content).to include('column "created_at"')
       expect(hcl_content).to include('column "updated_at"')
-      
+
       # Verify foreign keys
       expect(hcl_content).to include('foreign_key "fk_users_company_id"')
       expect(hcl_content).to include('foreign_key "fk_posts_user_id"')
       expect(hcl_content).to include('foreign_key "fk_posts_category_id"')
-      
+
       # Verify pattern applications
       expect(hcl_content).to include('ref_columns = [table.companies.column.id]')
-      
+
       last_login_at_section = hcl_content[/column "last_login_at".*?}/m]
       expect(last_login_at_section).to include('type = datetime')
-      
+
       is_active_section = hcl_content[/column "is_active".*?}/m]
       expect(is_active_section).to include('type = boolean')
       expect(is_active_section).to include('default = false')
-      
+
       profile_url_section = hcl_content[/column "profile_url".*?}/m]
       expect(profile_url_section).to include('type = varchar(500)')
-      
+
       backup_email_section = hcl_content[/column "backup_email".*?}/m]
       expect(backup_email_section).to include('type = varchar(255)')
-      
+
       login_count_section = hcl_content[/column "login_count".*?}/m]
       expect(login_count_section).to include('type = integer')
       expect(login_count_section).to include('default = 0')
-      
+
       account_status_section = hcl_content[/column "account_status".*?}/m]
       expect(account_status_section).to include('type = varchar(20)')
       expect(account_status_section).to include('default = "pending"')
-      
+
       # Verify indexes
       expect(hcl_content).to include('index "index_users_on_email"')
       expect(hcl_content).to include('index "index_users_on_company_id"')
@@ -776,12 +776,12 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
               id: primary_key
               contact_email: ~  # Should match first pattern that matches
       YAML
-      
+
       create_test_yaml(schema_content)
       compiler = Essence::Compiler.new
       compiler.compile!
       hcl_content = read_generated_hcl
-      
+
       # Should use the first matching pattern
       contact_email_section = hcl_content[/column "contact_email".*?}/m]
       expect(contact_email_section).to include('type = varchar(255)')
@@ -797,12 +797,12 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
               id: primary_key
               name: ~
       YAML
-      
+
       create_test_yaml(schema_content)
       compiler = Essence::Compiler.new
       compiler.compile!
       hcl_content = read_generated_hcl
-      
+
       # Should use built-in default patterns
       expect(hcl_content).to include('column "name"')
     end
@@ -820,10 +820,10 @@ RSpec.describe 'Essence Comprehensive Pattern Matching' do
               user_id: ~
               name: ~
       YAML
-      
+
       create_test_yaml(schema_content)
       compiler = Essence::Compiler.new
-      
+
       # Should not crash, may use fallback patterns
       expect { compiler.compile! }.not_to raise_error
     end
