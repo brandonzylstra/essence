@@ -46,18 +46,18 @@ The application models a complete speech and debate tournament system:
 ### Setup
 
 1. **Install dependencies:**
-   ```bash
+   ```shell
    cd example_app
    bundle install
    ```
 
 2. **Initialize the database:**
-   ```bash
+   ```shell
    rails db:create
    ```
 
 3. **Set up JAML:**
-   ```bash
+   ```shell
    rake jaml:init
    ```
 
@@ -83,7 +83,7 @@ users:
 
 Convert the YAML to Atlas HCL format:
 
-```bash
+```shell
 rake jaml:convert
 ```
 
@@ -93,7 +93,7 @@ This generates `db/schema.hcl` with proper foreign keys, constraints, and indexe
 
 See what database changes would be applied:
 
-```bash
+```shell
 rake jaml:preview
 ```
 
@@ -101,7 +101,7 @@ rake jaml:preview
 
 Apply the schema to your database:
 
-```bash
+```shell
 rake jaml:apply
 ```
 
@@ -109,7 +109,7 @@ rake jaml:apply
 
 Create a Rails migration file:
 
-```bash
+```shell
 rake jaml:generate["tournament system setup"]
 ```
 
@@ -145,7 +145,7 @@ Generates proper foreign key constraints with cascading deletes.
 
 JAML provides comprehensive rake tasks for schema management:
 
-```bash
+```shell
 rake jaml:help                     # Show all available commands
 rake jaml:template                 # Generate new schema template
 rake jaml:convert                  # Convert YAML to HCL
@@ -159,7 +159,7 @@ rake jaml:deploy[name]             # Full workflow
 
 The application includes comprehensive seed data for testing:
 
-```bash
+```shell
 rake jaml:seed    # Generate event type seed data
 rails db:seed     # Load all seed data
 ```
@@ -184,7 +184,7 @@ This creates:
    ```
 
 2. Deploy changes:
-   ```bash
+   ```shell
    rake jaml:deploy["add sponsors"]
    ```
 
@@ -233,7 +233,7 @@ class CreateUsers < ActiveRecord::Migration[8.0]
       t.references :league, null: true, foreign_key: { on_delete: :nullify }
       t.timestamps null: false
     end
-    
+
     add_index :users, :email, unique: true
     add_index :users, :league_id
   end

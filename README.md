@@ -24,7 +24,7 @@ gem 'essence'
 
 And then execute:
 
-```bash
+```shell
 $ bundle install
 ```
 
@@ -38,7 +38,7 @@ $ gem install essence
 
 ### 1. Generate a schema template ###
 
-```bash
+```shell
 # In your Rails project
 rake essence:template
 ```
@@ -77,7 +77,7 @@ tables:
 
 ### 2. Compile to HCL format
 
-```bash
+```shell
 rake essence:compile
 ```
 
@@ -136,7 +136,7 @@ table "users" {
 
 ### 3. Preview and apply changes ###
 
-```bash
+```shell
 # See what would change
 rake essence:preview
 
@@ -172,7 +172,7 @@ tables:
 ```
 
 ### Full Rails Integration ###
-```bash
+```shell
 rake essence:template     # Generate schema template
 rake essence:convert      # Convert YAML to HCL
 rake essence:preview      # Preview changes
@@ -284,7 +284,7 @@ tables:
 
 ### Complete Development Workflow ###
 
-```bash
+```shell
 # 1. Set up (first time)
 rake essence:init           # Import existing schema
 # OR
@@ -325,7 +325,7 @@ jobs:
 ## 📚 Command Reference ##
 
 ### CLI Commands ###
-```bash
+```shell
 essence template [path]         # Generate template
 essence compile [yaml] [hcl]    # Compile formats
 essence version                 # Show version
@@ -333,7 +333,7 @@ essence help                    # Show help
 ```
 
 ### Rake Tasks ###
-```bash
+```shell
 rake essence:template[path]     # Generate schema template
 rake essence:compile[yaml,hcl]  # Compile YAML to HCL
 rake essence:preview            # Preview changes
@@ -431,7 +431,7 @@ tables:
 ## 💡 Tips and Best Practices ##
 
 ### 1. Always Preview First ###
-```bash
+```shell
 rake essence:preview  # See what will change
 rake essence:apply    # Apply changes
 ```
