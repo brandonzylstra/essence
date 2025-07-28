@@ -1,7 +1,6 @@
 # 🌿 Essence 🫧 - ActiveRecord Modeling #
 
-[![Gem Version](https://badge.fury.io/rb/essence.svg)](https://badge.fury.io/rb/essence)
-[![Ruby](https://github.com/brandonzylstra/essence/workflows/Ruby/badge.svg)](https://github.com/brandonzylstra/essence/actions)
+[![CI](https://github.com/brandonzylstra/essence/workflows/CI/badge.svg)](https://github.com/brandonzylstra/essence/actions)
 
 **Essence** is a powerful tool for rapid database schema iteration in Rails applications. It provides a clean, YAML-based syntax with intelligent defaults and pattern matching that compiles to Atlas HCL format for seamless database migrations.
 
@@ -16,10 +15,14 @@
 
 ## 🔌 Installation ##
 
+**Note:** This gem is not yet published to RubyGems. Install from source:
+
+### From GitHub (recommended)
+
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'essence'
+gem 'essence', git: 'https://github.com/brandonzylstra/essence.git'
 ```
 
 And then execute:
@@ -28,10 +31,16 @@ And then execute:
 $ bundle install
 ```
 
-Or install it yourself as:
+### Build and install locally
 
-```bash
-$ gem install essence
+Clone the repository and build the gem:
+
+```shell
+$ git clone https://github.com/brandonzylstra/essence.git
+$ cd essence
+$ bundle install
+$ gem build essence.gemspec
+$ gem install essence-0.1.0.gem
 ```
 
 ## 🚀 Quick Start ##
