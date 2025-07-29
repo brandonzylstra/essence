@@ -442,9 +442,7 @@ module Essence
       parsed = parse_column_definition(column_def)
     end
 
-    hcl = <<~HCL
-      column "#{column_name}" {
-    HCL
+    hcl = "  column \"#{column_name}\" {\n"
 
     # Add null constraint
     if parsed[:not_null]
@@ -593,11 +591,7 @@ module Essence
   end
 
   def generate_primary_key_block(column_name)
-    <<~HCL
-      primary_key {
-        columns = [column.#{column_name}]
-      }
-    HCL
+    "  primary_key {\n    columns = [column.#{column_name}]\n  }\n"
   end
 
   def extract_foreign_keys(columns)
@@ -645,11 +639,7 @@ module Essence
   def generate_foreign_key_block(fk, table_name)
     constraint_name = "fk_#{table_name}_#{fk[:column]}"
 
-    hcl = <<~HCL
-      foreign_key "#{constraint_name}" {
-        columns = [column.#{fk[:column]}]
-        ref_columns = [table.#{fk[:ref_table]}.column.#{fk[:ref_column]}]
-    HCL
+    hcl = "  foreign_key \"#{constraint_name}\" {\n    columns = [column.#{fk[:column]}]\n    ref_columns = [table.#{fk[:ref_table]}.column.#{fk[:ref_column]}]\n"
 
     if fk[:on_delete]
       case fk[:on_delete].downcase
@@ -672,11 +662,7 @@ module Essence
       column_name = index_def
       index_name = "index_#{table_name}_on_#{column_name}"
 
-      <<~HCL
-      index "#{index_name}" {
-        columns = [column.#{column_name}]
-      }
-      HCL
+      "  index \"#{index_name}\" {\n    columns = [column.#{column_name}]\n  }\n"
 
     elsif index_def.is_a?(Hash)
       # New hash format with columns and options
@@ -688,10 +674,7 @@ module Essence
         index_name = "index_#{table_name}_on_#{column_names}"
         index_name += "_unique" if is_unique
 
-        hcl = <<~HCL
-        index "#{index_name}" {
-          columns = [#{columns.map { |col| "column.#{col}" }.join(', ')}]
-        HCL
+        hcl = "  index \"#{index_name}\" {\n    columns = [#{columns.map { |col| "column.#{col}" }.join(', ')}]\n"
 
         hcl += "    unique = true\n" if is_unique
         hcl += "  }\n"
@@ -707,11 +690,7 @@ module Essence
         column_name = index_def[0]
         index_name = "index_#{table_name}_on_#{column_name}"
 
-        <<~HCL
-        index "#{index_name}" {
-          columns = [column.#{column_name}]
-        }
-        HCL
+        "  index \"#{index_name}\" {\n    columns = [column.#{column_name}]\n  }\n"
       else
         # Multi-column index
         columns = index_def.reject { |item| item.is_a?(String) && item == "unique" }
@@ -721,10 +700,7 @@ module Essence
         index_name = "index_#{table_name}_on_#{column_names}"
         index_name += "_unique" if is_unique
 
-        hcl = <<~HCL
-        index "#{index_name}" {
-          columns = [#{columns.map { |col| "column.#{col}" }.join(', ')}]
-        HCL
+        hcl = "  index \"#{index_name}\" {\n    columns = [#{columns.map { |col| "column.#{col}" }.join(', ')}]\n"
 
         hcl += "    unique = true\n" if is_unique
         hcl += "  }\n"
