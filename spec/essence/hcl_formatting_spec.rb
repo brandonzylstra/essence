@@ -22,19 +22,19 @@ RSpec.describe 'HCL Formatting and Indentation' do
 
         # Table block should start at column 0
         expect(hcl_content).to match(/^table "users" \{$/)
-        
+
         # Table content should be indented 2 spaces
         expect(hcl_content).to match(/^  schema = schema\.public$/)
-        
+
         # Column blocks should be indented 2 spaces
         expect(hcl_content).to match(/^  column "id" \{$/)
         expect(hcl_content).to match(/^  column "email" \{$/)
-        
+
         # Column content should be indented 4 spaces
         expect(hcl_content).to match(/^    null = false$/)
         expect(hcl_content).to match(/^    type = integer$/)
         expect(hcl_content).to match(/^    auto_increment = true$/)
-        
+
         # Closing braces should align with their opening blocks
         expect(hcl_content).to match(/^  \}$/)  # Column closing brace at 2 spaces
         expect(hcl_content).to match(/^\}$/)    # Table closing brace at 0 spaces
@@ -66,12 +66,12 @@ RSpec.describe 'HCL Formatting and Indentation' do
 
         # Foreign key block should be indented 2 spaces
         expect(hcl_content).to match(/^  foreign_key "fk_posts_user_id" \{$/)
-        
+
         # Foreign key content should be indented 4 spaces
         expect(hcl_content).to match(/^    columns = \[column\.user_id\]$/)
         expect(hcl_content).to match(/^    ref_columns = \[table\.users\.column\.id\]$/)
         expect(hcl_content).to match(/^    on_delete = CASCADE$/)
-        
+
         # Foreign key closing brace should be at 2 spaces
         expect(hcl_content).to match(/^  \}$/)
       end
@@ -93,10 +93,10 @@ RSpec.describe 'HCL Formatting and Indentation' do
 
         # Primary key block should be indented 2 spaces
         expect(hcl_content).to match(/^  primary_key \{$/)
-        
+
         # Primary key content should be indented 4 spaces
         expect(hcl_content).to match(/^    columns = \[column\.id\]$/)
-        
+
         # Primary key closing brace should be at 2 spaces
         expect(hcl_content).to match(/^  \}$/)
       end
@@ -124,16 +124,16 @@ RSpec.describe 'HCL Formatting and Indentation' do
         # Index blocks should be indented 2 spaces
         expect(hcl_content).to match(/^  index "index_users_on_email" \{$/)
         expect(hcl_content).to match(/^  index "index_users_on_username_unique" \{$/)
-        
+
         # Index content should be indented 4 spaces
         expect(hcl_content).to match(/^    columns = \[column\.email\]$/)
         expect(hcl_content).to match(/^    columns = \[column\.username\]$/)
         expect(hcl_content).to match(/^    unique = true$/)
-        
+
         # Index closing braces should be at 2 spaces
         lines = hcl_content.lines
         index_sections = lines.select { |line| line.strip.start_with?('index ') }
-        
+
         index_sections.each do |index_line|
           index_start = lines.index(index_line)
           # Find the next closing brace after this index
@@ -190,25 +190,25 @@ RSpec.describe 'HCL Formatting and Indentation' do
           leading_spaces = line.length - line.lstrip.length
 
           # Indentation should always be a multiple of 2
-          expect(leading_spaces % 2).to eq(0), 
+          expect(leading_spaces % 2).to eq(0),
             "Line #{index + 1} has odd indentation (#{leading_spaces} spaces): '#{line}'"
 
           # Check specific indentation patterns
           case line.strip
           when /^(schema|table) ".+" \{/
-            expect(leading_spaces).to eq(0), 
+            expect(leading_spaces).to eq(0),
               "Schema/table declarations should not be indented: '#{line}'"
           when /^(column|primary_key|foreign_key|index) /
-            expect(leading_spaces).to eq(2), 
+            expect(leading_spaces).to eq(2),
               "Block declarations should be indented 2 spaces: '#{line}'"
           when /^schema = schema\./
-            expect(leading_spaces).to eq(2), 
+            expect(leading_spaces).to eq(2),
               "Table-level schema assignment should be indented 2 spaces: '#{line}'"
           when /^(columns|ref_columns|on_delete|null|type|auto_increment|default|unique) =/
-            expect(leading_spaces).to eq(4), 
+            expect(leading_spaces).to eq(4),
               "Property assignments should be indented 4 spaces: '#{line}'"
           when /^\}$/
-            expect([0, 2]).to include(leading_spaces), 
+            expect([ 0, 2 ]).to include(leading_spaces),
               "Closing braces should be at 0 or 2 spaces: '#{line}'"
           end
         end
@@ -248,20 +248,20 @@ RSpec.describe 'HCL Formatting and Indentation' do
             brace_stack.push({ line: index + 1, indent: leading_spaces, content: line.strip })
           elsif line.strip == '}'
             # Closing brace - should match the most recent opening brace
-            expect(brace_stack).not_to be_empty, 
+            expect(brace_stack).not_to be_empty,
               "Closing brace on line #{index + 1} has no matching opening brace"
 
             opening_brace = brace_stack.pop
             closing_spaces = line.length - line.lstrip.length
 
-            expect(closing_spaces).to eq(opening_brace[:indent]), 
+            expect(closing_spaces).to eq(opening_brace[:indent]),
               "Closing brace on line #{index + 1} (#{closing_spaces} spaces) doesn't align with " \
               "opening brace on line #{opening_brace[:line]} (#{opening_brace[:indent]} spaces): '#{opening_brace[:content]}'"
           end
         end
 
         # All braces should be matched
-        expect(brace_stack).to be_empty, 
+        expect(brace_stack).to be_empty,
           "Unmatched opening braces: #{brace_stack.map { |b| "line #{b[:line]}: #{b[:content]}" }.join(', ')}"
       end
 
@@ -289,13 +289,13 @@ RSpec.describe 'HCL Formatting and Indentation' do
         # Look for the specific pattern that was mentioned in the issue:
         # two levels of curly braces closing where both are at the beginning of the line
         consecutive_closing_braces = []
-        
+
         lines.each_with_index do |line, index|
           if line.strip == '}'
             # Check if the next non-empty line is also a closing brace
             next_lines = lines[index + 1..-1]
             next_non_empty = next_lines.find { |l| !l.strip.empty? }
-            
+
             if next_non_empty&.strip == '}'
               consecutive_closing_braces << {
                 first_line: index + 1,
@@ -309,7 +309,7 @@ RSpec.describe 'HCL Formatting and Indentation' do
 
         # Check that consecutive closing braces have proper indentation
         consecutive_closing_braces.each do |pair|
-          expect(pair[:first_indent]).to be > pair[:second_indent], 
+          expect(pair[:first_indent]).to be > pair[:second_indent],
             "Consecutive closing braces on lines #{pair[:first_line]} and #{pair[:second_line]} " \
             "have incorrect indentation: first=#{pair[:first_indent]}, second=#{pair[:second_indent]}. " \
             "Inner blocks should be indented more than outer blocks."
@@ -340,11 +340,11 @@ RSpec.describe 'HCL Formatting and Indentation' do
 
         assignment_lines.each do |line|
           # Should have exactly one space before and after equals
-          expect(line).to match(/\S+ = \S/), 
+          expect(line).to match(/\S+ = \S/),
             "Assignment should have single space around equals: '#{line.strip}'"
-          expect(line).not_to match(/\S+=\S/), 
+          expect(line).not_to match(/\S+=\S/),
             "Assignment should not have no spaces around equals: '#{line.strip}'"
-          expect(line).not_to match(/\S+  =  \S/), 
+          expect(line).not_to match(/\S+  =  \S/),
             "Assignment should not have multiple spaces around equals: '#{line.strip}'"
         end
       end
@@ -372,12 +372,12 @@ RSpec.describe 'HCL Formatting and Indentation' do
 
         # Find table boundaries
         table_starts = lines.each_with_index.select { |line, _| line.match(/^table /) }.map(&:last)
-        
+
         # There should be exactly one blank line between tables (if multiple tables)
         if table_starts.length > 1
           table_starts[1..-1].each do |table_start_index|
             # The line before the table should be blank
-            expect(lines[table_start_index - 1].strip).to eq(''), 
+            expect(lines[table_start_index - 1].strip).to eq(''),
               "There should be a blank line before table on line #{table_start_index + 1}"
           end
         end
@@ -441,7 +441,7 @@ RSpec.describe 'HCL Formatting and Indentation' do
 
       # Basic syntax checks
       expect(hcl_content).not_to match(/\{\s*\{/), "Should not have consecutive opening braces"
-      
+
       # Check for problematic consecutive closing braces (same indentation level)
       lines = hcl_content.lines
       lines.each_with_index do |line, index|
@@ -450,12 +450,12 @@ RSpec.describe 'HCL Formatting and Indentation' do
           if next_line&.strip == '}'
             current_indent = line.length - line.lstrip.length
             next_indent = next_line.length - next_line.lstrip.length
-            expect(current_indent).not_to eq(next_indent), 
+            expect(current_indent).not_to eq(next_indent),
               "Consecutive closing braces should have different indentation levels (lines #{index + 1} and #{index + 2})"
           end
         end
       end
-      
+
       # Check that string literals with spaces or special characters are properly quoted
       # Skip complex validation of all HCL types - focus on obvious cases
       string_values = hcl_content.scan(/= ([^,\]\}\s\n]+)/).flatten

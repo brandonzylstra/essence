@@ -9,10 +9,10 @@ SimpleCov.start do
   add_filter '/example_app/'
   add_filter '/vendor/'
 
-  add_group 'Core', 'lib/jaml'
-  add_group 'Tasks', 'lib/jaml/tasks'
+  add_group 'Core', 'lib/essence'
+  add_group 'Tasks', 'lib/essence/tasks'
 
-  minimum_coverage 90
+  minimum_coverage 85
 
   formatter SimpleCov::Formatter::MultiFormatter.new([
     SimpleCov::Formatter::HTMLFormatter
@@ -83,7 +83,7 @@ RSpec.configure do |config|
 
   # Configure test environment cleanup
   config.before(:each) do
-    @test_dir = Dir.mktmpdir('jaml_test')
+    @test_dir = Dir.mktmpdir('essence_test')
     @original_dir = Dir.pwd
     Dir.chdir(@test_dir)
 

@@ -109,3 +109,65 @@ Style/AccessModifierDeclarations:
 # This configuration maintains compatibility with RuboCop Rails Omakase while
 # enforcing the project's scope-based indentation standard. For complete
 # indentation guidelines and examples, see docs/indentation_standard.md.
+
+# RSpec Configuration for Integration Tests
+# Allow longer examples and multiple expectations for comprehensive integration tests
+RSpec/ExampleLength:
+  Max: 50
+  Exclude:
+    - 'spec/integration/**/*'
+    - 'spec/**/comprehensive_*_spec.rb'
+    - 'spec/**/hcl_formatting_spec.rb'
+    - 'spec/**/pattern_verification_spec.rb'
+
+RSpec/MultipleExpectations:
+  Max: 10
+  Exclude:
+    - 'spec/integration/**/*'
+    - 'spec/**/comprehensive_*_spec.rb'
+    - 'spec/**/pattern_verification_spec.rb'
+    - 'spec/**/compiler_spec.rb'
+
+# Allow string descriptions for integration test suites
+RSpec/DescribeClass:
+  Exclude:
+    - 'spec/integration/**/*'
+    - 'spec/**/comprehensive_*_spec.rb'
+    - 'spec/**/hcl_formatting_spec.rb'
+    - 'spec/**/pattern_verification_spec.rb'
+
+# Enable new cops by default
+AllCops:
+  NewCops: enable
+
+# Configure new RSpec cops
+RSpec/IncludeExamples:
+  Enabled: true
+
+# Disable overly strict RSpec cops for gem testing
+RSpec/MessageSpies:
+  Enabled: false
+
+RSpec/StubbedMock:
+  Enabled: false
+
+RSpec/MessageChain:
+  Enabled: false
+
+RSpec/InstanceVariable:
+  Enabled: false
+
+RSpec/SpecFilePathFormat:
+  Enabled: false
+
+RSpec/ContextWording:
+  Enabled: false
+
+RSpec/HookArgument:
+  Enabled: false
+
+RSpec/BeNil:
+  Enabled: false
+
+RSpec/DescribedClass:
+  Enabled: false

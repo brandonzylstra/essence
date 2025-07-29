@@ -12,16 +12,13 @@ end
 
 # Set up RuboCop task
 RuboCop::RakeTask.new(:rubocop) do |task|
-  task.requires << 'rubocop-rails'
-  task.requires << 'rubocop-rspec'
+  task.options = [ '--plugin', 'rubocop-rails', '--plugin', 'rubocop-rspec' ]
   task.fail_on_error = true
 end
 
 # Auto-correct RuboCop offenses
 RuboCop::RakeTask.new('rubocop:autocorrect') do |task|
-  task.requires << 'rubocop-rails'
-  task.requires << 'rubocop-rspec'
-  task.options = [ '--autocorrect' ]
+  task.options = [ '--plugin', 'rubocop-rails', '--plugin', 'rubocop-rspec', '--autocorrect' ]
   task.fail_on_error = false
 end
 

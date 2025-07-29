@@ -517,7 +517,7 @@ module Essence
     # Maps Rails migration types to Essence types for compatibility
     RAILS_TYPE_MAPPING = {
       "bigint" => "bigint",
-      "float" => "float", 
+      "float" => "float",
       "timestamp" => "datetime",
       "time" => "time"
     }.freeze
@@ -525,7 +525,7 @@ module Essence
     private def convert_type_to_hcl(type, size_info)
       # Normalize Rails types to Essence types for compatibility
       normalized_type = RAILS_TYPE_MAPPING[type] || type
-      
+
       case normalized_type
       when "string"
         size_info ? "varchar(#{size_info})" : "varchar"
@@ -645,7 +645,7 @@ module Essence
         parsed = parse_column_definition(column_def)
         if parsed[:unique]
           unique_index = {
-            "columns" => [column_name],
+            "columns" => [ column_name ],
             "unique" => true
           }
           unique_indexes << unique_index
