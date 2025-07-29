@@ -6,3 +6,35 @@ inherit_gem: { rubocop-rails-omakase: rubocop.yml }
 # # Use `[a, [b, c]]` not `[ a, [ b, c ] ]`
 # Layout/SpaceInsideArrayLiteralBrackets:
 #   Enabled: false
+
+# Disable standard method call indentation to prevent double-indentation anti-pattern
+# Standard RuboCop styles create the problematic pattern we want to avoid
+Layout/MultilineMethodCallIndentation:
+  Enabled: false
+
+# Ensure consistent indentation for all multiline operations
+Layout/MultilineOperationIndentation:
+  EnforcedStyle: indented
+
+# Enforce 2-space indentation consistently
+Layout/IndentationWidth:
+  Width: 2
+
+# SCOPE-BASED INDENTATION STANDARD:
+# 
+# Method chaining should align with the scope level, NOT add extra indentation.
+# 
+# ✅ CORRECT (scope-based indentation):
+#   cleaned_words = name.to_s
+#   .gsub(/pattern/, "")     # Aligned with scope level
+#   .split(/delim/)          # Same indentation as the line above
+#   .map(&:capitalize)
+#
+# ❌ WRONG (double indentation anti-pattern):
+#   cleaned_words = name.to_s
+#       .gsub(/pattern/, "")  # Extra indentation - creates visual noise
+#       .split(/delim/)       # Hard to read, not scope-based
+#       .map(&:capitalize)
+#
+# This standard applies to all method chaining, regardless of context.
+# Each method call should be indented at the same level as the scope it belongs to.

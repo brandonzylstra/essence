@@ -354,10 +354,10 @@ module Essence
 
       # Clean and split the name into words
       cleaned_words = name.to_s
-          .gsub(/[^a-zA-Z0-9_\s]/, "") # Remove special characters except underscores and spaces
-          .split(/[\s_]+/)             # Split on spaces and underscores
-          .reject(&:empty?)            # Remove empty strings
-          .map(&:capitalize)           # Capitalize each word
+      .gsub(/[^a-zA-Z0-9_\s]/, "") # Remove special characters except underscores and spaces
+      .split(/[\s_]+/)             # Split on spaces and underscores
+      .reject(&:empty?)            # Remove empty strings
+      .map(&:capitalize)           # Capitalize each word
 
       # If already in PascalCase format and short enough, return as-is
       if name.match?(/^[A-Z][a-zA-Z0-9]*$/) && name.length <= 80

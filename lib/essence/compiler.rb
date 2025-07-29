@@ -35,7 +35,7 @@ module Essence
 
     # Generate a new schema.yaml template with default patterns
     def self.generate_template(file_path = "db/schema.yaml")
-    template_content = <<~YAML
+      template_content = <<~YAML
       # Enhanced Essence Schema with Default Columns and Pattern Matching
       # This file will be converted to HCL format automatically
 
