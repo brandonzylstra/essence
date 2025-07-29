@@ -49,6 +49,49 @@ RSpec.describe Essence::Compiler do
         expect(hcl_content).to include('column "updated_at" {')
         expect(hcl_content).to include('auto_increment = true')
       end
+
+      it 'applies pattern matching to default columns with ~ shorthand' do
+        schema_with_pattern_defaults = <<~YAML
+          schema_name: public
+          defaults:
+            "*":
+              columns:
+                id: ~
+                created_at: ~
+                updated_at: ~
+          column_patterns:
+            - "^id$": "primary_key"
+            - "_at$": "datetime not_null"
+            - ".*": "string"
+          tables:
+            users:
+              columns:
+                email: string(255) not_null unique
+            posts:
+              columns:
+                title: string(255) not_null
+        YAML
+
+        create_test_yaml(schema_with_pattern_defaults)
+
+        compiler = described_class.new
+        compiler.compile!
+
+        hcl_content = read_generated_hcl
+
+        # Check that pattern matching was applied to default columns
+        expect(hcl_content).to include('column "id" {')
+        expect(hcl_content).to include('auto_increment = true')  # from primary_key pattern
+        expect(hcl_content).to include('column "created_at" {')
+        expect(hcl_content).to include('column "updated_at" {')
+        expect(hcl_content).to include('type = datetime')  # from _at pattern
+        expect(hcl_content).to include('null = false')     # from _at pattern
+
+        # Verify both tables got the default columns with patterns applied
+        expect(hcl_content.scan(/column "id" \{/).length).to eq(2)  # users and posts tables
+        expect(hcl_content.scan(/column "created_at" \{/).length).to eq(2)
+        expect(hcl_content.scan(/column "updated_at" \{/).length).to eq(2)
+      end
     end
 
     context 'with pattern matching' do
@@ -219,9 +262,11 @@ RSpec.describe Essence::Compiler do
 
       # Verify it's valid YAML
       parsed = YAML.load_file(template_path)
-      expect(parsed['defaults']['*']['columns']['id']).to eq('primary_key')
+      expect(parsed['defaults']['*']['columns']['id']).to be_nil
+      expect(parsed['defaults']['*']['columns']['created_at']).to be_nil
+      expect(parsed['defaults']['*']['columns']['updated_at']).to be_nil
       expect(parsed['column_patterns']).to be_an(Array)
-      expect(parsed['column_patterns'].length).to eq(23)
+      expect(parsed['column_patterns'].length).to eq(24)
     end
 
     it 'generates a convertible template' do

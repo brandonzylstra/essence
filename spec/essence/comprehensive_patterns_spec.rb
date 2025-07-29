@@ -3,6 +3,36 @@
 require 'spec_helper'
 
 RSpec.describe 'Essence Comprehensive Pattern Matching' do
+  describe 'Primary Key Pattern' do
+    it 'applies ^id$ pattern for primary key columns' do
+      schema_yaml = <<~YAML
+        schema_name: public
+        column_patterns:
+          - "^id$": "primary_key"
+        tables:
+          users:
+            columns:
+              id: ~
+          posts:
+            columns:
+              id: ~
+      YAML
+
+      create_test_yaml(schema_yaml)
+      compiler = Essence::Compiler.new
+      compiler.compile!
+      hcl_content = read_generated_hcl
+
+      # Check that id columns become primary keys with auto increment
+      expect(hcl_content).to include('column "id" {')
+      expect(hcl_content).to include('auto_increment = true')
+      expect(hcl_content).to include('null = false')
+      expect(hcl_content).to include('type = integer')
+      expect(hcl_content).to include('primary_key {')
+      expect(hcl_content).to include('columns = [column.id]')
+    end
+  end
+
   describe 'Foreign Key Patterns' do
     it 'generates foreign keys for _id columns' do
       schema_content = <<~YAML

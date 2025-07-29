@@ -61,11 +61,12 @@ schema_name: public
 defaults:
   "*":
     columns:
-      id: primary_key
-      created_at: datetime not_null
-      updated_at: datetime not_null
+      id: ~
+      created_at: ~
+      updated_at: ~
 
 column_patterns:
+  - "^id$": "primary_key"
   - "_id$": "integer -> {table}.id on_delete=cascade not_null"
   - "_at$": "datetime not_null"
   - ".*": "string"
@@ -230,24 +231,24 @@ Essence automatically recognizes these column patterns:
 | `*_at` | `published_at: ~` | `datetime not_null` |
 | `*_on` | `published_on: ~` | `date not_null` |
 | `*_date` | `birth_date: ~` | `date not_null` |
-| `is_*` | `is_active: ~` | `boolean default false not_null` |
-| `has_*` | `has_premium: ~` | `boolean default false not_null` |
-| `can_*` | `can_edit: ~` | `boolean default false not_null` |
-| `*_flag` | `admin_flag: ~` | `boolean default false not_null` |
+| `is_*` | `is_active: ~` | `boolean default=false not_null` |
+| `has_*` | `has_premium: ~` | `boolean default=false not_null` |
+| `can_*` | `can_edit: ~` | `boolean default=false not_null` |
+| `*_flag` | `admin_flag: ~` | `boolean default=false not_null` |
 | `*_content` | `body_content: ~` | `text` |
 | `*_body` | `email_body: ~` | `text` |
 | `*_text` | `description_text: ~` | `text` |
 | `*_html` | `content_html: ~` | `text` |
-| `*_count` | `view_count: ~` | `integer default 0 not_null` |
-| `*_score` | `rating_score: ~` | `decimal(5,2) default 0.0 not_null` |
-| `*_amount` | `price_amount: ~` | `decimal(10,2) not_null` |
-| `*_price` | `unit_price: ~` | `decimal(10,2) not_null` |
-| `*_email` | `contact_email: ~` | `string(255) not_null` |
+| `*_count` | `view_count: ~` | `integer default=0 not_null` |
+| `*_score` | `rating_score: ~` | `decimal(8,2)` |
+| `*_amount` | `price_amount: ~` | `decimal(10,2)` |
+| `*_price` | `unit_price: ~` | `decimal(10,2)` |
+| `*_email` | `contact_email: ~` | `string(255)` |
 | `*_url` | `website_url: ~` | `string(500)` |
-| `*_code` | `product_code: ~` | `string(50) not_null` |
-| `*_slug` | `permalink_slug: ~` | `string(255) not_null unique` |
-| `*_status` | `order_status: ~` | `string(50) not_null` |
-| `*_state` | `workflow_state: ~` | `string(50) not_null` |
+| `*_code` | `product_code: ~` | `string(50)` |
+| `*_slug` | `permalink_slug: ~` | `string(255) unique` |
+| `*_status` | `order_status: ~` | `string(50)` |
+| `*_state` | `workflow_state: ~` | `string(50)` |
 
 ## 🛠️ Advanced Usage ##
 
@@ -268,13 +269,13 @@ Override defaults for specific tables:
 defaults:
   "*":
     columns:
-      id: primary_key
-      created_at: datetime not_null
-      updated_at: datetime not_null
+      id: ~
+      created_at: ~
+      updated_at: ~
   "audit_*":
     columns:
       id: uuid primary_key
-      created_at: datetime not_null
+      created_at: ~
       created_by: string(255) not_null
 ```
 

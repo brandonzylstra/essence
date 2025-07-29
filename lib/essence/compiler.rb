@@ -46,12 +46,15 @@ module Essence
       defaults:
         "*":
           columns:
-            id: primary_key
-            created_at: datetime not_null
-            updated_at: datetime not_null
+            id: ~
+            created_at: ~
+            updated_at: ~
 
       # Pattern-based column attribute inference - simplified syntax
       column_patterns:
+        # Primary key: id column gets auto-incrementing primary key
+        - "^id$": "primary_key"
+      #{'  '}
         # Foreign key columns: _id suffix gets foreign key reference
         - "_id$": "integer -> {table}.id on_delete=cascade not_null"
       #{'  '}
@@ -303,14 +306,30 @@ module Essence
     # Start with default columns for all tables (*)
     merged = {}
 
-    # Apply defaults from "*" pattern
+    # Apply defaults from "*" pattern with pattern inference
     if @defaults["*"] && @defaults["*"]["columns"]
-      merged.merge!(@defaults["*"]["columns"])
+      @defaults["*"]["columns"].each do |column_name, column_def|
+        if column_def.nil? || column_def == "~"
+          # Use pattern matching for nil or ~ values in defaults
+          merged[column_name] = infer_column_properties(column_name, table_name)
+        else
+          # Use explicit definition from defaults
+          merged[column_name] = column_def
+        end
+      end
     end
 
-    # Apply table-specific defaults if they exist
+    # Apply table-specific defaults if they exist with pattern inference
     if @defaults[table_name] && @defaults[table_name]["columns"]
-      merged.merge!(@defaults[table_name]["columns"])
+      @defaults[table_name]["columns"].each do |column_name, column_def|
+        if column_def.nil? || column_def == "~"
+          # Use pattern matching for nil or ~ values in table-specific defaults
+          merged[column_name] = infer_column_properties(column_name, table_name)
+        else
+          # Use explicit definition from table-specific defaults
+          merged[column_name] = column_def
+        end
+      end
     end
 
     # Apply explicit table columns (these override defaults)
@@ -396,6 +415,12 @@ module Essence
     foreign_keys = extract_foreign_keys(table_def["columns"])
     foreign_keys.each do |fk|
       hcl += generate_foreign_key_block(fk, table_name)
+    end
+
+    # Generate unique indexes for columns with unique flag
+    unique_indexes = extract_unique_indexes(table_def["columns"])
+    unique_indexes.each do |unique_index|
+      hcl += generate_index_block(unique_index, table_name)
     end
 
     # Generate indexes
@@ -594,6 +619,27 @@ module Essence
     end
 
     foreign_keys
+  end
+
+  def extract_unique_indexes(columns)
+    return [] unless columns
+
+    unique_indexes = []
+
+    columns.each do |column_name, column_def|
+      next if column_def == "primary_key"
+
+      parsed = parse_column_definition(column_def)
+      if parsed[:unique]
+        unique_index = {
+          "columns" => [column_name],
+          "unique" => true
+        }
+        unique_indexes << unique_index
+      end
+    end
+
+    unique_indexes
   end
 
   def generate_foreign_key_block(fk, table_name)
