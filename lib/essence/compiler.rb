@@ -514,26 +514,45 @@ module Essence
       result
     end
 
+    # Maps Rails migration types to Essence types for compatibility
+    RAILS_TYPE_MAPPING = {
+      "bigint" => "bigint",
+      "float" => "float", 
+      "timestamp" => "datetime",
+      "time" => "time"
+    }.freeze
+
     private def convert_type_to_hcl(type, size_info)
-      case type
+      # Normalize Rails types to Essence types for compatibility
+      normalized_type = RAILS_TYPE_MAPPING[type] || type
+      
+      case normalized_type
       when "string"
         size_info ? "varchar(#{size_info})" : "varchar"
       when "integer"
         "integer"
+      when "bigint"
+        "bigint"
       when "text"
         "text"
       when "boolean"
         "boolean"
       when "datetime"
         "datetime"
+      when "timestamp" # Handle both Rails :timestamp and normalized datetime
+        "datetime"
       when "date"
         "date"
+      when "time"
+        "time"
+      when "float"
+        "float"
       when "decimal"
         size_info ? "decimal(#{size_info})" : "decimal"
       when "binary"
         size_info ? "binary(#{size_info})" : "binary"
       else
-        type
+        normalized_type
       end
     end
 

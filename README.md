@@ -7,6 +7,7 @@
 ## 🚀 Why Essence?
 
 - **10x faster schema iteration** - Write schemas in clean YAML instead of verbose Rails migrations or GUI tools
+- **Flexible data type syntax** - Use familiar Rails migration types (`:string`, `:integer`) or concise Atlas/SQL types (`string(100)`, `integer`)
 - **Smart defaults** - Automatic `id`, `created_at`, `updated_at` columns for every table
 - **Pattern-based property inference** - `league_id: ~` automatically becomes a foreign key to `leagues.id`
 - **Version control friendly** - Text-based schemas that diff and merge cleanly
@@ -169,16 +170,31 @@ Write `league_id: ~` and—based on the pattern that name matches—automaticall
 - Cascading delete
 - Proper indexing
 
-### Clean YAML Syntax ###
+### Flexible Data Type Syntax ###
+Choose the syntax that works best for your team:
+
 ```yaml
+# Atlas/SQL syntax
 tables:
   tournaments:
     columns:
       name: string(255) not_null unique
       league_id: ~   # Becomes foreign key automatically
       start_date: ~  # Becomes datetime not_null
-      is_active: ~   # Becomes boolean default false
-      max_teams: ~   # Becomes integer
+
+# Rails syntax
+  users:
+    columns:
+      name: :string, limit: 255, null: false, unique: true
+      league_id: ~   # Pattern matching works with both syntaxes
+      created_at: :datetime, null: false
+
+# Mixed syntax
+  posts:
+    columns:
+      title: string(255) not_null           # Atlas/SQL syntax
+      content: :text                        # Rails syntax
+      user_id: ~                            # Pattern matching
 ```
 
 ### Full Rails Integration ###
@@ -197,7 +213,8 @@ Essence provides comprehensive support for database schema elements, with plans 
 |Status| Group    | Element                  | Explanation                                                        |
 |:----:|:--------:|:-------------------------|:-------------------------------------------------------------------|
 | ✅   | Core     | **Tables**               | Primary schema containers with columns, constraints, and metadata  |
-| ✅   | Core     | **Columns**              | All standard data types (string, integer, boolean, text, datetime, date, decimal, binary) |
+| ✅   | Core     | **Columns**              | All standard data types with dual syntax support (Atlas/SQL + Rails) |
+| ✅   | Core     | **Data Types**           | Support for both `:string` (Rails) and `string(100)` (Atlas/SQL) syntax |
 | ✅   | Core     | **Primary Keys**         | Auto-incrementing ID columns with proper constraints               |
 | ✅   | Core     | **Foreign Keys**         | Automatic relationship detection with cascade/set null options     |
 | ✅   | Core     | **Indexes**              | Single and multi-column indexes with unique constraints            |
@@ -223,7 +240,7 @@ Priority is given to supporting newer Rails versions as they are released (8.1, 
 
 ## 📋 Available Patterns ##
 
-Essence automatically recognizes these column patterns:
+Essence automatically recognizes these column patterns (works with both Atlas/SQL and Rails syntax):
 
 | Pattern | Example | Result |
 |---------|---------|--------|
@@ -377,7 +394,7 @@ schema.yaml → [Essence] → schema.hcl → [Atlas] → migration.rb → [Rails
 ```yaml
 schema_name: public
 tables:
-  users:
+  users:  # Atlas/SQL syntax
     columns:
       email: string(255) not_null unique
       username: string(50) not_null unique
@@ -386,15 +403,16 @@ tables:
       is_admin: ~
       last_login_at: ~
 
-  posts:
+  posts:  # Rails syntax
     columns:
-      title: string(255) not_null
-      post_slug: ~
-      content_html: ~
-      user_id: ~
-      published_at: ~
-      is_published: ~
-      view_count: ~
+      title: :string, limit: 255, null: false
+      post_slug: ~                    # Pattern matching works with both
+      content_html: :text
+      user_id: ~                      # Foreign key via pattern
+      published_at: :datetime
+      is_published: :boolean, default: false
+      view_count: :integer, default: 0
+```
 
   comments:
     columns:

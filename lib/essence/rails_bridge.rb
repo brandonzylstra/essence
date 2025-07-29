@@ -7,18 +7,35 @@ require "time"
 module Essence
   # Rails Bridge - Generate Rails migrations from schema changes
   class RailsBridge
-    RAILS_TYPE_MAPPING = {
-    "integer" => "integer",
-    "varchar" => "string",
-    "text" => "text",
-    "boolean" => "boolean",
-    "datetime" => "datetime",
-    "date" => "date",
-    "decimal" => "decimal",
-    "binary" => "binary",
-    "bigint" => "bigint",
-    "float" => "float",
-    "time" => "time"
+    # Maps HCL/Atlas types to Rails migration types
+    HCL_TO_RAILS_TYPE_MAPPING = {
+      "integer" => "integer",
+      "varchar" => "string",
+      "text" => "text",
+      "boolean" => "boolean",
+      "datetime" => "datetime",
+      "date" => "date",
+      "decimal" => "decimal",
+      "binary" => "binary",
+      "bigint" => "bigint",
+      "float" => "float",
+      "time" => "time"
+    }.freeze
+
+    # Maps Rails migration types to HCL/Atlas types (for bidirectional support)
+    RAILS_TO_HCL_TYPE_MAPPING = {
+      "string" => "varchar",
+      "text" => "text",
+      "integer" => "integer",
+      "bigint" => "bigint",
+      "float" => "float",
+      "decimal" => "decimal",
+      "datetime" => "datetime",
+      "timestamp" => "datetime", # Rails timestamp maps to datetime in HCL
+      "time" => "time",
+      "date" => "date",
+      "binary" => "binary",
+      "boolean" => "boolean"
     }.freeze
 
     def initialize(atlas_env: "dev", rails_root: ".")
@@ -207,13 +224,13 @@ module Essence
       timestamp = Time.now.utc.strftime("%Y%m%d%H%M%S")
 
       # Generate filename with length limits (filesystem typically limits to 255 chars)
-      filename_base = name.downcase.gsub(/[^a-z0-9_]+/, '_')
+      filename_base = name.downcase.gsub(/[^a-z0-9_]+/, "_")
       max_filename_length = 240 - timestamp.length - 1 - 3  # Leave room for timestamp, underscore, and .rb
 
       if filename_base.length > max_filename_length
         # Truncate at word boundaries if possible
         truncated = filename_base[0, max_filename_length]
-        last_underscore = truncated.rindex('_')
+        last_underscore = truncated.rindex("_")
         if last_underscore && last_underscore > max_filename_length * 0.7
           filename_base = truncated[0, last_underscore]
         else

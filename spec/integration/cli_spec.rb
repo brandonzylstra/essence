@@ -479,7 +479,7 @@ RSpec.describe 'CLI Integration Tests' do
       # Verify overrides work
       expect(hcl_content).to match(/column "company_id".*?type = bigint/m)
       expect(hcl_content).to include('on_delete = SET_NULL')
-      expect(hcl_content).to match(/column "published_at".*?type = timestamp/m)
+      expect(hcl_content).to match(/column "published_at".*?type = datetime/m)
       expect(hcl_content).to match(/column "bio".*?type = text/m)
 
       # Verify patterns still work where not overridden
