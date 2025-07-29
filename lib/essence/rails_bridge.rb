@@ -60,7 +60,7 @@ module Essence
       result = system("atlas schema apply --env #{@atlas_env} --auto-approve")
       unless result
         puts "❌ Schema apply failed"
-        exit 1
+        raise StandardError, "Schema apply failed"
       end
 
       # Update Rails schema.rb
@@ -205,10 +205,27 @@ module Essence
 
     def create_rails_migration(name, sql_statements)
       timestamp = Time.now.utc.strftime("%Y%m%d%H%M%S")
-      filename = "#{timestamp}_#{name.downcase.gsub(/[^a-z0-9_]+/, '_')}.rb"
+      
+      # Generate filename with length limits (filesystem typically limits to 255 chars)
+      filename_base = name.downcase.gsub(/[^a-z0-9_]+/, '_')
+      max_filename_length = 240 - timestamp.length - 1 - 3  # Leave room for timestamp, underscore, and .rb
+      
+      if filename_base.length > max_filename_length
+        # Truncate at word boundaries if possible
+        truncated = filename_base[0, max_filename_length]
+        last_underscore = truncated.rindex('_')
+        if last_underscore && last_underscore > max_filename_length * 0.7
+          filename_base = truncated[0, last_underscore]
+        else
+          filename_base = truncated
+        end
+        puts "⚠️  Warning: Migration filename truncated due to length limits"
+      end
+      
+      filename = "#{timestamp}_#{filename_base}.rb"
       filepath = File.join(@migrations_dir, filename)
 
-      class_name = name.split(/\s+/).map(&:capitalize).join
+      class_name = format_class_name(name)
 
       migration_content = generate_migration_content(class_name, sql_statements)
 
@@ -335,16 +352,35 @@ module Essence
       # "add user tables" -> "AddUserTables"
       # "create_posts_table" -> "CreatePostsTable"
 
-      # If already in PascalCase format, return as-is
-      if name.match?(/^[A-Z][a-zA-Z0-9]*$/)
+      # Clean and split the name into words
+      cleaned_words = name.to_s
+          .gsub(/[^a-zA-Z0-9_\s]/, "") # Remove special characters except underscores and spaces
+          .split(/[\s_]+/)             # Split on spaces and underscores
+          .reject(&:empty?)            # Remove empty strings
+          .map(&:capitalize)           # Capitalize each word
+
+      # If already in PascalCase format and short enough, return as-is
+      if name.match?(/^[A-Z][a-zA-Z0-9]*$/) && name.length <= 80
         return name
       end
 
-      name.to_s
-          .gsub(/[^a-zA-Z0-9_\s]/, "") # Remove special characters except underscores and spaces
-          .split(/[\s_]+/)             # Split on spaces and underscores
-          .map(&:capitalize)           # Capitalize each word
-          .join                        # Join without separators
+      # Intelligent truncation: try to keep complete words up to our limit
+      class_name = ""
+      cleaned_words.each do |word|
+        # If adding this word would exceed our limit, stop
+        if (class_name + word).length > 80
+          break
+        end
+        class_name += word
+      end
+
+      # If we couldn't fit any complete words, take first 80 chars of first word
+      if class_name.empty? && !cleaned_words.empty?
+        class_name = cleaned_words.first[0, 80]
+      end
+
+      # Ensure we have something valid
+      class_name.empty? ? "GeneratedMigration" : class_name
     end
   end
 end

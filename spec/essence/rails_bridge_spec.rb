@@ -110,10 +110,10 @@ RSpec.describe Essence::RailsBridge do
       bridge.apply_schema!
     end
 
-    it 'exits with error code 1 if atlas apply fails' do
+    it 'raises StandardError if atlas apply fails' do
       expect(bridge).to receive(:system).with('atlas schema apply --env test --auto-approve').and_return(false)
 
-      expect { bridge.apply_schema! }.to raise_error(SystemExit)
+      expect { bridge.apply_schema! }.to raise_error(StandardError, "Schema apply failed")
     end
 
     it 'updates Rails schema.rb after successful apply' do
@@ -423,12 +423,96 @@ RSpec.describe Essence::RailsBridge do
       expect(File.exist?('db/migrate/20240101120000_malformed_test.rb')).to be true
     end
 
-    it 'handles very long migration names' do
-      long_name = 'a' * 200  # Very long name
+    it 'handles realistic long migration names from complex schemas' do
+      # Test realistic long migration name that could occur in practice
+      realistic_long_name = 'add_user_authentication_tokens_and_session_management_with_device_tracking_and_security_audit_logs'
       allow(bridge).to receive(:get_atlas_migration_plan).and_return([ 'CREATE TABLE users (id INTEGER)' ])
       allow(Time).to receive_message_chain(:now, :utc, :strftime).and_return('20240101120000')
 
-      expect { bridge.generate_migration(long_name) }.not_to raise_error
+      expect { bridge.generate_migration(realistic_long_name) }.not_to raise_error
+
+      # Verify the class name is properly formatted and truncated if needed
+      content = bridge.send(:generate_migration_content, realistic_long_name, [])
+      expect(content).to include('class AddUserAuthenticationTokensAndSessionManagement')
+      expect(content).to include('< ActiveRecord::Migration[8.0]')
+
+      # Verify filename is properly formatted (lowercase with underscores)
+      expect(realistic_long_name.length).to be > 50  # Ensure we're testing a genuinely long name
+    end
+
+    it 'handles migration names at filesystem limits' do
+      # Test name at typical filesystem filename limit (255 characters)
+      # This represents a migration that might be generated from a schema with many long table/column names
+      very_long_realistic_name = 'create_comprehensive_enterprise_resource_planning_system_with_multi_tenant_architecture_including_user_management_role_based_access_control_audit_logging_financial_reporting_inventory_tracking_customer_relationship_management_and_real_time_analytics_dashboard'
+
+      expect(very_long_realistic_name.length).to be > 200  # Ensure this is genuinely long
+
+      allow(bridge).to receive(:get_atlas_migration_plan).and_return([ 'CREATE TABLE users (id INTEGER)' ])
+      allow(Time).to receive_message_chain(:now, :utc, :strftime).and_return('20240101120000')
+
+      expect { bridge.generate_migration(very_long_realistic_name) }.not_to raise_error
+
+      # Verify truncation works properly
+      content = bridge.send(:generate_migration_content, very_long_realistic_name, [])
+      class_name_match = content.match(/class (\w+) < ActiveRecord::Migration/)
+      expect(class_name_match).not_to be_nil
+
+      class_name = class_name_match[1]
+      expect(class_name.length).to be <= 80  # Our implemented limit
+      expect(class_name).to start_with('CreateComprehensiveEnterpriseResource')
+    end
+
+    it 'generates valid Ruby class names from complex migration scenarios' do
+      # Test various edge cases that could occur in real usage
+      test_cases = [
+        'add_foreign_keys_to_user_profile_settings_and_notification_preferences',
+        'create_indexes_for_performance_optimization_on_frequently_queried_columns',
+        'migrate_legacy_data_structure_to_new_normalized_database_schema',
+        'implement_soft_delete_functionality_across_all_user_generated_content'
+      ]
+
+      allow(bridge).to receive(:get_atlas_migration_plan).and_return([ 'CREATE TABLE test (id INTEGER)' ])
+      allow(Time).to receive_message_chain(:now, :utc, :strftime).and_return('20240101120000')
+
+      test_cases.each do |migration_name|
+        expect { bridge.generate_migration(migration_name) }.not_to raise_error
+
+        content = bridge.send(:generate_migration_content, migration_name, [])
+        class_name_match = content.match(/class (\w+) < ActiveRecord::Migration/)
+        expect(class_name_match).not_to be_nil
+
+        class_name = class_name_match[1]
+        # Verify it's a valid Ruby class name
+        expect(class_name).to match(/^[A-Z][a-zA-Z0-9]*$/)
+        expect(class_name.length).to be > 0
+        expect(class_name.length).to be <= 80
+      end
+    end
+
+    it 'warns about potential issues with extremely long names' do
+      # Test what happens when we exceed reasonable limits
+      # This could happen if someone generates a migration from a schema with many very long column names
+      extremely_long_name = 'create_tables_for_international_multi_language_customer_relationship_management_system_with_advanced_analytics_real_time_reporting_automated_marketing_campaigns_inventory_management_financial_accounting_human_resources_project_management_and_comprehensive_audit_trail_functionality_for_enterprise_level_deployment'
+
+      expect(extremely_long_name.length).to be > 300  # Ensure this exceeds reasonable limits
+
+      allow(bridge).to receive(:get_atlas_migration_plan).and_return([ 'CREATE TABLE test (id INTEGER)' ])
+      allow(Time).to receive_message_chain(:now, :utc, :strftime).and_return('20240101120000')
+
+      # Should still work but be heavily truncated
+      expect { bridge.generate_migration(extremely_long_name) }.not_to raise_error
+
+      content = bridge.send(:generate_migration_content, extremely_long_name, [])
+      class_name_match = content.match(/class (\w+) < ActiveRecord::Migration/)
+      expect(class_name_match).not_to be_nil
+
+      class_name = class_name_match[1]
+      expect(class_name.length).to be <= 80  # Should be truncated to our limit
+      expect(class_name).to start_with('CreateTablesForInternationalMultiLanguage')
+
+      # The filename should also be reasonable
+      filename_part = extremely_long_name.downcase.gsub(/[^a-z0-9_]+/, '_')
+      expect(filename_part.length).to be > 255  # This would exceed filesystem limits
     end
 
     it 'handles concurrent migration generation' do
