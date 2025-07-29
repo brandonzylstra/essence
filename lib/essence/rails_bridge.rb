@@ -205,11 +205,11 @@ module Essence
 
     def create_rails_migration(name, sql_statements)
       timestamp = Time.now.utc.strftime("%Y%m%d%H%M%S")
-      
+
       # Generate filename with length limits (filesystem typically limits to 255 chars)
       filename_base = name.downcase.gsub(/[^a-z0-9_]+/, '_')
       max_filename_length = 240 - timestamp.length - 1 - 3  # Leave room for timestamp, underscore, and .rb
-      
+
       if filename_base.length > max_filename_length
         # Truncate at word boundaries if possible
         truncated = filename_base[0, max_filename_length]
@@ -221,7 +221,7 @@ module Essence
         end
         puts "⚠️  Warning: Migration filename truncated due to length limits"
       end
-      
+
       filename = "#{timestamp}_#{filename_base}.rb"
       filepath = File.join(@migrations_dir, filename)
 

@@ -136,21 +136,21 @@ RSpec.describe 'Comprehensive Integration Tests' do
       expect(hcl_content).to include('index "index_leagues_on_name"')
 
       # Verify comprehensive pattern application across all categories
-      
+
       # Boolean patterns
       expect(hcl_content.scan(/type = boolean/).length).to be >= 4  # is_active(2), has_premium, is_published
       expect(hcl_content.scan(/default = false/).length).to be >= 4
-      
+
       # Text patterns
       expect(hcl_content).to include('column "post_content"')
       expect(hcl_content.scan(/type = text/).length).to be >= 2  # description, post_content
-      
+
       # Numeric patterns
       expect(hcl_content.scan(/column "view_count"/).length).to eq(2)  # users and posts
       expect(hcl_content).to include('column "rating_score"')
       expect(hcl_content.scan(/default = 0/).length).to be >= 2
       expect(hcl_content.scan(/type = decimal\(8,2\)/).length).to be >= 1
-      
+
       # String patterns with different sizes
       expect(hcl_content.scan(/column "backup_email"/).length).to eq(1)
       expect(hcl_content.scan(/column "contact_email"/).length).to eq(1)
@@ -158,12 +158,12 @@ RSpec.describe 'Comprehensive Integration Tests' do
       expect(hcl_content.scan(/column "website_url"/).length).to eq(2)  # leagues and users
       expect(hcl_content.scan(/type = varchar\(500\)/).length).to be >= 2  # website_urls
       expect(hcl_content.scan(/type = varchar\(50\)/).length).to be >= 2   # account_status, post_status
-      
+
       # Date patterns
       expect(hcl_content).to include('column "birth_date"')
       expect(hcl_content).to include('column "due_on"')
       expect(hcl_content.scan(/type = date/).length).to be >= 2
-      
+
       # Fallback pattern
       expect(hcl_content).to include('column "bio"')  # Should use fallback string pattern
     end
@@ -171,27 +171,27 @@ RSpec.describe 'Comprehensive Integration Tests' do
     it 'handles complex mixed explicit and pattern definitions correctly' do
       mixed_schema = <<~YAML
         schema_name: public
-        
+
         defaults:
           "*":
             columns:
               id: ~
               created_at: ~
               updated_at: ~
-        
+
         column_patterns:
           - "^id$": "primary_key"
           - "_id$": "integer -> {table}.id on_delete=cascade not_null"
           - "_slug$": "string(255) unique"
           - "_count$": "integer default=0 not_null"
           - ".*": "string"
-        
+
         tables:
           categories:
             columns:
               name: string(255) not_null unique
               parent_id: integer -> categories.id on_delete=set_null  # Override pattern
-              
+
           products:
             columns:
               name: string(255) not_null
@@ -210,20 +210,20 @@ RSpec.describe 'Comprehensive Integration Tests' do
       # Verify explicit overrides work correctly
       expect(hcl_content).to include('foreign_key "fk_categories_parent_id"')
       expect(hcl_content).to include('on_delete = SET_NULL')  # Explicit override
-      
+
       # Verify patterns work alongside explicit definitions
       expect(hcl_content).to include('foreign_key "fk_products_category_id"')
       expect(hcl_content).to include('on_delete = CASCADE')   # From pattern
-      
+
       # Verify unique slug pattern generates index
       expect(hcl_content).to include('index "index_products_on_product_slug_unique"')
       expect(hcl_content).to include('unique = true')
-      
+
       # Verify count pattern vs explicit override
       expect(hcl_content).to match(/column "view_count".*?type = integer.*?default = 0/m)
       expect(hcl_content).to match(/column "special_count".*?type = bigint/m)
       expect(hcl_content).not_to match(/column "special_count".*?default = 0/m)
-      
+
       # Verify explicit non-pattern field
       expect(hcl_content).to include('column "custom_field"')
       expect(hcl_content).to match(/column "custom_field".*?type = text/m)
@@ -232,14 +232,14 @@ RSpec.describe 'Comprehensive Integration Tests' do
     it 'generates valid HCL syntax for complex schemas' do
       complex_schema = <<~YAML
         schema_name: public
-        
+
         defaults:
           "*":
             columns:
               id: ~
               created_at: ~
               updated_at: ~
-        
+
         column_patterns:
           - "^id$": "primary_key"
           - "_id$": "integer -> {table}.id on_delete=cascade not_null"
@@ -248,7 +248,7 @@ RSpec.describe 'Comprehensive Integration Tests' do
           - "_count$": "integer default=0 not_null"
           - "_at$": "datetime not_null"
           - ".*": "string"
-        
+
         tables:
           organizations:
             columns:
@@ -258,7 +258,7 @@ RSpec.describe 'Comprehensive Integration Tests' do
             indexes:
               - name
               - org_slug
-          
+
           teams:
             columns:
               name: string(255) not_null
@@ -271,7 +271,7 @@ RSpec.describe 'Comprehensive Integration Tests' do
               - organization_id
               - team_slug
               - is_public
-          
+
           users:
             columns:
               email: string(255) not_null unique
@@ -300,16 +300,16 @@ RSpec.describe 'Comprehensive Integration Tests' do
       expect(hcl_content.scan(/primary_key \{/).length).to eq(3)
       expect(hcl_content.scan(/foreign_key "\w+" \{/).length).to be >= 3
       expect(hcl_content.scan(/index "\w+" \{/).length).to be >= 10   # Explicit + unique generated
-      
+
       # Verify all closing braces are balanced
       open_braces = hcl_content.scan(/\{/).length
       close_braces = hcl_content.scan(/\}/).length
       expect(open_braces).to eq(close_braces)
-      
+
       # Verify no syntax errors in generated identifiers
       expect(hcl_content).not_to include('""')  # No empty strings
       expect(hcl_content).not_to match(/column "\w+" \{\s*\}/)  # No empty column blocks
-      
+
       # Verify circular foreign key references are handled
       expect(hcl_content).to include('ref_columns = [table.organizations.column.id]')
       expect(hcl_content).to include('ref_columns = [table.teams.column.id]')
@@ -320,14 +320,14 @@ RSpec.describe 'Comprehensive Integration Tests' do
       # Test that the compiler handles reasonably large schemas efficiently
       large_schema = <<~YAML
         schema_name: public
-        
+
         defaults:
           "*":
             columns:
               id: ~
               created_at: ~
               updated_at: ~
-        
+
         column_patterns:
           - "^id$": "primary_key"
           - "_id$": "integer -> {table}.id on_delete=cascade not_null"
@@ -335,7 +335,7 @@ RSpec.describe 'Comprehensive Integration Tests' do
           - "^is_": "boolean default=false not_null"
           - "_count$": "integer default=0 not_null"
           - ".*": "string"
-        
+
         tables:
       YAML
 
@@ -348,38 +348,38 @@ RSpec.describe 'Comprehensive Integration Tests' do
         large_schema += "              #{table_name}_slug: ~\n"
         large_schema += "              is_active_#{i}: ~\n"
         large_schema += "              record_count_#{i}: ~\n"
-        
+
         # Add some cross-references
         if i > 0
           large_schema += "              ref_id_#{i}: integer -> table_#{i-1}.id on_delete=cascade not_null\n"
         end
-        
+
         large_schema += "            indexes:\n"
         large_schema += "              - #{table_name}_slug\n"
         large_schema += "              - is_active_#{i}\n"
       end
 
       create_test_yaml(large_schema)
-      
+
       # Measure compilation time
       start_time = Time.now
       compiler = Essence::Compiler.new
       compiler.compile!
       end_time = Time.now
-      
+
       compilation_time = end_time - start_time
-      
+
       # Should compile reasonably quickly (under 1 second for 10 tables)
       expect(compilation_time).to be < 1.0
-      
+
       hcl_content = read_generated_hcl
-      
+
       # Verify all tables were generated
       expect(hcl_content.scan(/table "table_\d+"/).length).to eq(10)
-      
+
       # Verify relationships were established
       expect(hcl_content.scan(/foreign_key/).length).to be >= 9  # 9 cross-references
-      
+
       # Verify unique indexes were generated for all slugs
       expect(hcl_content.scan(/unique = true/).length).to be >= 10
     end

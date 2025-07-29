@@ -16,14 +16,44 @@ Layout/MultilineMethodCallIndentation:
 Layout/MultilineOperationIndentation:
   EnforcedStyle: indented
 
-# Enforce 2-space indentation consistently
+# Re-enable indentation width cop with proper configuration to catch structural errors
 Layout/IndentationWidth:
   Width: 2
 
+# Prevent incorrect indentation after access modifiers (private, protected, public)
+# Methods after 'private' should be at same level as other methods, NOT indented
+Layout/AccessModifierIndentation:
+  EnforcedStyle: outdent
+
+# Add cops to catch structural indentation errors
+Layout/IndentationConsistency:
+  Enabled: true
+  EnforcedStyle: normal
+
+Layout/EndAlignment:
+  Enabled: true
+  EnforcedStyleAlignWith: variable
+
+Layout/DefEndAlignment:
+  Enabled: true
+  EnforcedStyleAlignWith: start_of_line
+
+# Handle HEREDOC indentation properly
+Layout/HeredocIndentation:
+  Enabled: true
+
+# Ensure proper HEREDOC argument placement
+Layout/HeredocArgumentClosingParenthesis:
+  Enabled: true
+
+# Handle method calls on HEREDOCs correctly
+Lint/HeredocMethodCallPosition:
+  Enabled: true
+
 # SCOPE-BASED INDENTATION STANDARD:
-# 
+#
 # Method chaining should align with the scope level, NOT add extra indentation.
-# 
+#
 # ✅ CORRECT (scope-based indentation):
 #   cleaned_words = name.to_s
 #   .gsub(/pattern/, "")     # Aligned with scope level
@@ -38,3 +68,38 @@ Layout/IndentationWidth:
 #
 # This standard applies to all method chaining, regardless of context.
 # Each method call should be indented at the same level as the scope it belongs to.
+
+# RUBOCOP CONFIGURATION OVERVIEW:
+#
+# This configuration extends RuboCop Rails Omakase with custom indentation rules
+# that enforce a 2-space, scope-based indentation standard throughout the project.
+#
+# KEY CONFIGURATION DECISIONS:
+#
+# DISABLED COPS:
+# - Layout/MultilineMethodCallIndentation: All built-in styles create problematic
+#   double-indentation patterns. Disabled to allow scope-based indentation rules
+#   even in cases of long method chains spread across multiple lines.
+#
+# STRUCTURAL INDENTATION COPS:
+# - Layout/IndentationWidth: Enforces consistent 2-space indentation
+# - Layout/IndentationConsistency: Prevents mixed indentation patterns
+# - Layout/EndAlignment: Ensures end statements align with their opening statements
+# - Layout/DefEndAlignment: Ensures method endings align with method definitions
+#
+# HEREDOC HANDLING:
+# - Layout/HeredocIndentation: Ensures proper HEREDOC indentation structure
+# - Layout/HeredocArgumentClosingParenthesis: Handles HEREDOC argument placement
+# - Lint/HeredocMethodCallPosition: Catches HEREDOC method call positioning errors
+#
+# ACCESS MODIFIER CONFIGURATION:
+# - Layout/AccessModifierIndentation: Uses 'outdent' style so methods after
+#   'private', 'protected', or 'public' align with other class methods
+#
+# MULTILINE OPERATION STYLE:
+# - Layout/MultilineOperationIndentation: Uses 'indented' style for consistent
+#   handling of multiline operations like array literals and hash definitions
+#
+# This configuration maintains compatibility with RuboCop Rails Omakase while
+# enforcing the project's scope-based indentation standard. For complete
+# indentation guidelines and examples, see docs/indentation_standard.md.
