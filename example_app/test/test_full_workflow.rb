@@ -54,9 +54,9 @@ class WorkflowDemo
     puts "- ✅ Rails integration ready"
   end
 
-  private
+  ##################################################################################################
 
-  def setup_demo_environment
+  private def setup_demo_environment
     puts "🔧 Setting up demonstration environment..."
     FileUtils.rm_rf(@demo_dir) if Dir.exist?(@demo_dir)
     FileUtils.mkdir_p(@demo_dir)
@@ -66,14 +66,14 @@ class WorkflowDemo
     puts
   end
 
-  def cleanup_demo_environment
+  private def cleanup_demo_environment
     Dir.chdir(@original_dir)
     FileUtils.rm_rf(@demo_dir)
     puts "🧹 Cleaned up demo environment"
     puts
   end
 
-  def demo_file_preferences
+  private def demo_file_preferences
     puts "1️⃣  Testing file extension and location preferences..."
     puts
 
@@ -106,7 +106,7 @@ class WorkflowDemo
     puts
   end
 
-  def demo_simple_conversion
+  private def demo_simple_conversion
     puts "2️⃣  Testing simple schema conversion..."
     puts
 
@@ -143,7 +143,7 @@ class WorkflowDemo
     puts
   end
 
-  def demo_complex_schema
+  private def demo_complex_schema
     puts "3️⃣  Testing complex speech & debate tournament schema..."
     puts
 
@@ -175,7 +175,7 @@ class WorkflowDemo
     puts
   end
 
-  def demo_atlas_integration
+  private def demo_atlas_integration
     puts "4️⃣  Testing Atlas integration..."
     puts
 
@@ -201,7 +201,7 @@ class WorkflowDemo
     puts
   end
 
-  def demo_seed_generation
+  private def demo_seed_generation
     puts "5️⃣  Testing Rails seed data generation..."
     puts
 
@@ -241,11 +241,11 @@ class WorkflowDemo
     puts
   end
 
-  def atlas_available?
+  private def atlas_available?
     system("atlas version > /dev/null 2>&1")
   end
 
-  def simple_schema_yaml
+  private def simple_schema_yaml
     <<~YAML
       schema_name: public
       tables:
@@ -276,7 +276,7 @@ class WorkflowDemo
     YAML
   end
 
-  def tournament_schema_yaml
+  private def tournament_schema_yaml
     <<~YAML
       schema_name: public
       tables:

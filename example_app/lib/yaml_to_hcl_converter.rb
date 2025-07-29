@@ -97,9 +97,8 @@ class YamlToHclConverter
     puts "🔧 Run 'rake jaml:convert' to convert to HCL format"
   end
 
-  private
-
-  def find_schema_yaml_file
+  ##################################################################################################
+  private def find_schema_yaml_file
     # Prefer .yaml extension over .yml, and db/ directory over root
     candidates = [
       'db/schema.yaml',
@@ -116,7 +115,7 @@ class YamlToHclConverter
     'db/schema.yaml'
   end
 
-  def load_yaml
+  private def load_yaml
     unless File.exist?(@yaml_file)
       puts "❌ YAML file #{@yaml_file} not found!"
       puts "💡 Run 'rake jaml:template' to create a new schema file"
@@ -127,7 +126,7 @@ class YamlToHclConverter
     puts "📖 Loaded YAML schema with #{@schema_data['tables']&.keys&.length || 0} tables"
   end
 
-  def parse_defaults_and_patterns
+  private def parse_defaults_and_patterns
     # Parse default columns
     if @schema_data['defaults']
       @defaults = @schema_data['defaults']
@@ -164,7 +163,7 @@ class YamlToHclConverter
     end
   end
 
-  def default_column_patterns
+  private def default_column_patterns
     [
       {
         regex: Regexp.new("_id$"),
@@ -181,7 +180,7 @@ class YamlToHclConverter
     ]
   end
 
-  def generate_hcl
+  private def generate_hcl
     hcl_content = generate_hcl_header
     hcl_content += generate_schema_block
     hcl_content += generate_table_blocks
@@ -189,7 +188,7 @@ class YamlToHclConverter
     File.write(@hcl_file, hcl_content)
   end
 
-  def generate_hcl_header
+  private def generate_hcl_header
     <<~HCL
       # Auto-generated HCL schema from #{@yaml_file}
       # Edit the YAML file and re-run the converter to update this file
@@ -197,7 +196,7 @@ class YamlToHclConverter
     HCL
   end
 
-  def generate_schema_block
+  private def generate_schema_block
     schema_name = @schema_data['schema_name'] || 'public'
     <<~HCL
       schema "#{schema_name}" {}
@@ -205,7 +204,7 @@ class YamlToHclConverter
     HCL
   end
 
-  def generate_table_blocks
+  private def generate_table_blocks
     return "" unless @schema_data['tables']
 
     hcl_content = ""
@@ -222,7 +221,7 @@ class YamlToHclConverter
     hcl_content
   end
 
-  def merge_default_columns(table_name, table_def)
+  private def merge_default_columns(table_name, table_def)
     # Start with default columns for all tables (*)
     merged = {}
 
@@ -252,7 +251,7 @@ class YamlToHclConverter
     merged
   end
 
-  def infer_column_attributes(column_name, table_name)
+  private def infer_column_attributes(column_name, table_name)
     @column_patterns.each do |pattern|
       if column_name.match?(pattern[:regex])
         # Check if attributes contains template variables
@@ -269,7 +268,7 @@ class YamlToHclConverter
     "string"
   end
 
-  def expand_template(template, column_name, table_name)
+  private def expand_template(template, column_name, table_name)
     # Extract the table name from column name (e.g., "league_id" -> "leagues")
     if column_name.match(/^(.+)_id$/)
       referenced_table = pluralize($1)
@@ -278,7 +277,7 @@ class YamlToHclConverter
     template
   end
 
-  def pluralize(word)
+  private def pluralize(word)
     # Simple pluralization rules - could be enhanced with a proper library
     case word
     when /y$/
@@ -294,7 +293,7 @@ class YamlToHclConverter
     end
   end
 
-  def generate_table_block(table_name, table_def)
+  private def generate_table_block(table_name, table_def)
     schema_name = @schema_data['schema_name'] || 'public'
 
     hcl = <<~HCL
@@ -332,7 +331,7 @@ class YamlToHclConverter
     hcl
   end
 
-  def generate_column_block(column_name, column_def)
+  private def generate_column_block(column_name, column_def)
     # Handle primary key columns specially but still generate them
     if column_def == 'primary_key'
       parsed = { type: 'integer', not_null: true, hcl_type: 'integer' }
@@ -368,7 +367,7 @@ class YamlToHclConverter
     hcl
   end
 
-  def parse_column_definition(column_def)
+  private def parse_column_definition(column_def)
     return { type: 'primary_key' } if column_def == 'primary_key'
 
     # Handle foreign key references
@@ -385,7 +384,7 @@ class YamlToHclConverter
     parse_simple_column_def(column_def)
   end
 
-  def parse_simple_column_def(def_str)
+  private def parse_simple_column_def(def_str)
     result = {
       not_null: false,
       unique: false,
@@ -414,7 +413,7 @@ class YamlToHclConverter
     result
   end
 
-  def convert_type_to_hcl(type, size_info)
+  private def convert_type_to_hcl(type, size_info)
     case type
     when 'string'
       size_info ? "varchar(#{size_info})" : "varchar"
@@ -437,7 +436,7 @@ class YamlToHclConverter
     end
   end
 
-  def format_default_value(value)
+  private def format_default_value(value)
     case value.downcase
     when 'true'
       'true'
@@ -454,7 +453,7 @@ class YamlToHclConverter
     end
   end
 
-  def parse_foreign_key_reference(reference)
+  private def parse_foreign_key_reference(reference)
     # Format: "leagues.id on_delete=cascade"
     parts = reference.split(' ')
     table_column = parts[0] # "leagues.id"
@@ -477,7 +476,7 @@ class YamlToHclConverter
     fk
   end
 
-  def find_primary_key_column(columns)
+  private def find_primary_key_column(columns)
     return nil unless columns
 
     columns.each do |column_name, column_def|
@@ -490,7 +489,7 @@ class YamlToHclConverter
     nil
   end
 
-  def generate_primary_key_block(column_name)
+  private def generate_primary_key_block(column_name)
     <<~HCL
       primary_key {
         columns = [column.#{column_name}]
@@ -498,7 +497,7 @@ class YamlToHclConverter
     HCL
   end
 
-  def extract_foreign_keys(columns)
+  private def extract_foreign_keys(columns)
     return [] unless columns
 
     foreign_keys = []
@@ -519,7 +518,7 @@ class YamlToHclConverter
     foreign_keys
   end
 
-  def generate_foreign_key_block(fk, table_name)
+  private def generate_foreign_key_block(fk, table_name)
     constraint_name = "fk_#{table_name}_#{fk[:column]}"
 
     hcl = <<~HCL
@@ -543,16 +542,16 @@ class YamlToHclConverter
     hcl
   end
 
-  def generate_index_block(index_def, table_name)
+  private def generate_index_block(index_def, table_name)
     if index_def.is_a?(String)
       # Simple single-column index
       column_name = index_def
       index_name = "index_#{table_name}_on_#{column_name}"
 
       <<~HCL
-      index "#{index_name}" {
-        columns = [column.#{column_name}]
-      }
+        index "#{index_name}" {
+          columns = [column.#{column_name}]
+        }
       HCL
 
     elsif index_def.is_a?(Hash)
@@ -566,8 +565,8 @@ class YamlToHclConverter
         index_name += '_unique' if is_unique
 
         hcl = <<~HCL
-        index "#{index_name}" {
-          columns = [#{columns.map { |col| "column.#{col}" }.join(', ')}]
+          index "#{index_name}" {
+            columns = [#{columns.map { |col| "column.#{col}" }.join(', ')}]
         HCL
 
         hcl += "    unique = true\n" if is_unique
@@ -585,9 +584,9 @@ class YamlToHclConverter
         index_name = "index_#{table_name}_on_#{column_name}"
 
         <<~HCL
-        index "#{index_name}" {
-          columns = [column.#{column_name}]
-        }
+          index "#{index_name}" {
+            columns = [column.#{column_name}]
+          }
         HCL
       else
         # Multi-column index
@@ -599,8 +598,8 @@ class YamlToHclConverter
         index_name += '_unique' if is_unique
 
         hcl = <<~HCL
-        index "#{index_name}" {
-          columns = [#{columns.map { |col| "column.#{col}" }.join(', ')}]
+          index "#{index_name}" {
+            columns = [#{columns.map { |col| "column.#{col}" }.join(', ')}]
         HCL
 
         hcl += "    unique = true\n" if is_unique

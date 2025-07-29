@@ -153,9 +153,8 @@ class AtlasRailsBridge
     puts "✅ Seed data written to #{seed_file}"
   end
 
-  private
-
-  def get_atlas_migration_plan
+  ##################################################################################################
+  private def get_atlas_migration_plan
     # Get the SQL statements from Atlas dry run
     result = `atlas schema apply --env #{@atlas_env} --dry-run`
 
@@ -182,7 +181,7 @@ class AtlasRailsBridge
     statements
   end
 
-  def create_rails_migration(name, sql_statements)
+  private def create_rails_migration(name, sql_statements)
     timestamp = Time.now.utc.strftime('%Y%m%d%H%M%S')
     filename = "#{timestamp}_#{name.downcase.gsub(/\s+/, '_')}.rb"
     filepath = File.join(@migrations_dir, filename)
@@ -200,7 +199,7 @@ class AtlasRailsBridge
     puts migration_content
   end
 
-  def generate_migration_content(class_name, sql_statements)
+  private def generate_migration_content(class_name, sql_statements)
     rails_version = get_rails_version
 
     content = <<~RUBY
@@ -234,7 +233,7 @@ class AtlasRailsBridge
     content
   end
 
-  def convert_sql_to_rails(sql_statement)
+  private def convert_sql_to_rails(sql_statement)
     sql = sql_statement.strip.upcase
 
     case sql
@@ -279,7 +278,7 @@ class AtlasRailsBridge
     end
   end
 
-  def convert_sql_type_to_rails(sql_type)
+  private def convert_sql_type_to_rails(sql_type)
     case sql_type.downcase
     when /varchar\((\d+)\)/
       "string, limit: #{$1}"
@@ -304,7 +303,7 @@ class AtlasRailsBridge
     end
   end
 
-  def get_rails_version
+  private def get_rails_version
     "8.0" # Default for new Rails apps
   end
 end

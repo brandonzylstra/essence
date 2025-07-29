@@ -267,9 +267,9 @@ class AtlasRailsBridgeTest < ActiveSupport::TestCase
     assert_includes content, '# To rollback, revert your schema.hcl file'
   end
 
-  private
+  ##################################################################################################
 
-  def test_database_yml
+  private def test_database_yml
     <<~YAML
       development:
         adapter: sqlite3
@@ -285,7 +285,7 @@ class AtlasRailsBridgeTest < ActiveSupport::TestCase
     YAML
   end
 
-  def capture_io
+  private def capture_io
     original_stdout = $stdout
     original_stderr = $stderr
 

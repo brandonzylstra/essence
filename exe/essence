@@ -42,9 +42,9 @@ class EssenceCli
     end
   end
 
-  private
+  ##################################################################################################
 
-  def generate_template
+  private def generate_template
     file_path = @args[1] || 'db/schema.yaml'
 
     puts "🎯 Generating Essence schema template at #{file_path}..."

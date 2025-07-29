@@ -741,9 +741,9 @@ class YamlToHclConverterTest < ActiveSupport::TestCase
     assert_includes hcl_content, 'table "users"'
   end
 
-  private
+  ##################################################################################################
 
-  def test_yaml_content
+  private def test_yaml_content
     <<~YAML
       schema_name: public
 

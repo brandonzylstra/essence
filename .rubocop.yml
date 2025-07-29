@@ -100,6 +100,12 @@ Lint/HeredocMethodCallPosition:
 # - Layout/MultilineOperationIndentation: Uses 'indented' style for consistent
 #   handling of multiline operations like array literals and hash definitions
 #
+# ACCESS MODIFIER STYLE:
+# - Style/AccessModifierDeclarations: Enforces inline style for private/protected
+#   modifiers (e.g., 'private def method_name' instead of separate 'private' line)
+Style/AccessModifierDeclarations:
+  EnforcedStyle: inline
+
 # This configuration maintains compatibility with RuboCop Rails Omakase while
 # enforcing the project's scope-based indentation standard. For complete
 # indentation guidelines and examples, see docs/indentation_standard.md.

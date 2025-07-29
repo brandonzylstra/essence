@@ -346,9 +346,9 @@ class AtlasWorkflowIntegrationTest < ActiveSupport::TestCase
     assert_includes hcl_content, 'column "emailAddress"'
   end
 
-  private
+  ##################################################################################################
 
-  def create_test_yaml_schema
+  private def create_test_yaml_schema
     yaml_content = <<~YAML
       schema_name: public
       tables:

@@ -165,9 +165,9 @@ module Essence
       puts "🔧 Run 'rake essence:compile' to compile to HCL format"
     end
 
-    private
+    ##################################################################################################
 
-    def validate_rails_version
+    private def validate_rails_version
       rails_version = @schema_data["rails_version"]
       return unless rails_version
 
@@ -178,7 +178,7 @@ module Essence
       end
     end
 
-    def find_schema_yaml_file
+    private def find_schema_yaml_file
       # Prefer .yaml extension over .yml, and db/ directory over root
       candidates = [
         "db/schema.yaml",
@@ -195,7 +195,7 @@ module Essence
       "db/schema.yaml"
     end
 
-    def load_yaml
+    private def load_yaml
       unless File.exist?(@yaml_file)
         puts "❌ YAML file #{@yaml_file} not found!"
         puts "💡 Run 'rake essence:template' to create a new schema file"
@@ -206,7 +206,7 @@ module Essence
       puts "📖 Loaded YAML schema with #{@schema_data['tables']&.keys&.length || 0} tables"
     end
 
-    def parse_defaults_and_patterns
+    private def parse_defaults_and_patterns
       # Parse default columns
       if @schema_data["defaults"]
         @defaults = @schema_data["defaults"]
@@ -244,7 +244,7 @@ module Essence
       end
     end
 
-    def default_column_patterns
+    private def default_column_patterns
       [
         {
           regex: Regexp.new("_id$"),
@@ -261,7 +261,7 @@ module Essence
       ]
     end
 
-    def generate_hcl
+    private def generate_hcl
       hcl_content = generate_hcl_header
       hcl_content += generate_schema_block
       hcl_content += generate_table_blocks
@@ -269,7 +269,7 @@ module Essence
       File.write(@hcl_file, hcl_content)
     end
 
-    def generate_hcl_header
+    private def generate_hcl_header
       <<~HCL
         # Auto-generated HCL schema from #{@yaml_file}
         # Edit the YAML file and re-run the converter to update this file
@@ -277,7 +277,7 @@ module Essence
       HCL
     end
 
-    def generate_schema_block
+    private def generate_schema_block
       schema_name = @schema_data["schema_name"] || "public"
       <<~HCL
         schema "#{schema_name}" {}
@@ -285,7 +285,7 @@ module Essence
       HCL
     end
 
-    def generate_table_blocks
+    private def generate_table_blocks
       return "" unless @schema_data["tables"]
 
       hcl_content = ""
@@ -302,7 +302,7 @@ module Essence
       hcl_content
     end
 
-    def merge_default_columns(table_name, table_def)
+    private def merge_default_columns(table_name, table_def)
       # Start with default columns for all tables (*)
       merged = {}
 
@@ -348,7 +348,7 @@ module Essence
       merged
     end
 
-    def infer_column_properties(column_name, table_name)
+    private def infer_column_properties(column_name, table_name)
       @column_patterns.each do |pattern|
         if column_name.match?(pattern[:regex])
           # Check if properties contains template variables
@@ -365,7 +365,7 @@ module Essence
       "string"
     end
 
-    def expand_template(template, column_name, table_name)
+    private def expand_template(template, column_name, table_name)
       # Extract the table name from column name (e.g., "league_id" -> "leagues")
       if column_name.match(/^(.+)_id$/)
         referenced_table = pluralize($1)
@@ -374,7 +374,7 @@ module Essence
       template
     end
 
-    def pluralize(word)
+    private def pluralize(word)
       # Simple pluralization rules - could be enhanced with a proper library
       case word
       when /y$/
@@ -390,7 +390,7 @@ module Essence
       end
     end
 
-    def generate_table_block(table_name, table_def)
+    private def generate_table_block(table_name, table_def)
       schema_name = @schema_data["schema_name"] || "public"
 
       hcl = <<~HCL
@@ -434,7 +434,7 @@ module Essence
       hcl
     end
 
-    def generate_column_block(column_name, column_def)
+    private def generate_column_block(column_name, column_def)
       # Handle primary key columns specially but still generate them
       if column_def == "primary_key"
         parsed = { type: "integer", not_null: true, hcl_type: "integer" }
@@ -468,7 +468,7 @@ module Essence
       hcl
     end
 
-    def parse_column_definition(column_def)
+    private def parse_column_definition(column_def)
       return { type: "primary_key" } if column_def == "primary_key"
 
       # Handle foreign key references
@@ -485,7 +485,7 @@ module Essence
       parse_simple_column_def(column_def)
     end
 
-    def parse_simple_column_def(def_str)
+    private def parse_simple_column_def(def_str)
       result = {
         not_null: false,
         unique: false,
@@ -514,7 +514,7 @@ module Essence
       result
     end
 
-    def convert_type_to_hcl(type, size_info)
+    private def convert_type_to_hcl(type, size_info)
       case type
       when "string"
         size_info ? "varchar(#{size_info})" : "varchar"
@@ -537,7 +537,7 @@ module Essence
       end
     end
 
-    def format_default_value(value)
+    private def format_default_value(value)
       case value.downcase
       when "true"
         "true"
@@ -554,7 +554,7 @@ module Essence
       end
     end
 
-    def parse_foreign_key_reference(reference)
+    private def parse_foreign_key_reference(reference)
       # Format: "leagues.id on_delete=cascade"
       parts = reference.split(" ")
       table_column = parts[0] # "leagues.id"
@@ -577,7 +577,7 @@ module Essence
       fk
     end
 
-    def find_primary_key_column(columns)
+    private def find_primary_key_column(columns)
       return nil unless columns
 
       columns.each do |column_name, column_def|
@@ -590,11 +590,11 @@ module Essence
       nil
     end
 
-    def generate_primary_key_block(column_name)
+    private def generate_primary_key_block(column_name)
       "  primary_key {\n    columns = [column.#{column_name}]\n  }\n"
     end
 
-    def extract_foreign_keys(columns)
+    private def extract_foreign_keys(columns)
       return [] unless columns
 
       foreign_keys = []
@@ -615,7 +615,7 @@ module Essence
       foreign_keys
     end
 
-    def extract_unique_indexes(columns)
+    private def extract_unique_indexes(columns)
       return [] unless columns
 
       unique_indexes = []
@@ -636,7 +636,7 @@ module Essence
       unique_indexes
     end
 
-    def generate_foreign_key_block(fk, table_name)
+    private def generate_foreign_key_block(fk, table_name)
       constraint_name = "fk_#{table_name}_#{fk[:column]}"
 
       hcl = "  foreign_key \"#{constraint_name}\" {\n    columns = [column.#{fk[:column]}]\n    ref_columns = [table.#{fk[:ref_table]}.column.#{fk[:ref_column]}]\n"
@@ -656,7 +656,7 @@ module Essence
       hcl
     end
 
-    def generate_index_block(index_def, table_name)
+    private def generate_index_block(index_def, table_name)
       if index_def.is_a?(String)
         # Simple single-column index
         column_name = index_def

@@ -502,9 +502,9 @@ class StandaloneYamlConverterTest < Minitest::Test
     assert_includes hcl_content, 'columns = [column.commentable_id, column.commentable_type]'
   end
 
-  private
+  ##################################################################################################
 
-  def test_yaml_content
+  private def test_yaml_content
     <<~YAML
       schema_name: public
 

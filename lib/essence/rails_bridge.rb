@@ -166,9 +166,9 @@ module Essence
       end
     end
 
-    private
+    ##################################################################################################
 
-    def get_atlas_migration_plan
+    private def get_atlas_migration_plan
       output, success = execute_atlas_command
 
       unless success
@@ -179,12 +179,12 @@ module Essence
       parse_atlas_output(output)
     end
 
-    def execute_atlas_command
+    private def execute_atlas_command
       result = `atlas schema apply --env #{@atlas_env} --dry-run`
       [ result, $?.exitstatus == 0 ]
     end
 
-    def parse_atlas_output(output)
+    private def parse_atlas_output(output)
       # Parse SQL statements from the dry-run output
       statements = []
       output.each_line do |line|
@@ -203,7 +203,7 @@ module Essence
       statements
     end
 
-    def create_rails_migration(name, sql_statements)
+    private def create_rails_migration(name, sql_statements)
       timestamp = Time.now.utc.strftime("%Y%m%d%H%M%S")
 
       # Generate filename with length limits (filesystem typically limits to 255 chars)
@@ -238,7 +238,7 @@ module Essence
       puts migration_content
     end
 
-    def generate_migration_content(class_name, sql_statements)
+    private def generate_migration_content(class_name, sql_statements)
       rails_version = get_rails_version
 
       formatted_class_name = format_class_name(class_name)
@@ -273,7 +273,7 @@ module Essence
       content
     end
 
-    def convert_sql_to_rails(sql_statement)
+    private def convert_sql_to_rails(sql_statement)
       sql = sql_statement.strip
 
       case sql
@@ -318,7 +318,7 @@ module Essence
       end
     end
 
-    def convert_sql_type_to_rails(sql_type)
+    private def convert_sql_type_to_rails(sql_type)
       case sql_type.downcase
       when /varchar\((\d+)\)/
         "string, limit: #{$1}"
@@ -343,11 +343,11 @@ module Essence
       end
     end
 
-    def get_rails_version
+    private def get_rails_version
       "8.0" # Default for new Rails apps
     end
 
-    def format_class_name(name)
+    private def format_class_name(name)
       # Convert migration name to proper Rails class name format
       # "add user tables" -> "AddUserTables"
       # "create_posts_table" -> "CreatePostsTable"
