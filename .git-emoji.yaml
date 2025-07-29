@@ -1,0 +1,267 @@
+# Semantic Emoji Map #
+# ================== #
+
+# As long as we keep the name "Essence" we should have a set of symbols for it
+Essence Gem:
+ - ⚗️
+ - 🍯
+ - 🌿
+ - 🫧
+
+# if and when we adopt "Preserves" we should have a set of symbols for that
+Preserves Gem:
+  - 🍓
+  - 🫐
+  - 🍒
+  - 🍯
+  - 🫙
+  - 🍍
+  - 🥭
+  - 🍊
+
+Migrations:
+  - 💫
+  - 🦋
+
+Options:
+  - 🎛️
+  - 🎚
+
+Structured YAML:
+  - 🗂️
+
+Type coercion:
+  - 🎭
+
+Types:
+  - 🔡
+  - 🔢
+
+Models:
+  - 🧩
+
+Compiling:
+  - 💾
+  - 🔌
+  - ⚡
+  - 🚀
+
+Seed data:
+  - 🌰
+
+Remote schemas:
+  - 📡
+  - 🛰
+
+# Commit Message Types #
+# ==================== #
+
+Features:
+  - ✨
+  - 🎉
+  - 🆕
+  - 📢
+
+Bug fixes:
+  - 🐛
+  - 🩹
+  - 🚑
+  - 🔧
+
+Documentation:
+  - 📝
+  - 📚
+  - 📖
+  - 💡
+
+Code style:
+  - 🎨
+  - 💄
+  - 🧹
+
+Refactoring:
+  - ♻️
+  - 🔨
+  - 🛠️
+
+Testing:
+  - ✅
+  - 🧪
+  - 🔬
+  - 🎯
+
+Performance:
+  - ⚡
+  - 🏎
+  - 📈
+  - 🏃
+
+Security:
+  - 🛡️
+
+Emergency Fix:
+  - 🚑
+
+Emergency Change Needed:
+  - 🚨
+
+Authorization:
+  - 🔒
+  - 🔐
+
+Dependencies:
+  - ⬆️
+  - ⬇️
+  - 📦
+  - 🔗
+
+Configuration:
+  - ⚙️
+  - 🔧
+  - 📋
+  - 🎛️
+
+CI/CD:
+  - 🏃🏼‍♂️‍➡️
+
+Launch:
+  - 🚀
+  - 🔄
+  - ✅
+
+Breaking changes:
+  - 💥
+  - ⚠️
+  - 🚨
+  - 🔥
+
+Removal:
+  - 🗑️
+  - 🔥
+
+Forbidden Code:
+  - 🚫
+
+Work in progress:
+  - 🚧
+
+Delayed Features:
+  - ⏳
+
+Initial commit:
+  - 🎉
+  - 🌱
+  - 🚀
+  - 🐣
+
+Race Conditions:
+  - 🏁
+
+
+# Project-Specific Categories #
+# ============================ #
+
+Configuration files:
+  - ⚙️
+  - 📋
+  - 🎚️
+  - 🗂️
+
+Data validation:
+  - ✅
+  - 🔍
+  - 📏
+  - 🎯
+
+Error handling:
+  - 🚨
+  - 💀
+  - ⚠️
+  - 🛡️
+
+Logging:
+  - 📊
+  - 📈
+  - 🔍
+  - 📋
+
+API endpoints:
+  - 🌐
+  - 📡
+  - 🔌
+  - 🎯
+
+Database operations:
+  - 💾
+  - 🗄️
+  - 📊
+  - 🔍
+
+Ruby gems:
+  - 💎
+  - 📦
+  - 🔗
+  - ⚗️
+
+Parsing:
+  - 🔍
+  - 📝
+  - 🧩
+  - 🎭
+
+Schema definition:
+  - 📐
+  - 🗂️
+  - 📋
+  - 🎯
+
+Data transformation:
+  - 🔄
+  - 🎭
+  - ⚡
+  - 🧪
+
+Serialization:
+  - 📦
+  - 💾
+  - 🔌
+  - 📤
+
+Deserialization:
+  - 📥
+  - 🔓
+  - 🧩
+  - 📋
+
+Caching:
+  - ⚡
+  - 💾
+  - 🏃
+  - 📈
+
+Optimization:
+  - 🚀
+  - ⚡
+  - 📈
+  - 🎯
+
+Debugging:
+  - 🐛
+  - 🔍
+  - 🧪
+  - 💡
+
+File operations:
+  - 📁
+  - 📄
+  - 💾
+  - 🗂️
+
+Version management:
+  - 🏷️
+  - 📌
+  - 🔢
+  - 📋
+
+Synchronization:
+  - 🔄
