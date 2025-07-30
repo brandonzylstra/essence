@@ -4,6 +4,9 @@ require "bundler/gem_tasks"
 require "rspec/core/rake_task"
 require "rubocop/rake_task"
 
+# Load custom rake tasks
+Dir[File.join(__dir__, 'lib', 'tasks', '*.rake')].each { |f| load f }
+
 # Set up RSpec task
 RSpec::Core::RakeTask.new(:spec) do |spec|
   spec.pattern = FileList['spec/**/*_spec.rb']

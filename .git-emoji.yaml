@@ -1,267 +1,1332 @@
-# Semantic Emoji Map #
-# ================== #
+# Emoji Semantic Map
+# ==================
 
-# As long as we keep the name "Essence" we should have a set of symbols for it
-Essence Gem:
- - ⚗️
- - 🍯
- - 🌿
- - 🫧
+# Hybrid format: emoji-as-key with primary concept and optional contexts
+# This allows single emoji -> contextual meanings while maintaining clear primary meaning
+# Only includes naturally occurring associations from actual commit usage
 
-# if and when we adopt "Preserves" we should have a set of symbols for that
-Preserves Gem:
-  - 🍓
-  - 🫐
-  - 🍒
-  - 🍯
-  - 🫙
-  - 🍍
-  - 🥭
-  - 🍊
+emojis:
+  "⚗️":
+    primary: "essence_alchemy"
+    contexts:
+      - concept: "transformation"
+        usage: "essence project alchemy and transformation"
 
-Migrations:
-  - 💫
-  - 🦋
+  "🍯":
+    primary: "essence_sweetness"
+    contexts:
+      - concept: "preserves"
+        usage: "essence and preserves sweetness"
 
-Options:
-  - 🎛️
-  - 🎚
+  "🌿":
+    primary: "essence_nature"
+    contexts:
+      - concept: "natural"
+        usage: "essence project natural elements"
 
-Structured YAML:
-  - 🗂️
+  "🫧":
+    primary: "essence_bubbles"
+    contexts:
+      - concept: "project_identity"
+        usage: "essence project branding"
 
-Type coercion:
-  - 🎭
+  "🍓":
+    primary: "preserves_strawberry"
+    contexts:
+      - concept: "preserves"
+        usage: "preserves gem strawberry flavor"
 
-Types:
-  - 🔡
-  - 🔢
+  "🫐":
+    primary: "preserves_blueberry"
+    contexts:
+      - concept: "preserves"
+        usage: "preserves gem blueberry flavor"
 
-Models:
-  - 🧩
+  "🍒":
+    primary: "preserves_cherry"
+    contexts:
+      - concept: "preserves"
+        usage: "preserves gem cherry flavor"
 
-Compiling:
-  - 💾
-  - 🔌
-  - ⚡
-  - 🚀
+  "🫙":
+    primary: "preserves_jar"
+    contexts:
+      - concept: "preserves"
+        usage: "preserves gem jar container"
 
-Seed data:
-  - 🌰
+  "🍍":
+    primary: "preserves_pineapple"
+    contexts:
+      - concept: "preserves"
+        usage: "preserves gem pineapple flavor"
 
-Remote schemas:
-  - 📡
-  - 🛰
+  "🥭":
+    primary: "preserves_mango"
+    contexts:
+      - concept: "preserves"
+        usage: "preserves gem mango flavor"
 
-# Commit Message Types #
-# ==================== #
+  "🍊":
+    primary: "preserves_orange"
+    contexts:
+      - concept: "preserves"
+        usage: "preserves gem orange flavor"
 
-Features:
-  - ✨
-  - 🎉
-  - 🆕
-  - 📢
+  "💫":
+    primary: "migrations"
+    contexts:
+      - concept: "transformation"
+        usage: "database migrations and transformations"
 
-Bug fixes:
-  - 🐛
-  - 🩹
-  - 🚑
-  - 🔧
+  "🦋":
+    primary: "migrations_metamorphosis"
+    contexts:
+      - concept: "transformation"
+        usage: "migrations that transform like metamorphosis"
 
-Documentation:
-  - 📝
-  - 📚
-  - 📖
-  - 💡
+  "🎛️":
+    primary: "options_controls"
+    contexts:
+      - concept: "configuration"
+        usage: "configuration options and controls"
 
-Code style:
-  - 🎨
-  - 💄
-  - 🧹
+  "🎚":
+    primary: "options_sliders"
+    contexts:
+      - concept: "configuration"
+        usage: "configuration options with slider controls"
 
-Refactoring:
-  - ♻️
-  - 🔨
-  - 🛠️
+  "🗂️":
+    primary: "structured_yaml"
+    contexts:
+      - concept: "organization"
+        usage: "structured YAML and file organization"
 
-Testing:
-  - ✅
-  - 🧪
-  - 🔬
-  - 🎯
+  "🎭":
+    primary: "type_coercion"
+    contexts:
+      - concept: "transformation"
+        usage: "type coercion and data masking"
 
-Performance:
-  - ⚡
-  - 🏎
-  - 📈
-  - 🏃
+  "🔢":
+    primary: "number_types"
+    contexts:
+      - concept: "types"
+        usage: "numeric types and data"
 
-Security:
-  - 🛡️
+  "🧩":
+    primary: "models"
+    contexts:
+      - concept: "structure"
+        usage: "data models and puzzle pieces"
 
-Emergency Fix:
-  - 🚑
+  "💾":
+    primary: "compiling_storage"
+    contexts:
+      - concept: "compilation"
+        usage: "compiling and data storage"
 
-Emergency Change Needed:
-  - 🚨
+  "🌰":
+    primary: "seed_data"
+    contexts:
+      - concept: "data"
+        usage: "seed data and database seeding"
 
-Authorization:
-  - 🔒
-  - 🔐
+  "🛰":
+    primary: "remote_schemas"
+    contexts:
+      - concept: "remote"
+        usage: "remote schemas and satellite connections"
 
-Dependencies:
-  - ⬆️
-  - ⬇️
-  - 📦
-  - 🔗
+  "🐞":
+    primary: "bugs"
+    contexts:
+      - concept: "proactive_fixes"
+        usage: "preventing bugs before they happen, catching potential issues"
 
-Configuration:
-  - ⚙️
-  - 🔧
-  - 📋
-  - 🎛️
+  "🦟":
+    primary: "small_bugs"
+    contexts:
+      - concept: "user_frustration"
+        usage: "particularly annoying bugs that frustrate users"
 
-CI/CD:
-  - 🏃🏼‍♂️‍➡️
+  "🐛":
+    primary: "caterpillar_bugs"
+    contexts:
+      - concept: "growing_problems"
+        usage: "bugs that grow into bigger problems if not addressed"
 
-Launch:
-  - 🚀
-  - 🔄
-  - ✅
+  "🦗":
+    primary: "cricket_bugs"
+    contexts:
+      - concept: "noisy_bugs"
+        usage: "bugs that make noise or create annoying alerts"
 
-Breaking changes:
-  - 💥
-  - ⚠️
-  - 🚨
-  - 🔥
+  "🐜":
+    primary: "ant_bugs"
+    contexts:
+      - concept: "small_persistent"
+        usage: "small persistent bugs that keep coming back"
 
-Removal:
-  - 🗑️
-  - 🔥
+  "🕷️":
+    primary: "spider_bugs"
+    contexts:
+      - concept: "web_related"
+        usage: "web-related bugs or bugs that trap other issues"
 
-Forbidden Code:
-  - 🚫
+  "🦂":
+    primary: "scorpion_bugs"
+    contexts:
+      - concept: "dangerous_bugs"
+        usage: "dangerous bugs with serious consequences"
 
-Work in progress:
-  - 🚧
+  "🐝":
+    primary: "bee_bugs"
+    contexts:
+      - concept: "productive_fixes"
+        usage: "bugs that lead to productive improvements when fixed"
 
-Delayed Features:
-  - ⏳
+  "🐨":
+    primary: "koala_bugs"
+    contexts:
+      - concept: "cute_harmless"
+        usage: "harmless bugs that are more cute than problematic"
 
-Initial commit:
-  - 🎉
-  - 🌱
-  - 🚀
-  - 🐣
+  "📐":
+    primary: "specs"
+    contexts:
+      - concept: "specifications"
+        usage: "test specifications and measurements"
 
-Race Conditions:
-  - 🏁
+  "🚔":
+    primary: "enforcement"
+    contexts:
+      - concept: "rubocop"
+        usage: "Ruby code style enforcement"
+      - concept: "compliance"
+        usage: "policy and rule enforcement"
+
+  "👾":
+    primary: "spacing"
+    contexts:
+      - concept: "indentation"
+        usage: "code formatting and spacing fixes"
+
+  "🥸":
+    primary: "impersonation"
+    contexts:
+      - concept: "access_modifiers"
+        usage: "disguising or masking access levels"
+
+  "📛":
+    primary: "branding"
+    contexts:
+      - concept: "naming"
+        usage: "names, labels, and brand changes"
+
+  "🧹":
+    primary: "cleanup"
+    contexts:
+      - concept: "housekeeping"
+        usage: "removing debris and organizing"
+
+  "🛠️":
+    primary: "tooling"
+    contexts:
+      - concept: "developer_experience"
+        usage: "improving development tools"
+
+  "🚸":
+    primary: "user_experience"
+    contexts:
+      - concept: "ux_improvements"
+        usage: "making things easier for users"
+
+  "📦":
+    primary: "dependencies"
+    contexts:
+      - concept: "packages"
+        usage: "gem and package management"
+
+  "✨":
+    primary: "features"
+    contexts:
+      - concept: "new_functionality"
+        usage: "adding new capabilities"
+
+  "🔌":
+    primary: "installation"
+    contexts:
+      - concept: "setup"
+        usage: "installation and connection setup"
+
+  "🔡":
+    primary: "text"
+    contexts:
+      - concept: "content"
+        usage: "text content and formatting"
+
+  "📝":
+    primary: "documentation"
+    contexts:
+      - concept: "writing"
+        usage: "creating or updating docs"
+
+  "🧽":
+    primary: "scrubbing"
+    contexts:
+      - concept: "cleanup"
+        usage: "thorough cleaning and scrubbing"
+
+  "💅🏼":
+    primary: "polish"
+    contexts:
+      - concept: "styling"
+        usage: "visual polish and styling improvements"
+
+  "💥":
+    primary: "breaking_changes"
+    contexts:
+      - concept: "destruction"
+        usage: "breaking API changes"
+
+  "🤔":
+    primary: "thinking"
+    contexts:
+      - concept: "consideration"
+        usage: "considering alternatives or options"
+
+  "🧪":
+    primary: "testing"
+    contexts:
+      - concept: "experiments"
+        usage: "test suites and experimental code"
+
+  "🛤":
+    primary: "rails"
+    contexts:
+      - concept: "framework"
+        usage: "Rails framework specific features"
+
+  "💎":
+    primary: "ruby"
+    contexts:
+      - concept: "language"
+        usage: "Ruby language and gems"
+
+  "🍱":
+    primary: "organization"
+    contexts:
+      - concept: "structure"
+        usage: "organizing and structuring code"
+
+  "🐣":
+    primary: "initial"
+    contexts:
+      - concept: "generated"
+        usage: "initial or generated code"
+
+  "🚧":
+    primary: "work_in_progress"
+    contexts:
+      - concept: "incomplete"
+        usage: "work that is not yet finished"
+
+  "🏗":
+    primary: "build"
+    contexts:
+      - concept: "construction"
+        usage: "build system and construction"
+
+  "👷🏼‍♂️":
+    primary: "workers"
+    contexts:
+      - concept: "build_workers"
+        usage: "CI workers and build processes"
 
 
-# Project-Specific Categories #
-# ============================ #
+  "😃":
+    primary: "positive"
+    contexts:
+      - concept: "happy"
+        usage: "positive changes and improvements"
 
-Configuration files:
-  - ⚙️
-  - 📋
-  - 🎚️
-  - 🗂️
+  "🗺":
+    primary: "mapping"
+    contexts:
+      - concept: "documentation"
+        usage: "mapping and planning documentation"
 
-Data validation:
-  - ✅
-  - 🔍
-  - 📏
-  - 🎯
+  "🛡️":
+    primary: "security"
+    contexts:
+      - concept: "protection"
+        usage: "security and protection measures"
 
-Error handling:
-  - 🚨
-  - 💀
-  - ⚠️
-  - 🛡️
+  "🏰":
+    primary: "firewall"
+    contexts:
+      - concept: "security"
+        usage: "firewall and security barriers"
 
-Logging:
-  - 📊
-  - 📈
-  - 🔍
-  - 📋
+  "🚀":
+    primary: "launch"
+    contexts:
+      - concept: "deployment"
+        usage: "launching and deploying applications"
 
-API endpoints:
-  - 🌐
-  - 📡
-  - 🔌
-  - 🎯
+  "🔀":
+    primary: "branching"
+    contexts:
+      - concept: "merging"
+        usage: "git branching and merging operations"
 
-Database operations:
-  - 💾
-  - 🗄️
-  - 📊
-  - 🔍
+  "🔐":
+    primary: "credentials"
+    contexts:
+      - concept: "security"
+        usage: "credentials and secure keys"
 
-Ruby gems:
-  - 💎
-  - 📦
-  - 🔗
-  - ⚗️
+  "⚔️":
+    primary: "conflicts"
+    contexts:
+      - concept: "fighting"
+        usage: "resolving conflicts and battles"
 
-Parsing:
-  - 🔍
-  - 📝
-  - 🧩
-  - 🎭
+  "🚫":
+    primary: "blocking"
+    contexts:
+      - concept: "avoiding"
+        usage: "blocking, avoiding, or disabling"
 
-Schema definition:
-  - 📐
-  - 🗂️
-  - 📋
-  - 🎯
+  "⚡":
+    primary: "performance"
+    contexts:
+      - concept: "speed"
+        usage: "performance improvements and speed"
 
-Data transformation:
-  - 🔄
-  - 🎭
-  - ⚡
-  - 🧪
+  "🗄️":
+    primary: "database"
+    contexts:
+      - concept: "storage"
+        usage: "database operations and storage"
 
-Serialization:
-  - 📦
-  - 💾
-  - 🔌
-  - 📤
+  "🩺":
+    primary: "diagnosis"
+    contexts:
+      - concept: "health_check"
+        usage: "diagnosing and health checking"
 
-Deserialization:
-  - 📥
-  - 🔓
-  - 🧩
-  - 📋
+  "🪪":
+    primary: "identification"
+    contexts:
+      - concept: "credentials"
+        usage: "credentials and identification"
 
-Caching:
-  - ⚡
-  - 💾
-  - 🏃
-  - 📈
+  "🩹":
+    primary: "patches"
+    contexts:
+      - concept: "small_fixes"
+        usage: "small patches and band-aid fixes"
 
-Optimization:
-  - 🚀
-  - ⚡
-  - 📈
-  - 🎯
+  "❤️‍🩹":
+    primary: "healing"
+    contexts:
+      - concept: "fixing"
+        usage: "healing and repairing broken things"
 
-Debugging:
-  - 🐛
-  - 🔍
-  - 🧪
-  - 💡
+  "🧫":
+    primary: "experiments"
+    contexts:
+      - concept: "testing"
+        usage: "experimental code and testing"
 
-File operations:
-  - 📁
-  - 📄
-  - 💾
-  - 🗂️
+  "🔥":
+    primary: "removal"
+    contexts:
+      - concept: "deletion"
+        usage: "removing or deleting code/features"
 
-Version management:
-  - 🏷️
-  - 📌
-  - 🔢
-  - 📋
+  "🎮":
+    primary: "gaming"
+    contexts:
+      - concept: "configuration"
+        usage: "configuration and game-like interfaces"
 
-Synchronization:
-  - 🔄
+  "🚨":
+    primary: "alerts"
+    contexts:
+      - concept: "security"
+        usage: "alerts, warnings, and security notices"
+
+  "🌠":
+    primary: "upgrades"
+    contexts:
+      - concept: "improvements"
+        usage: "upgrades and stellar improvements"
+
+  "🏫":
+    primary: "institutional"
+    contexts:
+      - concept: "berkeley"
+        usage: "institutional and Berkeley-specific"
+
+  "🥀":
+    primary: "deprecation"
+    contexts:
+      - concept: "wilting"
+        usage: "deprecated and dying features"
+
+  "🌹":
+    primary: "replacement"
+    contexts:
+      - concept: "improvement"
+        usage: "replacing with something better"
+
+  "🚝":
+    primary: "rails_transport"
+    contexts:
+      - concept: "framework"
+        usage: "Rails framework transportation"
+
+  "🔴":
+    primary: "ruby_red"
+    contexts:
+      - concept: "ruby"
+        usage: "Ruby language (red color association)"
+
+  "🤫":
+    primary: "silence"
+    contexts:
+      - concept: "quiet"
+        usage: "silencing output or making quiet"
+
+  "⬆️":
+    primary: "up_direction"
+    contexts:
+      - concept: "upgrades"
+        usage: "upgrading dependencies or versions"
+
+  "🗃️":
+    primary: "data_storage"
+    contexts:
+      - concept: "organization"
+        usage: "data storage and organization"
+
+  "🔁":
+    primary: "sync"
+    contexts:
+      - concept: "repetition"
+        usage: "syncing and repeating operations"
+
+  "🏎":
+    primary: "speed"
+    contexts:
+      - concept: "performance"
+        usage: "high performance and racing speed"
+
+  "🚑":
+    primary: "emergency_fixes"
+    contexts:
+      - concept: "hotfixes"
+        usage: "emergency fixes and urgent repairs"
+
+  "🛰":
+    primary: "remote"
+    contexts:
+      - concept: "satellite"
+        usage: "remote operations and satellite connections"
+
+  "🔠":
+    primary: "text_content"
+    contexts:
+      - concept: "letters"
+        usage: "text content and letter formatting"
+
+  "📆":
+    primary: "dates"
+    contexts:
+      - concept: "calendar"
+        usage: "date handling and calendar operations"
+
+  "👨🏼‍🎤":
+    primary: "entertainment"
+    contexts:
+      - concept: "performance"
+        usage: "performance and entertainment features"
+
+  "👆🏼":
+    primary: "touching"
+    contexts:
+      - concept: "pointing"
+        usage: "touching, pointing, or manual operations"
+
+  "🪵":
+    primary: "logging"
+    contexts:
+      - concept: "logs"
+        usage: "logging and log file operations"
+
+  "🥣":
+    primary: "flakey"
+    contexts:
+      - concept: "testing"
+        usage: "flakey tests and unstable behavior"
+
+  "👨🏼‍⚕️":
+    primary: "medical_fixes"
+    contexts:
+      - concept: "healing"
+        usage: "medical-style fixing and healing"
+
+  "👩🏼‍⚕️":
+    primary: "female_medical"
+    contexts:
+      - concept: "healing"
+        usage: "medical-style fixing and healing"
+
+  "🧮":
+    primary: "calculations"
+    contexts:
+      - concept: "math"
+        usage: "calculations and mathematical operations"
+
+  "🤖":
+    primary: "automation"
+    contexts:
+      - concept: "ci"
+        usage: "automation and CI/CD processes"
+
+  "🔄":
+    primary: "rollback"
+    contexts:
+      - concept: "cycling"
+        usage: "rolling back or cycling through states"
+
+  "😡":
+    primary: "frustration"
+    contexts:
+      - concept: "anger"
+        usage: "frustration with difficult problems"
+
+  "📧":
+    primary: "email"
+    contexts:
+      - concept: "communication"
+        usage: "email operations and communication"
+
+  "💬":
+    primary: "comments"
+    contexts:
+      - concept: "text"
+        usage: "comments and text messages"
+
+  "📜":
+    primary: "scrolls"
+    contexts:
+      - concept: "logging"
+        usage: "logging and scroll-like documentation"
+
+  "🌾":
+    primary: "fields"
+    contexts:
+      - concept: "data"
+        usage: "data fields and agricultural-style growth"
+
+  "🧷":
+    primary: "safety"
+    contexts:
+      - concept: "pins"
+        usage: "safety pins and securing things"
+
+  "🪄":
+    primary: "magic"
+    contexts:
+      - concept: "automation"
+        usage: "magical automation and wand-like tools"
+
+  "✈️":
+    primary: "deployment"
+    contexts:
+      - concept: "flying"
+        usage: "deployment and flying operations"
+
+  "👨🏼‍🏫":
+    primary: "teaching"
+    contexts:
+      - concept: "management"
+        usage: "teaching and management roles"
+
+  "🔏":
+    primary: "locking"
+    contexts:
+      - concept: "security"
+        usage: "locking and securing access"
+
+  "🙈":
+    primary: "hiding"
+    contexts:
+      - concept: "ignoring"
+        usage: "hiding or ignoring things"
+
+  "🎛️":
+    primary: "configuration"
+    contexts:
+      - concept: "controls"
+        usage: "configuration controls and settings"
+
+  "🐞":
+    primary: "bugs"
+    contexts:
+      - concept: "fixes"
+        usage: "bug fixes and debugging"
+
+  "📡":
+    primary: "api"
+    contexts:
+      - concept: "remote"
+        usage: "API calls and remote communications"
+
+  "🚅":
+    primary: "fast_rails"
+    contexts:
+      - concept: "speed"
+        usage: "fast Rails operations and bullet trains"
+
+  "👨🏼‍🎨":
+    primary: "design"
+    contexts:
+      - concept: "styling"
+        usage: "design and styling operations"
+
+  "🚮":
+    primary: "disposal"
+    contexts:
+      - concept: "removal"
+        usage: "disposing and removing unwanted things"
+
+  "👷🏻‍♂️":
+    primary: "construction_workers"
+    contexts:
+      - concept: "construction"
+        usage: "construction workers and builders"
+
+  "😃":
+    primary: "happiness"
+    contexts:
+      - concept: "positive"
+        usage: "happy and positive changes"
+
+  "🏫":
+    primary: "institutional"
+    contexts:
+      - concept: "berkeley"
+        usage: "institutional and educational contexts"
+
+  "©️":
+    primary: "copyright"
+    contexts:
+      - concept: "legal"
+        usage: "copyright and legal attributions"
+
+  "🗂":
+    primary: "indexing"
+    contexts:
+      - concept: "organization"
+        usage: "indexing and organizing data"
+
+  "🔃":
+    primary: "updating"
+    contexts:
+      - concept: "cycling"
+        usage: "updating and cycling through states"
+
+  "😷":
+    primary: "filtering"
+    contexts:
+      - concept: "health"
+        usage: "filtering and health-related masking"
+
+  "📺":
+    primary: "display"
+    contexts:
+      - concept: "screens"
+        usage: "display and screen-related operations"
+
+  "🥑":
+    primary: "avo"
+    contexts:
+      - concept: "green"
+        usage: "Avo framework (green color association)"
+
+  "📇":
+    primary: "contacts"
+    contexts:
+      - concept: "data"
+        usage: "contact data and rolodex-style information"
+
+  "🏖":
+    primary: "relaxed"
+    contexts:
+      - concept: "local"
+        usage: "relaxed local development environments"
+
+  "👨🏼‍💻":
+    primary: "developers"
+    contexts:
+      - concept: "programming"
+        usage: "developers and programming activities"
+
+  "☑️":
+    primary: "checkboxes"
+    contexts:
+      - concept: "completion"
+        usage: "checkboxes and completion states"
+
+  "🧭":
+    primary: "navigation"
+    contexts:
+      - concept: "compass"
+        usage: "navigation and compass-like guidance"
+
+  "🏁":
+    primary: "flags"
+    contexts:
+      - concept: "features"
+        usage: "feature flags and finishing lines"
+
+  "🦟":
+    primary: "small_bugs"
+    contexts:
+      - concept: "minor_fixes"
+        usage: "small bugs and minor fixes"
+
+  "🏎":
+    primary: "speed"
+    contexts:
+      - concept: "performance"
+        usage: "high performance and racing speed"
+        usage: "high performance optimizations"
+
+  "🔍":
+    primary: "searching"
+    contexts:
+      - concept: "finding"
+        usage: "searching and finding operations"
+
+  "🕵🏼‍♂️":
+    primary: "detective"
+    contexts:
+      - concept: "searching"
+        usage: "detective work and investigation"
+
+  "📊":
+    primary: "reports"
+    contexts:
+      - concept: "analytics"
+        usage: "reports and analytics data"
+
+  "🪦":
+    primary: "death"
+    contexts:
+      - concept: "tracking_end"
+        usage: "tracking death or end of lifecycle"
+
+  "☀️":
+    primary: "dry"
+    contexts:
+      - concept: "sunny"
+        usage: "dry operations and sunny conditions"
+
+  "🌵":
+    primary: "desert"
+    contexts:
+      - concept: "dry"
+        usage: "dry desert-like conditions"
+
+  "⛓️":
+    primary: "chains"
+    contexts:
+      - concept: "coupling"
+        usage: "chains and coupling relationships"
+
+  "⚠️":
+    primary: "warnings"
+    contexts:
+      - concept: "alerts"
+        usage: "warning messages and alerts"
+
+# Reverse lookup for finding emojis by concept
+concepts:
+  essence_alchemy:
+    primary: ["⚗️"]
+  essence_sweetness:
+    primary: ["🍯"]
+  essence_nature:
+    primary: ["🌿"]
+  essence_bubbles:
+    primary: ["🫧"]
+  preserves_strawberry:
+    primary: ["🍓"]
+  preserves_blueberry:
+    primary: ["🫐"]
+  preserves_cherry:
+    primary: ["🍒"]
+  preserves_jar:
+    primary: ["🫙"]
+  preserves_pineapple:
+    primary: ["🍍"]
+  preserves_mango:
+    primary: ["🥭"]
+  preserves_orange:
+    primary: ["🍊"]
+  migrations:
+    primary: ["💫"]
+  migrations_metamorphosis:
+    primary: ["🦋"]
+  options_controls:
+    primary: ["🎛️"]
+  options_sliders:
+    primary: ["🎚"]
+  structured_yaml:
+    primary: ["🗂️"]
+  type_coercion:
+    primary: ["🎭"]
+  number_types:
+    primary: ["🔢"]
+  models:
+    primary: ["🧩"]
+  compiling_storage:
+    primary: ["💾"]
+  seed_data:
+    primary: ["🌰"]
+  remote_schemas:
+    primary: ["🛰"]
+  bugs:
+    primary: ["🐞"]
+  small_bugs:
+    primary: ["🦟"]
+  caterpillar_bugs:
+    primary: ["🐛"]
+  cricket_bugs:
+    primary: ["🦗"]
+  ant_bugs:
+    primary: ["🐜"]
+  spider_bugs:
+    primary: ["🕷️"]
+  scorpion_bugs:
+    primary: ["🦂"]
+  bee_bugs:
+    primary: ["🐝"]
+  koala_bugs:
+    primary: ["🐨"]
+  specs:
+    primary: ["📐"]
+  enforcement:
+    primary: ["🚔"]
+  spacing:
+    primary: ["👾"]
+  impersonation:
+    primary: ["🥸"]
+  branding:
+    primary: ["📛"]
+  cleanup:
+    primary: ["🧹"]
+  scrubbing:
+    primary: ["🧽"]
+  tooling:
+    primary: ["🛠️"]
+  user_experience:
+    primary: ["🚸"]
+  dependencies:
+    primary: ["📦"]
+  features:
+    primary: ["✨"]
+  installation:
+    primary: ["🔌"]
+  text:
+    primary: ["🔡"]
+  text_content:
+    primary: ["🔠"]
+  documentation:
+    primary: ["📝"]
+  mapping:
+    primary: ["🗺"]
+  polish:
+    primary: ["💅🏼"]
+  breaking_changes:
+    primary: ["💥"]
+  thinking:
+    primary: ["🤔"]
+  testing:
+    primary: ["🧪"]
+  flakey:
+    primary: ["🥣"]
+  rails:
+    primary: ["🛤"]
+  rails_transport:
+    primary: ["🚝"]
+  fast_rails:
+    primary: ["🚅"]
+  ruby:
+    primary: ["💎"]
+  ruby_red:
+    primary: ["🔴"]
+  organization:
+    primary: ["🍱"]
+  data_storage:
+    primary: ["🗃️"]
+  indexing:
+    primary: ["🗂"]
+  initial:
+    primary: ["🐣"]
+  work_in_progress:
+    primary: ["🚧"]
+  build:
+    primary: ["🏗"]
+  workers:
+    primary: ["👷🏼‍♂️"]
+  female_workers:
+    primary: ["👷🏼‍♀️"]
+  construction_workers:
+    primary: ["👷🏻‍♂️"]
+  positive:
+    primary: ["😃"]
+  security:
+    primary: ["🛡️"]
+  credentials:
+    primary: ["🔐"]
+  identification:
+    primary: ["🪪"]
+  locking:
+    primary: ["🔏"]
+  alerts:
+    primary: ["🚨"]
+  firewall:
+    primary: ["🏰"]
+  launch:
+    primary: ["🚀"]
+  branching:
+    primary: ["🔀"]
+  conflicts:
+    primary: ["⚔️"]
+  blocking:
+    primary: ["🚫"]
+  performance:
+    primary: ["⚡"]
+  speed:
+    primary: ["🏎"]
+  entertainment:
+    primary: ["👨🏼‍🎤"]
+  database:
+    primary: ["🗄️"]
+  diagnosis:
+    primary: ["🩺"]
+  patches:
+    primary: ["🩹"]
+  healing:
+    primary: ["❤️‍🩹"]
+  medical_fixes:
+    primary: ["👨🏼‍⚕️"]
+  female_medical:
+    primary: ["👩🏼‍⚕️"]
+  experiments:
+    primary: ["🧫"]
+  removal:
+    primary: ["🔥"]
+  disposal:
+    primary: ["🚮"]
+  configuration:
+    primary: ["🎛️"]
+  gaming:
+    primary: ["🎮"]
+  upgrades:
+    primary: ["🌠"]
+  up_direction:
+    primary: ["⬆️"]
+  institutional:
+    primary: ["🏫"]
+  deprecation:
+    primary: ["🥀"]
+  replacement:
+    primary: ["🌹"]
+  silence:
+    primary: ["🤫"]
+  sync:
+    primary: ["🔁"]
+  updating:
+    primary: ["🔃"]
+  emergency_fixes:
+    primary: ["🚑"]
+  remote:
+    primary: ["🛰"]
+  api:
+    primary: ["📡"]
+  dates:
+    primary: ["📆"]
+  logging:
+    primary: ["🪵"]
+  scrolls:
+    primary: ["📜"]
+  touching:
+    primary: ["👆🏼"]
+  medical_fixes:
+    primary: ["👨🏼‍⚕️"]
+    secondary: ["👩🏼‍⚕️"]
+  calculations:
+    primary: ["🧮"]
+  automation:
+    primary: ["🤖"]
+  magic:
+    primary: ["🪄"]
+  rollback:
+    primary: ["🔄"]
+  frustration:
+    primary: ["😡"]
+  email:
+    primary: ["📧"]
+  comments:
+    primary: ["💬"]
+  fields:
+    primary: ["🌾"]
+  safety:
+    primary: ["🧷"]
+  deployment:
+    primary: ["✈️"]
+    secondary: ["🚀"]
+  teaching:
+    primary: ["👨🏼‍🏫"]
+  hiding:
+    primary: ["🙈"]
+  design:
+    primary: ["👨🏼‍🎨"]
+  happiness:
+    primary: ["😃"]
+  copyright:
+    primary: ["©️"]
+  filtering:
+    primary: ["😷"]
+  display:
+    primary: ["📺"]
+  avo:
+    primary: ["🥑"]
+  contacts:
+    primary: ["📇"]
+  relaxed:
+    primary: ["🏖"]
+  developers:
+    primary: ["👨🏼‍💻"]
+  checkboxes:
+    primary: ["☑️"]
+  navigation:
+    primary: ["🧭"]
+  flags:
+    primary: ["🏁"]
+  searching:
+    primary: ["🔍"]
+  detective:
+    primary: ["🕵🏼‍♂️"]
+  reports:
+    primary: ["📊"]
+  death:
+    primary: ["🪦"]
+  dry:
+    primary: ["☀️"]
+  desert:
+    primary: ["🌵"]
+  chains:
+    primary: ["⛓️"]
+  warnings:
+    primary: ["⚠️"]
+  # Context concepts that appear in emoji contexts
+  transformation:
+    secondary: ["⚗️", "💫", "🦋", "🎭"]
+  controls:
+    secondary: ["🎛️"]
+  fixes:
+    secondary: ["🐞"]
+  minor_fixes:
+    secondary: ["🦟"]
+  preserves:
+    secondary: ["🍯", "🍓", "🫐", "🍒", "🫙", "🍍", "🥭", "🍊"]
+  natural:
+    secondary: ["🌿"]
+  project_identity:
+    secondary: ["🫧"]
+  types:
+    secondary: ["🔢"]
+  structure:
+    secondary: ["🧩", "🍱"]
+  compilation:
+    secondary: ["💾"]
+  data:
+    secondary: ["🌰", "🌾", "📇"]
+  satellite:
+    secondary: ["🛰"]
+  proactive_fixes:
+    secondary: ["🐞"]
+  user_frustration:
+    secondary: ["🦟"]
+  programming:
+    secondary: ["👨🏼‍💻"]
+  completion:
+    secondary: ["☑️"]
+  compass:
+    secondary: ["🧭"]
+  finding:
+    secondary: ["🔍"]
+  analytics:
+    secondary: ["📊"]
+  tracking_end:
+    secondary: ["🪦"]
+  sunny:
+    secondary: ["☀️"]
+  coupling:
+    secondary: ["⛓️"]
+  growing_problems:
+    secondary: ["🐛"]
+  noisy_bugs:
+    secondary: ["🦗"]
+  small_persistent:
+    secondary: ["🐜"]
+  web_related:
+    secondary: ["🕷️"]
+  dangerous_bugs:
+    secondary: ["🦂"]
+  productive_fixes:
+    secondary: ["🐝"]
+  cute_harmless:
+    secondary: ["🐨"]
+  specifications:
+    secondary: ["📐"]
+  rubocop:
+    secondary: ["🚔"]
+  compliance:
+    secondary: ["🚔"]
+  indentation:
+    secondary: ["👾"]
+  access_modifiers:
+    secondary: ["🥸"]
+  naming:
+    secondary: ["📛"]
+  housekeeping:
+    secondary: ["🧹"]
+  developer_experience:
+    secondary: ["🛠️"]
+  ux_improvements:
+    secondary: ["🚸"]
+  packages:
+    secondary: ["📦"]
+  new_functionality:
+    secondary: ["✨"]
+  setup:
+    secondary: ["🔌"]
+  content:
+    secondary: ["🔡"]
+  writing:
+    secondary: ["📝"]
+  styling:
+    secondary: ["💅🏼", "👨🏼‍🎨"]
+  destruction:
+    secondary: ["💥"]
+  consideration:
+    secondary: ["🤔"]
+  framework:
+    secondary: ["🛤", "🚝"]
+  language:
+    secondary: ["💎"]
+  generated:
+    secondary: ["🐣"]
+  incomplete:
+    secondary: ["🚧"]
+  construction:
+    secondary: ["🏗", "👷🏻‍♂️"]
+  build_workers:
+    secondary: ["👷🏼‍♂️", "👷🏼‍♀️"]
+  protection:
+    secondary: ["🛡️"]
+  merging:
+    secondary: ["🔀"]
+  fighting:
+    secondary: ["⚔️"]
+  avoiding:
+    secondary: ["🚫"]
+  speed:
+    secondary: ["⚡", "🏎", "🚅"]
+  storage:
+    secondary: ["🗄️"]
+  health_check:
+    secondary: ["🩺"]
+  identification:
+    secondary: ["🪪"]
+  small_fixes:
+    secondary: ["🩹"]
+  fixing:
+    secondary: ["❤️‍🩹"]
+  deletion:
+    secondary: ["🔥"]
+  gaming:
+    secondary: ["🎮"]
+  improvements:
+    secondary: ["🌠"]
+  berkeley:
+    secondary: ["🏫"]
+  wilting:
+    secondary: ["🥀"]
+  improvement:
+    secondary: ["🌹"]
+  quiet:
+    secondary: ["🤫"]
+  up_direction:
+    secondary: ["⬆️"]
+  repetition:
+    secondary: ["🔁"]
+  hotfixes:
+    secondary: ["🚑"]
+  letters:
+    secondary: ["🔠"]
+  calendar:
+    secondary: ["📆"]
+  entertainment:
+    secondary: ["👨🏼‍🎤"]
+  pointing:
+    secondary: ["👆🏼"]
+  logs:
+    secondary: ["🪵"]
+  math:
+    secondary: ["🧮"]
+  ci:
+    secondary: ["🤖"]
+  cycling:
+    secondary: ["🔄", "🔃"]
+  anger:
+    secondary: ["😡"]
+  communication:
+    secondary: ["📧"]
+  scrolls:
+    secondary: ["📜"]
+  pins:
+    secondary: ["🧷"]
+  flying:
+    secondary: ["✈️"]
+  management:
+    secondary: ["👨🏼‍🏫"]
+  ignoring:
+    secondary: ["🙈"]
+  legal:
+    secondary: ["©️"]
+  health:
+    secondary: ["😷"]
+  screens:
+    secondary: ["📺"]
+  green:
+    secondary: ["🥑"]
+  local:
+    secondary: ["🏖"]
+
+# Data validation rules for consistency checking
+validation_rules:
+  bidirectional_consistency: true
+  unique_primary_meanings: true
+  max_contexts_per_emoji: 3
+  require_usage_description: true
